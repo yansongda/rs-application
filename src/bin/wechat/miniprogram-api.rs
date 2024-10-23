@@ -1,7 +1,7 @@
 use tracing::info;
-use wechat::config::Config;
-use wechat::logger::Logger;
-use wechat::miniprogram_api::App;
+use application::config::Config;
+use application::logger::Logger;
+use application::miniprogram_api::App;
 
 #[tokio::main]
 async fn main() {

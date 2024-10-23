@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       tdesign-miniprogram:
-        specifier: ^1.4.1
-        version: 1.4.1
+        specifier: ^1.6.2
+        version: 1.6.2
     devDependencies:
       '@biomejs/biome':
         specifier: 1.7.2
         version: 1.7.2
       miniprogram-api-typings:
-        specifier: ^3.12.2
-        version: 3.12.2
+        specifier: ^3.12.3
+        version: 3.12.3
       typescript:
-        specifier: ^5.4.5
-        version: 5.4.5
+        specifier: ^5.6.3
+        version: 5.6.3
 
 packages:
 
@@ -77,17 +77,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  dayjs@1.11.11:
-    resolution: {integrity: sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==}
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
-  miniprogram-api-typings@3.12.2:
-    resolution: {integrity: sha512-OJB2uVAfhycX4teG/zEVpoThushQqLOx946XACDpVc6OQydiJWjn7djVzvNCbv0VOA7sbHGPQp/RkXD9vMCDEw==}
+  miniprogram-api-typings@3.12.3:
+    resolution: {integrity: sha512-o7bOfrU28MEMCBWo83nXv0ROQSBFxJcfCl4f2wTYqah64ipC5RGqLJfvWJTWhlQt2ECVwspSzM8LgvnfMo7TEQ==}
 
-  tdesign-miniprogram@1.4.1:
-    resolution: {integrity: sha512-i09HiSl9xZzaQ6zuIV79gpULyeadjSrslUp9XlAEJNcFoSD3MWY0ZVwDLhBXqfUhuyI2Lwy6ym8DwUU0lC8zzQ==}
+  tdesign-miniprogram@1.6.2:
+    resolution: {integrity: sha512-Rxusw4LuHznulvuE5+I0poIH/FpCUsKnPg7CBMH4HMDux2ZPWTTX8FOCdftJCfm1Bkge6tnZd+TfpCuvDIE1Dw==}
 
-  typescript@5.4.5:
-    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
+  typescript@5.6.3:
+    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -128,12 +128,12 @@ snapshots:
   '@biomejs/cli-win32-x64@1.7.2':
     optional: true
 
-  dayjs@1.11.11: {}
+  dayjs@1.11.13: {}
 
-  miniprogram-api-typings@3.12.2: {}
+  miniprogram-api-typings@3.12.3: {}
 
-  tdesign-miniprogram@1.4.1:
+  tdesign-miniprogram@1.6.2:
     dependencies:
-      dayjs: 1.11.11
+      dayjs: 1.11.13
 
-  typescript@5.4.5: {}
+  typescript@5.6.3: {}
