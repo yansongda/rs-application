@@ -1,6 +1,6 @@
 pub mod config;
 pub mod logger;
-pub mod miniprogram_api;
+pub mod wechat_miniprogram_api;
 mod model;
 mod repository;
 mod request;

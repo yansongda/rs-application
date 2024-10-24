@@ -1,5 +1,7 @@
 use serde::Deserialize;
 
+pub mod miniprogram;
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct LoginResponse {
     pub session_key: Option<String>,

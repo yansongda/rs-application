@@ -1,7 +1,7 @@
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::short_url::{CreateShortUrl, ShortUrl};
+use crate::model::wechat::miniprogram::short_url::{CreateShortUrl, ShortUrl};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 

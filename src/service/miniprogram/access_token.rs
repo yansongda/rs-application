@@ -1,4 +1,4 @@
-use crate::model::miniprogram::access_token::{AccessToken, AccessTokenData};
+use crate::model::wechat::miniprogram::access_token::{AccessToken, AccessTokenData};
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::service::wechat;

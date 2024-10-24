@@ -1,7 +1,7 @@
 use totp_rs::{Algorithm, Secret, TOTP};
 use tracing::error;
 
-use crate::model::miniprogram::totp::{CreateTotp, Totp, UpdateTotp};
+use crate::model::wechat::miniprogram::totp::{CreateTotp, Totp, UpdateTotp};
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::request::miniprogram::totp::DetailResponse;
