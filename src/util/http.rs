@@ -13,7 +13,7 @@ static G_CLIENT: OnceLock<Client> = OnceLock::new();
 pub async fn request(request: Request) -> Result<HttpResponse> {
     let client = G_CLIENT.get_or_init(|| {
         Client::builder()
-            .user_agent("yansongda/miniprogram")
+            .user_agent("yansongda/rs-application")
             .connect_timeout(Duration::from_secs(1))
             .timeout(Duration::from_secs(3))
             .build()

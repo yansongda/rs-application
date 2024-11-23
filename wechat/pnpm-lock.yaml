@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       tdesign-miniprogram:
-        specifier: ^1.6.2
-        version: 1.6.2
+        specifier: ^1.8.0
+        version: 1.8.0
     devDependencies:
       '@biomejs/biome':
         specifier: 1.7.2
@@ -19,8 +19,8 @@ importers:
         specifier: ^3.12.3
         version: 3.12.3
       typescript:
-        specifier: ^5.6.3
-        version: 5.6.3
+        specifier: ^5.7.2
+        version: 5.7.2
 
 packages:
 
@@ -83,11 +83,14 @@ packages:
   miniprogram-api-typings@3.12.3:
     resolution: {integrity: sha512-o7bOfrU28MEMCBWo83nXv0ROQSBFxJcfCl4f2wTYqah64ipC5RGqLJfvWJTWhlQt2ECVwspSzM8LgvnfMo7TEQ==}
 
-  tdesign-miniprogram@1.6.2:
-    resolution: {integrity: sha512-Rxusw4LuHznulvuE5+I0poIH/FpCUsKnPg7CBMH4HMDux2ZPWTTX8FOCdftJCfm1Bkge6tnZd+TfpCuvDIE1Dw==}
+  tdesign-miniprogram@1.8.0:
+    resolution: {integrity: sha512-/ecDMkcrA6J1ocJ30N4AAxdPTbRz2gpigW1NEHu1TwTXHx0STG0FOpgJGoU1WYCyJRPv72kgYfF9VgZjZqxJMg==}
 
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+  tinycolor2@1.6.0:
+    resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
+
+  typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -132,8 +135,11 @@ snapshots:
 
   miniprogram-api-typings@3.12.3: {}
 
-  tdesign-miniprogram@1.6.2:
+  tdesign-miniprogram@1.8.0:
     dependencies:
       dayjs: 1.11.13
+      tinycolor2: 1.6.0
 
-  typescript@5.6.3: {}
+  tinycolor2@1.6.0: {}
+
+  typescript@5.7.2: {}
