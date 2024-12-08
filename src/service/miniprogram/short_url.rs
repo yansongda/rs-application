@@ -1,4 +1,4 @@
-use crate::model::wechat::miniprogram::short_url::{CreateShortUrl, ShortUrl};
+use crate::model::miniprogram::short_url::{CreateShortUrl, ShortUrl};
 use crate::model::result::Result;
 use crate::repository::miniprogram;
 use fasthash::murmur3;

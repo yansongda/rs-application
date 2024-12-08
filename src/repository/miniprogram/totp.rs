@@ -3,7 +3,7 @@ use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::wechat::miniprogram::totp::{CreateTotp, Totp, TotpConfig, UpdateTotp};
+use crate::model::miniprogram::totp::{CreateTotp, Totp, TotpConfig, UpdateTotp};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 

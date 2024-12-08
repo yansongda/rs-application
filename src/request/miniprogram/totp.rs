@@ -1,4 +1,4 @@
-use crate::model::wechat::miniprogram::totp::{Totp, UpdateTotp};
+use crate::model::miniprogram::totp::{Totp, UpdateTotp};
 use crate::model::result::Error;
 use crate::request::Validator;
 use crate::service::miniprogram::totp;

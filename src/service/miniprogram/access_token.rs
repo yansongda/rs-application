@@ -1,4 +1,4 @@
-use crate::model::wechat::miniprogram::access_token::{AccessToken, AccessTokenData};
+use crate::model::miniprogram::wechat_access_token::{AccessToken, AccessTokenData};
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::service::wechat;
@@ -12,7 +12,7 @@ pub async fn login(code: &str) -> Result<AccessToken> {
 
     if exist.is_ok() {
         return miniprogram::access_token::update(
-            exist.unwrap().id,
+            exist?.id,
             AccessTokenData::from(wechat_response),
         )
         .await;

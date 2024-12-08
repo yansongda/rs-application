@@ -2,7 +2,7 @@ use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::wechat::miniprogram::user::{UpdateUser, User};
+use crate::model::miniprogram::user::{UpdateUser, User};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 

@@ -1,4 +1,4 @@
-use crate::model::wechat::miniprogram::user::{UpdateUser, User};
+use crate::model::miniprogram::user::{UpdateUser, User};
 use crate::model::result::Result;
 use crate::repository::miniprogram;
 

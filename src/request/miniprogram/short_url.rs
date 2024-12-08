@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::config::Config;
-use crate::model::wechat::miniprogram::short_url::ShortUrl;
+use crate::model::miniprogram::short_url::ShortUrl;
 use crate::model::result::Error;
 use crate::request::Validator;
 

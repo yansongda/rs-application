@@ -1,4 +1,4 @@
-use crate::model::wechat::miniprogram::access_token::AccessToken;
+use crate::model::miniprogram::wechat_access_token::AccessToken;
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};

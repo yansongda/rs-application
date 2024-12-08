@@ -1,4 +1,4 @@
-use crate::model::wechat::miniprogram::user::{UpdateUser, User};
+use crate::model::miniprogram::user::{UpdateUser, User};
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};

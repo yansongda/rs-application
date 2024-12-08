@@ -4,7 +4,7 @@ use std::time::Instant;
 use sqlx::types::Json;
 use tracing::{error, info};
 
-use crate::model::wechat::miniprogram::access_token::{AccessToken, AccessTokenData};
+use crate::model::miniprogram::wechat_access_token::{AccessToken, AccessTokenData};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
