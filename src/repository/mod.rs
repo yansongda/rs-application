@@ -6,7 +6,7 @@ use std::time::Duration;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use sqlx::PgPool;
 
-use crate::config::{Config, Database};
+use crate::config::{Database, G_CONFIG};
 
 pub mod miniprogram;
 
@@ -24,7 +24,7 @@ impl Pool {
     }
 
     async fn init_databases() {
-        let databases = Config::get_databases();
+        let databases = &G_CONFIG.databases;
 
         let mut pg: HashMap<&'static str, PgPool> = HashMap::new();
 
@@ -40,7 +40,7 @@ impl Pool {
     async fn connect_postgres(config: &Database) -> PgPool {
         let connection_options = PgConnectOptions::from_str(config.url.as_str())
             .unwrap()
-            .application_name(Config::get_name());
+            .application_name(G_CONFIG.name.as_str());
 
         PgPoolOptions::new()
             .acquire_timeout(Duration::from_secs(config.acquire_timeout))

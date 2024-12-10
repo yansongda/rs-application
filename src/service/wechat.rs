@@ -1,17 +1,17 @@
 use reqwest::{Method, Request, Url};
 use tracing::error;
 
-use crate::config::Config;
+use crate::config::G_CONFIG;
 use crate::model::result::{Error, Result};
 use crate::model::wechat::LoginResponse;
 use crate::util::http;
 
 pub async fn login(code: &str) -> Result<LoginResponse> {
-    let url = format!("{}/sns/jscode2session", Config::get_wechat().url.as_str());
+    let url = format!("{}/sns/jscode2session", G_CONFIG.wechat.url.as_str());
 
     let query = [
-        ("appid", Config::get_wechat().app_id.as_str()),
-        ("secret", Config::get_wechat().app_secret.as_str()),
+        ("appid", G_CONFIG.wechat.app_id.as_str()),
+        ("secret", G_CONFIG.wechat.app_secret.as_str()),
         ("js_code", code),
         ("grant_type", "authorization_code"),
     ];

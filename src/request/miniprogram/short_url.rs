@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::config::Config;
+use crate::config::G_CONFIG;
 use crate::model::miniprogram::short_url::ShortUrl;
 use crate::model::result::Error;
 use crate::request::Validator;
@@ -38,7 +38,7 @@ impl From<ShortUrl> for CreateResponse {
             url: model.url,
             short: format!(
                 "{}/{}",
-                Config::get_short_url().domain.as_str(),
+                G_CONFIG.short_url.domain.as_str(),
                 model.short
             ),
         }
@@ -74,7 +74,7 @@ impl From<ShortUrl> for DetailResponse {
             url: model.url,
             short: format!(
                 "{}/{}",
-                Config::get_short_url().domain.as_str(),
+                G_CONFIG.short_url.domain.as_str(),
                 model.short
             ),
         }

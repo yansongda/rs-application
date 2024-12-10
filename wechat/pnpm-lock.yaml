@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       tdesign-miniprogram:
-        specifier: ^1.8.0
-        version: 1.8.0
+        specifier: ^1.8.1
+        version: 1.8.1
     devDependencies:
       '@biomejs/biome':
         specifier: 1.7.2
@@ -83,8 +83,8 @@ packages:
   miniprogram-api-typings@3.12.3:
     resolution: {integrity: sha512-o7bOfrU28MEMCBWo83nXv0ROQSBFxJcfCl4f2wTYqah64ipC5RGqLJfvWJTWhlQt2ECVwspSzM8LgvnfMo7TEQ==}
 
-  tdesign-miniprogram@1.8.0:
-    resolution: {integrity: sha512-/ecDMkcrA6J1ocJ30N4AAxdPTbRz2gpigW1NEHu1TwTXHx0STG0FOpgJGoU1WYCyJRPv72kgYfF9VgZjZqxJMg==}
+  tdesign-miniprogram@1.8.1:
+    resolution: {integrity: sha512-WeBQysX5IvxNqeZytOPS10gUZY9tlQmR7qCxrjOyJKd0jlijf3IcwtX2OgNRgaLb7loeoEzr+mIejh2lwc+2EQ==}
 
   tinycolor2@1.6.0:
     resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
@@ -135,7 +135,7 @@ snapshots:
 
   miniprogram-api-typings@3.12.3: {}
 
-  tdesign-miniprogram@1.8.0:
+  tdesign-miniprogram@1.8.1:
     dependencies:
       dayjs: 1.11.13
       tinycolor2: 1.6.0

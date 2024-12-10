@@ -1,7 +1,7 @@
 {
   "name": "yansongda",
   "version": "1.5.1",
-  "description": "miniprogram for yansongda",
+  "description": "wechat for yansongda",
   "type": "module",
   "scripts": {
     "biome:check": "biome check miniprogram",
@@ -19,6 +19,6 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "tdesign-miniprogram": "^1.8.0"
+    "tdesign-miniprogram": "^1.8.1"
   }
 }

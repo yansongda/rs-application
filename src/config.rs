@@ -1,9 +1,23 @@
 use config::{Config as C, Environment, File};
 use serde::Deserialize;
 use std::collections::HashMap;
-use std::sync::OnceLock;
+use std::sync::LazyLock;
 
-static G_CONFIG: OnceLock<Config> = OnceLock::new();
+pub(crate) static G_CONFIG: LazyLock<Config> = LazyLock::new(|| {
+    let config = C::builder()
+        .add_source(File::with_name("./config.toml").required(false))
+        .add_source(
+            Environment::with_prefix("APP")
+                .try_parsing(true)
+                .separator("_"),
+        )
+        .build()
+        .expect("加载配置失败");
+
+    let instance = config.try_deserialize::<Config>().expect("解析配置失败");
+
+    instance
+});
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct Config {
@@ -39,46 +53,4 @@ pub struct Wechat {
 #[derive(Debug, Clone, Deserialize)]
 pub struct ShortUrl {
     pub domain: String,
-}
-
-impl Config {
-    pub fn init() {
-        if G_CONFIG.get().is_some() {
-            return;
-        }
-
-        let config = C::builder()
-            .add_source(File::with_name("./config.toml").required(false))
-            .add_source(
-                Environment::with_prefix("APP")
-                    .try_parsing(true)
-                    .separator("_"),
-            )
-            .build()
-            .expect("加载配置失败");
-
-        let instance = config.try_deserialize::<Config>().expect("解析配置失败");
-
-        G_CONFIG.set(instance).expect("系统配置初始化失败");
-    }
-
-    pub fn get_name() -> &'static str {
-        G_CONFIG.get().unwrap().name.as_str()
-    }
-
-    pub fn get_bin(name: &str) -> &Bin {
-        G_CONFIG.get().unwrap().bin.get(name).unwrap()
-    }
-
-    pub fn get_databases() -> &'static HashMap<String, Database> {
-        &G_CONFIG.get().unwrap().databases
-    }
-
-    pub fn get_wechat() -> &'static Wechat {
-        &G_CONFIG.get().unwrap().wechat
-    }
-
-    pub fn get_short_url() -> &'static ShortUrl {
-        &G_CONFIG.get().unwrap().short_url
-    }
 }

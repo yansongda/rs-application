@@ -1,11 +1,9 @@
 use tracing::info;
-use application::config::Config;
 use application::logger::Logger;
 use application::miniprogram_api::App;
 
 #[tokio::main]
 async fn main() {
-    Config::init();
     Logger::non_blocking("miniprogram-api");
 
     let app = App::init().await;

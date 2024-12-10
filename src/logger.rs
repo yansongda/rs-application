@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::config::Config;
+use crate::config::G_CONFIG;
 use tracing::level_filters::LevelFilter;
 use tracing::{Event, Subscriber};
 use tracing_appender::non_blocking::{NonBlockingBuilder, WorkerGuard};
@@ -38,7 +38,7 @@ impl Logger {
     }
 
     fn get_filter_target(identifier: &str) -> filter::Targets {
-        let level = if Config::get_bin(identifier).debug {
+        let level = if G_CONFIG.bin.get(identifier).unwrap().debug {
             "debug"
         } else {
             "info"
