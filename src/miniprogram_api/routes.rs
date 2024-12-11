@@ -5,7 +5,7 @@ use tower::ServiceBuilder;
 use crate::miniprogram_api::middleware::authorization;
 use crate::miniprogram_api::v1;
 
-pub fn api_v1() -> Router {
+pub fn api_v1_miniprogram() -> Router {
     let unauthorized = Router::new()
         .route("/access-token/login", post(v1::access_token::login))
         .route("/short-url/detail", post(v1::short_url::detail))

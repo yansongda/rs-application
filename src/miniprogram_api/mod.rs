@@ -56,7 +56,7 @@ impl App {
 
     fn router() -> Router {
         Router::new()
-            .nest("/api/v1", routes::api_v1())
+            .nest("/api/v1/miniprogram", routes::api_v1_miniprogram())
             .route("/health", get(|| async { "success" }))
             .fallback(|| async {
                 Response::<String>::new(Some(404), Some("Not Found".to_string()), None)
