@@ -14,9 +14,7 @@ pub(crate) static G_CONFIG: LazyLock<Config> = LazyLock::new(|| {
         .build()
         .expect("加载配置失败");
 
-    let instance = config.try_deserialize::<Config>().expect("解析配置失败");
-
-    instance
+    config.try_deserialize::<Config>().expect("解析配置失败")
 });
 
 #[derive(Debug, Clone, Deserialize)]

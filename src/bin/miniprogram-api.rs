@@ -1,12 +1,12 @@
-use tracing::info;
 use application::logger::Logger;
 use application::miniprogram_api::App;
+use tracing::info;
 
 #[tokio::main]
 async fn main() {
     Logger::non_blocking("miniprogram-api");
 
-    let app = App::init().await;
+    let app = App::init();
 
     let listener = tokio::net::TcpListener::bind(app.get_listen())
         .await

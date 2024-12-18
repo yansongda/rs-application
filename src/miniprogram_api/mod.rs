@@ -16,7 +16,6 @@ use tracing::{error, info, info_span, Span};
 
 use crate::config::G_CONFIG;
 use crate::model::result::Response;
-use crate::repository::Pool;
 
 mod extract;
 mod middleware;
@@ -30,9 +29,7 @@ pub struct App {
 }
 
 impl App {
-    pub async fn init() -> Self {
-        Pool::init().await;
-
+    pub fn init() -> Self {
         App {
             listen: App::listen(),
             router: App::router(),

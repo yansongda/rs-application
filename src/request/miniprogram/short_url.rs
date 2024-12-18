@@ -36,11 +36,7 @@ impl From<ShortUrl> for CreateResponse {
     fn from(model: ShortUrl) -> Self {
         Self {
             url: model.url,
-            short: format!(
-                "{}/{}",
-                G_CONFIG.short_url.domain.as_str(),
-                model.short
-            ),
+            short: format!("{}/{}", G_CONFIG.short_url.domain.as_str(), model.short),
         }
     }
 }
@@ -72,11 +68,7 @@ impl From<ShortUrl> for DetailResponse {
     fn from(model: ShortUrl) -> Self {
         Self {
             url: model.url,
-            short: format!(
-                "{}/{}",
-                G_CONFIG.short_url.domain.as_str(),
-                model.short
-            ),
+            short: format!("{}/{}", G_CONFIG.short_url.domain.as_str(), model.short),
         }
     }
 }
