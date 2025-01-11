@@ -15,14 +15,14 @@ impl Validator for UpdateRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.avatar.is_some() && self.avatar.to_owned().unwrap().len() < 8 {
-            return Err(Error::Params(Some("头像不符合规范")));
+            return Err(Error::ParamsMiniprogramUserAvatarLengthShort(None));
         }
 
         if self.nickname.is_some() {
             let nickname = self.nickname.to_owned().unwrap();
 
             if nickname.is_empty() || nickname.chars().count() > 10 {
-                return Err(Error::Params(Some("昵称长度应为 1~10 之间，请正确填写")));
+                return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
             }
         }
 
@@ -30,7 +30,7 @@ impl Validator for UpdateRequest {
             let slogan = self.slogan.to_owned().unwrap();
 
             if slogan.is_empty() || slogan.chars().count() > 50 {
-                return Err(Error::Params(Some("slogan 长度应为 1~50 之间，请正确填写")));
+                return Err(Error::ParamsMiniprogramUserSloganLengthInvalid(None));
             }
         }
 

@@ -16,11 +16,11 @@ impl Validator for CreateRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.url.is_none() {
-            return Err(Error::Params(Some("URL 链接不能为空")));
+            return Err(Error::ParamsMiniprogramShortlinkEmpty(None));
         }
 
         Url::parse(self.url.clone().unwrap().as_str())
-            .map_err(|_| Error::Params(Some("URL 链接格式不正确")))?;
+            .map_err(|_| Error::ParamsMiniprogramShortlinkFormatInvalid(None))?;
 
         Ok(self.url.clone().unwrap())
     }
@@ -51,7 +51,7 @@ impl Validator for DetailRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.short.is_none() {
-            return Err(Error::Params(Some("短链不能为空")));
+            return Err(Error::ParamsMiniprogramShortlinkEmpty(None));
         }
 
         Ok(self.short.clone().unwrap())

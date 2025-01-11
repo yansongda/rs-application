@@ -19,7 +19,7 @@ pub async fn login(code: &str) -> Result<AccessToken> {
     }
 
     match exist.unwrap_err() {
-        Error::AccessTokenNotFound(_) => {
+        Error::ParamsMiniprogramAccessTokenNotFound(_) => {
             miniprogram::access_token::insert(user_id, AccessTokenData::from(wechat_response)).await
         }
         e => Err(e),
@@ -34,7 +34,9 @@ async fn get_login_user_id(open_id: &str) -> Result<i64> {
     }
 
     match result.unwrap_err() {
-        Error::UserNotFound(_) => miniprogram::user::insert(open_id).await.map(|u| u.id),
+        Error::ParamsMiniprogramUserNotFound(_) => {
+            miniprogram::user::insert(open_id).await.map(|u| u.id)
+        }
         e => Err(e),
     }
 }

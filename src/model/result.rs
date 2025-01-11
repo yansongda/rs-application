@@ -6,24 +6,39 @@ pub type Result<D> = std::result::Result<D, Error>;
 
 #[derive(PartialEq, Eq, Hash, Debug, Copy, Clone)]
 pub enum Error {
-    AuthorizationMissing(Option<&'static str>),
-    AuthorizationNotFound(Option<&'static str>),
-    AuthorizationInvalid(Option<&'static str>),
-    Params(Option<&'static str>),
-    UserNotFound(Option<&'static str>),
-    TotpNotFound(Option<&'static str>),
-    TotpParse(Option<&'static str>),
-    ShortlinkNotFound(Option<&'static str>),
-    AccessTokenNotFound(Option<&'static str>),
-    Database(Option<&'static str>),
-    DatabaseInsert(Option<&'static str>),
-    DatabaseUpdate(Option<&'static str>),
-    DatabaseDelete(Option<&'static str>),
-    Http(Option<&'static str>),
-    HttpResponse(Option<&'static str>),
-    HttpWechat(Option<&'static str>),
-    HttpWechatResponse(Option<&'static str>),
-    HttpWechatResponseParse(Option<&'static str>),
+    AuthorizationMiniprogramMissing(Option<&'static str>),
+    AuthorizationMiniprogramNotFound(Option<&'static str>),
+    AuthorizationMiniprogramInvalid(Option<&'static str>),
+    ParamsJsonInvalid(Option<&'static str>),
+    ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
+    ParamsMiniprogramLoginCodeEmpty(Option<&'static str>),
+    ParamsMiniprogramLoginCodeLengthShort(Option<&'static str>),
+    ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
+    ParamsMiniprogramUserNotFound(Option<&'static str>),
+    ParamsMiniprogramUserAvatarLengthShort(Option<&'static str>),
+    ParamsMiniprogramUserNicknameLengthInvalid(Option<&'static str>),
+    ParamsMiniprogramUserSloganLengthInvalid(Option<&'static str>),
+    ParamsMiniprogramTotpNotFound(Option<&'static str>),
+    ParamsMiniprogramTotpParseFailed(Option<&'static str>),
+    ParamsMiniprogramTotpIdEmpty(Option<&'static str>),
+    ParamsMiniprogramTotpUriEmpty(Option<&'static str>),
+    ParamsMiniprogramTotpUriFormatInvalid(Option<&'static str>),
+    ParamsMiniprogramTotpUsernameEmpty(Option<&'static str>),
+    ParamsMiniprogramShortlinkNotFound(Option<&'static str>),
+    ParamsMiniprogramShortlinkEmpty(Option<&'static str>),
+    ParamsMiniprogramShortlinkFormatInvalid(Option<&'static str>),
+
+    ThirdHttpRequest(Option<&'static str>),
+    ThirdHttpResponse(Option<&'static str>),
+    ThirdHttpWechatRequest(Option<&'static str>),
+    ThirdHttpWechatResponse(Option<&'static str>),
+    ThirdHttpWechatResponseCode(Option<&'static str>),
+    ThirdHttpWechatResponseParse(Option<&'static str>),
+
+    InternalDatabaseQuery(Option<&'static str>),
+    InternalDatabaseInsert(Option<&'static str>),
+    InternalDatabaseUpdate(Option<&'static str>),
+    InternalDatabaseDelete(Option<&'static str>),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -36,64 +51,127 @@ pub struct Response<D: Serialize> {
 impl Error {
     pub fn get_code_message(&self) -> (u16, &'static str) {
         match self {
-            Error::AuthorizationMissing(message) => (
+            Error::AuthorizationMiniprogramMissing(message) => (
                 1000,
-                message.unwrap_or_else(|| "缺少认证信息，请重新打开小程序"),
+                message.unwrap_or_else(|| "认证失败: 缺少认证信息，请重新打开小程序"),
             ),
-            Error::AuthorizationNotFound(message) => (
+            Error::AuthorizationMiniprogramNotFound(message) => (
                 1001,
-                message.unwrap_or_else(|| "认证信息不正确，请重新打开小程序"),
+                message.unwrap_or_else(|| "认证失败: 认证信息不正确，请重新打开小程序"),
             ),
-            Error::AuthorizationInvalid(message) => (
+            Error::AuthorizationMiniprogramInvalid(message) => (
                 1002,
-                message.unwrap_or_else(|| "认证信息格式不正确，请重新打开小程序"),
+                message.unwrap_or_else(|| "认证失败: 认证信息格式不正确，请重新打开小程序"),
             ),
-            Error::Params(message) => (
+            Error::ParamsJsonInvalid(message) => (
                 2000,
-                message.unwrap_or_else(|| "参数错误，请确认您的参数是否符合规范"),
+                message.unwrap_or_else(|| "参数错误: Json 解析失败，请确认您的参数是否符合规范"),
             ),
-            Error::UserNotFound(message) => (2001, message.unwrap_or_else(|| "用户未找到")),
-            Error::TotpNotFound(message) => (2002, message.unwrap_or_else(|| "TOTP 信息未找到")),
-            Error::TotpParse(message) => (2003, message.unwrap_or_else(|| "TOTP 链接解析失败")),
-            Error::ShortlinkNotFound(message) => (2004, message.unwrap_or_else(|| "短连接未找到")),
-            Error::AccessTokenNotFound(message) => {
-                (2005, message.unwrap_or_else(|| "Access Token 未找到"))
+            Error::ParamsMiniprogramLoginPlatformUnsupported(message) => (
+                2001,
+                message.unwrap_or_else(|| "参数错误: platform 参数值不支持"),
+            ),
+            Error::ParamsMiniprogramLoginCodeEmpty(message) => (
+                2002,
+                message.unwrap_or_else(|| "参数错误: 登录秘钥不能为空"),
+            ),
+            Error::ParamsMiniprogramLoginCodeLengthShort(message) => (
+                2003,
+                message.unwrap_or_else(|| "参数错误: 登录秘钥长度错误"),
+            ),
+            Error::ParamsMiniprogramAccessTokenNotFound(message) => (
+                2004,
+                message.unwrap_or_else(|| "参数错误: Access Token 未找到"),
+            ),
+            Error::ParamsMiniprogramUserNotFound(message) => {
+                (2005, message.unwrap_or_else(|| "参数错误: 用户未找到"))
             }
-            Error::Database(message) => (
-                5000,
-                message.unwrap_or_else(|| "发生了一些问题，请联系管理员"),
+            Error::ParamsMiniprogramUserAvatarLengthShort(message) => (
+                2006,
+                message.unwrap_or_else(|| "参数错误: 用户头像不符合规范"),
             ),
-            Error::DatabaseInsert(message) => (
-                5001,
-                message.unwrap_or_else(|| "保存数据出现了一些问题，请联系管理员"),
+            Error::ParamsMiniprogramUserNicknameLengthInvalid(message) => (
+                2007,
+                message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
             ),
-            Error::DatabaseUpdate(message) => (
-                5002,
-                message.unwrap_or_else(|| "更新数据出现了一些问题，请联系管理员"),
+            Error::ParamsMiniprogramUserSloganLengthInvalid(message) => (
+                2008,
+                message.unwrap_or_else(|| "参数错误: slogan 长度应为 1~50 之间，请正确填写"),
             ),
-            Error::DatabaseDelete(message) => (
-                5003,
-                message.unwrap_or_else(|| "删除数据出现了一些问题，请联系管理员"),
+            Error::ParamsMiniprogramTotpNotFound(message) => {
+                (2009, message.unwrap_or_else(|| "参数错误: TOTP 信息未找到"))
+            }
+            Error::ParamsMiniprogramTotpParseFailed(message) => (
+                2010,
+                message
+                    .unwrap_or_else(|| "参数错误: TOTP 链接解析失败, 请确认是否是正确的 TOTP 链接"),
             ),
-            Error::Http(message) => (
+            Error::ParamsMiniprogramTotpIdEmpty(message) => (
+                2011,
+                message.unwrap_or_else(|| "参数错误: 详情 id 不能为空"),
+            ),
+            Error::ParamsMiniprogramTotpUriEmpty(message) => (
+                2012,
+                message.unwrap_or_else(|| "参数错误: TOTP 链接不能为空"),
+            ),
+            Error::ParamsMiniprogramTotpUriFormatInvalid(message) => (
+                2013,
+                message.unwrap_or_else(|| "参数错误: TOTP 链接格式不正确"),
+            ),
+            Error::ParamsMiniprogramTotpUsernameEmpty(message) => (
+                2014,
+                message.unwrap_or_else(|| "参数错误: TOTP 用户名不能为空"),
+            ),
+            Error::ParamsMiniprogramShortlinkNotFound(message) => {
+                (2015, message.unwrap_or_else(|| "参数错误: 短连接未找到"))
+            }
+            Error::ParamsMiniprogramShortlinkEmpty(message) => {
+                (2016, message.unwrap_or_else(|| "参数错误: URL 不能为空"))
+            }
+            Error::ParamsMiniprogramShortlinkFormatInvalid(message) => {
+                (2017, message.unwrap_or_else(|| "参数错误: URL 格式不正确"))
+            }
+
+            Error::ThirdHttpRequest(message) => (
                 9800,
-                message.unwrap_or_else(|| "第三方 API 请求出错，请联系管理员"),
+                message.unwrap_or_else(|| "第三方错误: 第三方 API 请求出错，请联系管理员"),
             ),
-            Error::HttpResponse(message) => (
+            Error::ThirdHttpResponse(message) => (
                 9801,
-                message.unwrap_or_else(|| "第三方 API 响应出错，请联系管理员"),
+                message.unwrap_or_else(|| "第三方错误: 第三方 API 响应出错，请联系管理员"),
             ),
-            Error::HttpWechat(message) => (
+            Error::ThirdHttpWechatRequest(message) => (
                 9802,
-                message.unwrap_or_else(|| "微信 API 请求出错，请联系管理员"),
+                message.unwrap_or_else(|| "第三方错误: 微信 API 请求出错，请联系管理员"),
             ),
-            Error::HttpWechatResponse(message) => (
+            Error::ThirdHttpWechatResponse(message) => (
                 9803,
-                message.unwrap_or_else(|| "微信 API 解析出错，请联系管理员"),
+                message.unwrap_or_else(|| "第三方错误: 微信 API 响应接收出错，请联系管理员"),
             ),
-            Error::HttpWechatResponseParse(message) => (
+            Error::ThirdHttpWechatResponseCode(message) => (
                 9804,
-                message.unwrap_or_else(|| "微信 API 结果出错，请联系管理员"),
+                message.unwrap_or_else(|| "第三方错误: 微信 API 结果出错，请联系管理员"),
+            ),
+            Error::ThirdHttpWechatResponseParse(message) => (
+                9804,
+                message.unwrap_or_else(|| "第三方错误: 微信 API 结果解析出错，请联系管理员"),
+            ),
+
+            Error::InternalDatabaseQuery(message) => (
+                9900,
+                message.unwrap_or_else(|| "内部错误: 查询数据出现了一些问题，请联系管理员"),
+            ),
+            Error::InternalDatabaseInsert(message) => (
+                9901,
+                message.unwrap_or_else(|| "内部错误: 保存数据出现了一些问题，请联系管理员"),
+            ),
+            Error::InternalDatabaseUpdate(message) => (
+                9902,
+                message.unwrap_or_else(|| "内部错误: 更新数据出现了一些问题，请联系管理员"),
+            ),
+            Error::InternalDatabaseDelete(message) => (
+                9903,
+                message.unwrap_or_else(|| "内部错误: 删除数据出现了一些问题，请联系管理员"),
             ),
         }
     }

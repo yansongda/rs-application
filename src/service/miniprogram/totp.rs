@@ -16,7 +16,7 @@ pub async fn detail(user_id: i64, id: i64) -> Result<DetailResponse> {
     let totp = miniprogram::totp::fetch(id).await?;
 
     if user_id != totp.user_id {
-        return Err(Error::TotpNotFound(None));
+        return Err(Error::ParamsMiniprogramTotpNotFound(None));
     }
 
     Ok(totp.into())
@@ -26,7 +26,7 @@ pub async fn create(user_id: i64, uri: String) -> Result<()> {
     let totp = TOTP::from_url_unchecked(uri.as_str()).map_err(|e| {
         error!("TOTP 链接解析失败: {}", e);
 
-        Error::TotpParse(None)
+        Error::ParamsMiniprogramTotpParseFailed(None)
     })?;
 
     miniprogram::totp::insert(CreateTotp {
@@ -45,7 +45,7 @@ pub async fn update(user_id: i64, params: UpdateTotp) -> Result<()> {
     let totp = miniprogram::totp::fetch(params.id).await?;
 
     if user_id != totp.user_id {
-        return Err(Error::TotpNotFound(None));
+        return Err(Error::ParamsMiniprogramTotpNotFound(None));
     }
 
     miniprogram::totp::update(params).await?;
@@ -57,7 +57,7 @@ pub async fn delete(user_id: i64, id: i64) -> Result<()> {
     let totp = miniprogram::totp::fetch(id).await?;
 
     if user_id != totp.user_id {
-        return Err(Error::TotpNotFound(None));
+        return Err(Error::ParamsMiniprogramTotpNotFound(None));
     }
 
     miniprogram::totp::delete(id).await?;

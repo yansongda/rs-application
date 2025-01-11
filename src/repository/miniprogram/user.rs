@@ -17,7 +17,7 @@ pub async fn fetch_by_open_id(open_id: &str) -> Result<User> {
         .map_err(|e| {
             error!("查询用户失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -28,7 +28,7 @@ pub async fn fetch_by_open_id(open_id: &str) -> Result<User> {
         return Ok(user);
     }
 
-    Err(Error::UserNotFound(None))
+    Err(Error::ParamsMiniprogramUserNotFound(None))
 }
 
 pub async fn insert(open_id: &str) -> Result<User> {
@@ -42,7 +42,7 @@ pub async fn insert(open_id: &str) -> Result<User> {
         .map_err(|e| {
             error!("插入用户失败: {:?}", e);
 
-            Error::DatabaseInsert(None)
+            Error::InternalDatabaseInsert(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -81,7 +81,7 @@ pub async fn update(id: i64, update_user: UpdateUser) -> Result<User> {
         .map_err(|e| {
             error!("更新用户失败: {:?}", e);
 
-            Error::DatabaseUpdate(None)
+            Error::InternalDatabaseUpdate(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();

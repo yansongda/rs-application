@@ -16,7 +16,7 @@ pub async fn fetch(short: &str) -> Result<ShortUrl> {
         .map_err(|e| {
             error!("查询短连接失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -27,7 +27,7 @@ pub async fn fetch(short: &str) -> Result<ShortUrl> {
         return Ok(short_url);
     }
 
-    Err(Error::ShortlinkNotFound(None))
+    Err(Error::ParamsMiniprogramShortlinkNotFound(None))
 }
 
 pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
@@ -42,7 +42,7 @@ pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
         .map_err(|e| {
             error!("插入短连接失败: {:?}", e);
 
-            Error::DatabaseInsert(None)
+            Error::InternalDatabaseInsert(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -64,7 +64,7 @@ pub async fn update_count(id: i64) {
         .map_err(|e| {
             error!("更新短连接访问次数失败: {:?}", e);
 
-            Error::DatabaseUpdate(None)
+            Error::InternalDatabaseUpdate(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();

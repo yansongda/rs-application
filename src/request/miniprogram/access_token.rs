@@ -1,11 +1,11 @@
-use std::fmt::{Display, Formatter};
 use crate::model::miniprogram::wechat_access_token::AccessToken;
 use crate::model::result::Error;
 use crate::request::Validator;
-use serde::{Deserialize, Deserializer, Serialize};
 use serde::de::Visitor;
+use serde::{Deserialize, Deserializer, Serialize};
+use std::fmt::{Display, Formatter};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Platform {
     Wechat,
     Huawei,
@@ -28,7 +28,7 @@ impl From<String> for Platform {
         match v.to_lowercase().as_str() {
             "wechat" => Platform::Wechat,
             "huawei" => Platform::Huawei,
-            _s => Platform::Unsupported,
+            _ => Platform::Unsupported,
         }
     }
 }
@@ -41,7 +41,7 @@ impl From<Platform> for String {
 
 struct PlatformVisitor;
 
-impl<'de> Visitor<'de> for PlatformVisitor {
+impl Visitor<'_> for PlatformVisitor {
     type Value = Platform;
 
     fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
@@ -82,13 +82,16 @@ impl Validator for LoginRequest {
     type Data = String;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
+        if self.platform == Platform::Unsupported {
+            return Err(Error::ParamsMiniprogramLoginPlatformUnsupported(None));
+        }
 
         if self.code.is_none() {
-            return Err(Error::Params(Some("小程序错误：登录秘钥不能为空")));
+            return Err(Error::ParamsMiniprogramLoginCodeEmpty(None));
         }
 
         if self.code.to_owned().unwrap().chars().count() < 8 {
-            return Err(Error::Params(Some("小程序错误：登录秘钥必须大于 8 位")));
+            return Err(Error::ParamsMiniprogramLoginCodeLengthShort(None));
         }
 
         Ok(self.code.to_owned().unwrap())

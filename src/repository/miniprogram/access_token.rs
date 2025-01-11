@@ -19,7 +19,7 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
         .map_err(|e| {
             error!("查询 access_token 失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -30,7 +30,7 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
         return Ok(data);
     }
 
-    Err(Error::AccessTokenNotFound(None))
+    Err(Error::ParamsMiniprogramAccessTokenNotFound(None))
 }
 
 pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
@@ -44,7 +44,7 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
         .map_err(|e| {
             error!("通过 user_id 查询 access_token 失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -55,7 +55,7 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
         return Ok(data);
     }
 
-    Err(Error::AccessTokenNotFound(None))
+    Err(Error::ParamsMiniprogramAccessTokenNotFound(None))
 }
 
 pub async fn insert(user_id: i64, data: AccessTokenData) -> Result<AccessToken> {
@@ -74,7 +74,7 @@ pub async fn insert(user_id: i64, data: AccessTokenData) -> Result<AccessToken> 
         .map_err(|e| {
             error!("插入 access_token 失败: {:?}", e);
 
-            Error::DatabaseInsert(None)
+            Error::InternalDatabaseInsert(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -100,7 +100,7 @@ pub async fn update(id: i64, data: AccessTokenData) -> Result<AccessToken> {
         .map_err(|e| {
             error!("更新 access_token 失败: {:?}", e);
 
-            Error::DatabaseUpdate(None)
+            Error::InternalDatabaseUpdate(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();

@@ -24,7 +24,7 @@ pub async fn request(request: Request) -> Result<HttpResponse> {
     let response = G_CLIENT.execute(request).await.map_err(|e| {
         warn!("请求第三方服务接口失败 {:?}", e);
 
-        Error::Http(None)
+        Error::ThirdHttpRequest(None)
     })?;
 
     let result = HttpResponse {
@@ -37,7 +37,7 @@ pub async fn request(request: Request) -> Result<HttpResponse> {
         body: response
             .text()
             .await
-            .map_err(|_| Error::HttpResponse(None))?,
+            .map_err(|_| Error::ThirdHttpResponse(None))?,
         duration: started_at.elapsed().as_secs_f32(),
     };
 

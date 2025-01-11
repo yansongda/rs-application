@@ -9,13 +9,13 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
     let authorization = request.headers().get("Authorization");
 
     if authorization.is_none() {
-        return Error::AuthorizationMissing(None).into_response();
+        return Error::AuthorizationMiniprogramMissing(None).into_response();
     }
 
     let auth = authorization.unwrap().to_str();
 
     if auth.is_err() {
-        return Error::AuthorizationInvalid(None).into_response();
+        return Error::AuthorizationMiniprogramInvalid(None).into_response();
     }
 
     let access_token: Result<model::miniprogram::wechat_access_token::AccessToken> =
@@ -23,7 +23,7 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
             .await;
 
     if access_token.is_err() {
-        return Error::AuthorizationNotFound(None).into_response();
+        return Error::AuthorizationMiniprogramNotFound(None).into_response();
     }
 
     request.extensions_mut().insert(access_token.unwrap());
