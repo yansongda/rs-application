@@ -12,7 +12,7 @@ pub async fn fetch_by_open_id(open_id: &str) -> Result<User> {
 
     let result: Option<User> = sqlx::query_as(sql)
         .bind(open_id)
-        .fetch_optional(Pool::postgres("default")?)
+        .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("查询用户失败: {:?}", e);
@@ -37,7 +37,7 @@ pub async fn insert(open_id: &str) -> Result<User> {
 
     let result = sqlx::query_as(sql)
         .bind(open_id)
-        .fetch_one(Pool::postgres("default")?)
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("插入用户失败: {:?}", e);
@@ -76,7 +76,7 @@ pub async fn update(id: i64, update_user: UpdateUser) -> Result<User> {
     let started_at = Instant::now();
 
     let result = query
-        .fetch_one(Pool::postgres("default")?)
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("更新用户失败: {:?}", e);

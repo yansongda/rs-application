@@ -14,7 +14,7 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(access_token)
-        .fetch_optional(Pool::postgres("default")?)
+        .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("查询 access_token 失败: {:?}", e);
@@ -39,7 +39,7 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(user_id)
-        .fetch_optional(Pool::postgres("default")?)
+        .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("通过 user_id 查询 access_token 失败: {:?}", e);
@@ -69,7 +69,7 @@ pub async fn insert(user_id: i64, data: AccessTokenData) -> Result<AccessToken> 
         .bind(user_id)
         .bind(&access_token)
         .bind(Json(&data))
-        .fetch_one(Pool::postgres("default")?)
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("插入 access_token 失败: {:?}", e);
@@ -95,7 +95,7 @@ pub async fn update(id: i64, data: AccessTokenData) -> Result<AccessToken> {
         .bind(access_token)
         .bind(Json(&data))
         .bind(id)
-        .fetch_one(Pool::postgres("default")?)
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("更新 access_token 失败: {:?}", e);

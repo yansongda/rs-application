@@ -22,7 +22,7 @@ pub async fn detail(url: &str) -> Result<ShortUrl> {
     let result = miniprogram::short_url::fetch(url).await;
 
     if result.is_ok() {
-        miniprogram::short_url::update_count(result.clone()?.id).await;
+        miniprogram::short_url::update_count(result.clone()?.id).await?;
     }
 
     result
