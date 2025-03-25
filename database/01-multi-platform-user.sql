@@ -1,31 +1,46 @@
-DROP INDEX "miniprogram"."uk_user_open_id";
+create table third_user
+(
+    id       bigserial
+        constraint pk_third_user_id
+            primary key,
+    user_id  bigint default 0 not null,
+    platform varchar(32)      not null,
+    third_id varchar(128)     not null,
+    config   jsonb
+);
 
-ALTER TABLE "miniprogram"."user" RENAME COLUMN "open_id" TO "phone";
+comment on column third_user.platform is '平台';
 
-CREATE UNIQUE INDEX "uk_user_phone" ON "miniprogram"."user" USING btree (
-    "phone"
-    );
+comment on column third_user.third_id is '平台对应用户标识';
 
-CREATE TABLE "miniprogram"."third_user" (
-     "id" int8 NOT NULL DEFAULT nextval('third_user_id_seq'::regclass),
-     "user_id" int8 NOT NULL DEFAULT 0,
-     "platform" varchar(32) COLLATE "pg_catalog"."default" NOT NULL,
-     "third_id" varchar(128) COLLATE "pg_catalog"."default" NOT NULL,
-     "config" jsonb,
-     CONSTRAINT "third_user_pkey" PRIMARY KEY ("id"),
-     CONSTRAINT "uk_platform_third_id" UNIQUE ("platform", "third_id")
-)
-;
+alter table third_user
+    owner to miniprogram;
 
-ALTER TABLE "miniprogram"."third_user"
-    OWNER TO "miniprogram";
+create index idx_user_id
+    on third_user (user_id);
 
-CREATE INDEX "idx_user_id" ON "miniprogram"."third_user" USING btree (
-    "user_id" "pg_catalog"."int8_ops" ASC NULLS LAST
-    );
+create unique index uk_third_user_platform_third_id
+    on third_user (platform, third_id);
 
-COMMENT ON COLUMN "miniprogram"."third_user"."user_id" IS '标识用户';
+insert into third_user (user_id, platform, third_id, config)
+    (select id, 'wechat', open_id, '{}' from "miniprogram"."user")
 
-COMMENT ON COLUMN "miniprogram"."third_user"."platform" IS '平台';
+alter table "user"
+    rename column open_id to phone;
 
-COMMENT ON COLUMN "miniprogram"."third_user"."third_id" IS '平台对应用户标识';
+alter table "user"
+drop column avatar;
+
+alter table "user"
+drop column nickname;
+
+alter table "user"
+drop column slogan;
+
+drop index uk_user_open_id;
+
+create index idx_user_phone
+    on "user" (phone);
+
+alter table "user"
+    add config jsonb;
