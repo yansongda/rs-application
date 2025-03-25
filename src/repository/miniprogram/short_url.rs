@@ -11,7 +11,7 @@ pub async fn fetch(short: &str) -> Result<ShortUrl> {
 
     let result: Option<ShortUrl> = sqlx::query_as(sql)
         .bind(short)
-        .fetch_optional(Pool::postgres("default"))
+        .fetch_optional(Pool::postgres("default")?)
         .await
         .map_err(|e| {
             error!("查询短连接失败: {:?}", e);
@@ -37,7 +37,7 @@ pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
     let result = sqlx::query_as(sql)
         .bind(&url.short)
         .bind(&url.url)
-        .fetch_one(Pool::postgres("default"))
+        .fetch_one(Pool::postgres("default")?)
         .await
         .map_err(|e| {
             error!("插入短连接失败: {:?}", e);
@@ -59,7 +59,7 @@ pub async fn update_count(id: i64) {
 
     let _ = sqlx::query(sql)
         .bind(id)
-        .execute(Pool::postgres("default"))
+        .execute(Pool::postgres("default").unwrap())
         .await
         .map_err(|e| {
             error!("更新短连接访问次数失败: {:?}", e);

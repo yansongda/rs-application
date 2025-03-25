@@ -35,6 +35,7 @@ pub enum Error {
     ThirdHttpWechatResponseCode(Option<&'static str>),
     ThirdHttpWechatResponseParse(Option<&'static str>),
 
+    InternalDatabaseAcquire(Option<&'static str>),
     InternalDatabaseQuery(Option<&'static str>),
     InternalDatabaseInsert(Option<&'static str>),
     InternalDatabaseUpdate(Option<&'static str>),
@@ -157,20 +158,24 @@ impl Error {
                 message.unwrap_or_else(|| "第三方错误: 微信 API 结果解析出错，请联系管理员"),
             ),
 
-            Error::InternalDatabaseQuery(message) => (
+            Error::InternalDatabaseAcquire(message) => (
                 9900,
+                message.unwrap_or_else(|| "内部错误: 数据库连接出现了一些问题，请联系管理员"),
+            ),
+            Error::InternalDatabaseQuery(message) => (
+                9901,
                 message.unwrap_or_else(|| "内部错误: 查询数据出现了一些问题，请联系管理员"),
             ),
             Error::InternalDatabaseInsert(message) => (
-                9901,
+                9902,
                 message.unwrap_or_else(|| "内部错误: 保存数据出现了一些问题，请联系管理员"),
             ),
             Error::InternalDatabaseUpdate(message) => (
-                9902,
+                9903,
                 message.unwrap_or_else(|| "内部错误: 更新数据出现了一些问题，请联系管理员"),
             ),
             Error::InternalDatabaseDelete(message) => (
-                9903,
+                9904,
                 message.unwrap_or_else(|| "内部错误: 删除数据出现了一些问题，请联系管理员"),
             ),
         }

@@ -3,10 +3,11 @@ use std::str::FromStr;
 use std::sync::LazyLock;
 use std::time::Duration;
 
+use crate::config::{Database, G_CONFIG};
+use crate::model::result::{Error, Result};
 use sqlx::PgPool;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
-
-use crate::config::{Database, G_CONFIG};
+use tracing::error;
 
 pub mod miniprogram;
 
@@ -27,8 +28,12 @@ static G_POOL_PG: LazyLock<HashMap<&'static str, PgPool>> = LazyLock::new(|| {
 });
 
 impl Pool {
-    pub fn postgres(pool: &str) -> &PgPool {
-        G_POOL_PG.get(pool).unwrap()
+    pub fn postgres(pool: &str) -> Result<&PgPool> {
+        G_POOL_PG.get(pool).ok_or_else(|| {
+            error!("获取数据库连接失败: {}", pool);
+
+            Error::InternalDatabaseAcquire(None)
+        })
     }
 
     fn connect_postgres(config: &Database) -> PgPool {
