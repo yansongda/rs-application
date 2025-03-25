@@ -1,8 +1,8 @@
 use crate::model::wechat::LoginResponse;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
-use sqlx::types::Json;
 use sqlx::FromRow;
+use sqlx::types::Json;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct AccessToken {

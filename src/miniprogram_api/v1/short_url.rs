@@ -4,10 +4,10 @@ use axum::response::Redirect;
 use crate::miniprogram_api::extract::Json;
 use crate::miniprogram_api::response::Resp;
 use crate::model::result::{Response, Result};
+use crate::request::Validator;
 use crate::request::miniprogram::short_url::{
     CreateRequest, CreateResponse, DetailRequest, DetailResponse,
 };
-use crate::request::Validator;
 use crate::service;
 
 pub async fn create(Json(request): Json<CreateRequest>) -> Resp<CreateResponse> {

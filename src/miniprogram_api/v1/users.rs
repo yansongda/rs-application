@@ -4,8 +4,8 @@ use crate::miniprogram_api::extract::Json;
 use crate::miniprogram_api::response::Resp;
 use crate::model::miniprogram::wechat_access_token::AccessToken;
 use crate::model::result::Response;
-use crate::request::miniprogram::user::{DetailResponse, UpdateRequest};
 use crate::request::Validator;
+use crate::request::miniprogram::user::{DetailResponse, UpdateRequest};
 use crate::service;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {

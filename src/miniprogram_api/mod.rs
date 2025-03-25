@@ -5,14 +5,14 @@ use std::time::Duration;
 
 use axum::http::Request;
 use axum::routing::get;
-use axum::{http, Router};
+use axum::{Router, http};
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 use tower_http::request_id::{
     MakeRequestUuid, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
 };
 use tower_http::trace::{MakeSpan, OnFailure, OnRequest, OnResponse, TraceLayer};
-use tracing::{error, info, info_span, Span};
+use tracing::{Span, error, info, info_span};
 
 use crate::config::G_CONFIG;
 use crate::model::result::Response;

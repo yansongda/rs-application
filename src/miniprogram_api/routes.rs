@@ -1,5 +1,5 @@
 use axum::routing::{get, post};
-use axum::{middleware, Router};
+use axum::{Router, middleware};
 use tower::ServiceBuilder;
 
 use crate::miniprogram_api::middleware::authorization;

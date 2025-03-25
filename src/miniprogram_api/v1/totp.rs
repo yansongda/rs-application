@@ -4,10 +4,10 @@ use crate::miniprogram_api::extract::Json;
 use crate::miniprogram_api::response::Resp;
 use crate::model::miniprogram::wechat_access_token::AccessToken;
 use crate::model::result::Response;
+use crate::request::Validator;
 use crate::request::miniprogram::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, UpdateRequest,
 };
-use crate::request::Validator;
 use crate::service;
 
 pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {

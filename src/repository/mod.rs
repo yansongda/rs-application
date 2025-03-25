@@ -3,8 +3,8 @@ use std::str::FromStr;
 use std::sync::LazyLock;
 use std::time::Duration;
 
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use sqlx::PgPool;
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 
 use crate::config::{Database, G_CONFIG};
 
