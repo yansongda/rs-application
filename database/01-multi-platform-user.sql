@@ -44,3 +44,7 @@ create index idx_user_phone
 
 alter table "user"
     add config jsonb;
+
+
+alter table access_token
+    add platform varchar(32) default 'wechat' not null;

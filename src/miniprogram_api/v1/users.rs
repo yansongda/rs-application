@@ -2,15 +2,14 @@ use axum::Extension;
 
 use crate::miniprogram_api::extract::Json;
 use crate::miniprogram_api::response::Resp;
-use crate::model::miniprogram::wechat_access_token::AccessToken;
+use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
 use crate::request::miniprogram::user::{DetailResponse, UpdateRequest};
 use crate::service;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {
-    let user =
-        service::miniprogram::user::detail_by_open_id(access_token.data.open_id.as_str()).await?;
+    let user = service::miniprogram::user::detail(access_token.user_id).await?;
 
     Ok(Response::success(user.into()))
 }

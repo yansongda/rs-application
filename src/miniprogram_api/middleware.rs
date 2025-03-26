@@ -18,7 +18,7 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         return Error::AuthorizationMiniprogramInvalid(None).into_response();
     }
 
-    let access_token: Result<model::miniprogram::wechat_access_token::AccessToken> =
+    let access_token: Result<model::miniprogram::access_token::AccessToken> =
         repository::miniprogram::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
             .await;
 

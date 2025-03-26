@@ -9,10 +9,12 @@ pub enum Error {
     AuthorizationMiniprogramMissing(Option<&'static str>),
     AuthorizationMiniprogramNotFound(Option<&'static str>),
     AuthorizationMiniprogramInvalid(Option<&'static str>),
+
     ParamsJsonInvalid(Option<&'static str>),
     ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
     ParamsMiniprogramLoginCodeEmpty(Option<&'static str>),
     ParamsMiniprogramLoginCodeLengthShort(Option<&'static str>),
+    ParamsMiniprogramThirdUserNotFound(Option<&'static str>),
     ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
     ParamsMiniprogramUserNotFound(Option<&'static str>),
     ParamsMiniprogramUserAvatarLengthShort(Option<&'static str>),
@@ -64,6 +66,7 @@ impl Error {
                 1002,
                 message.unwrap_or_else(|| "认证失败: 认证信息格式不正确，请重新打开小程序"),
             ),
+
             Error::ParamsJsonInvalid(message) => (
                 2000,
                 message.unwrap_or_else(|| "参数错误: Json 解析失败，请确认您的参数是否符合规范"),
@@ -79,6 +82,11 @@ impl Error {
             Error::ParamsMiniprogramLoginCodeLengthShort(message) => (
                 2003,
                 message.unwrap_or_else(|| "参数错误: 登录秘钥长度错误"),
+            ),
+            // TODO: update error codes
+            Error::ParamsMiniprogramThirdUserNotFound(message) => (
+                2003,
+                message.unwrap_or_else(|| "参数错误: 第三方平台关联用户未找到"),
             ),
             Error::ParamsMiniprogramAccessTokenNotFound(message) => (
                 2004,

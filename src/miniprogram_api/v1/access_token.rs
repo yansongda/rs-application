@@ -6,9 +6,9 @@ use crate::request::miniprogram::access_token::{LoginRequest, LoginResponse};
 use crate::service;
 
 pub async fn login(Json(request): Json<LoginRequest>) -> Resp<LoginResponse> {
-    let code = request.validate()?;
+    let req = request.validate()?;
 
-    let token = service::miniprogram::access_token::login(code.as_str()).await?;
+    let token = service::miniprogram::access_token::login(req).await?;
 
     Ok(Response::success(token.into()))
 }

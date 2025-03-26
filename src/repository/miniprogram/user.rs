@@ -6,12 +6,12 @@ use crate::model::miniprogram::user::{UpdateUser, User};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
-pub async fn fetch_by_open_id(open_id: &str) -> Result<User> {
-    let sql = "select * from miniprogram.user where open_id = $1 limit 1";
+pub async fn fetch(user_id: i64) -> Result<User> {
+    let sql = "select * from miniprogram.user where id = $1 limit 1";
     let started_at = Instant::now();
 
     let result: Option<User> = sqlx::query_as(sql)
-        .bind(open_id)
+        .bind(user_id)
         .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
@@ -22,7 +22,7 @@ pub async fn fetch_by_open_id(open_id: &str) -> Result<User> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, open_id);
+    info!(elapsed, sql, user_id);
 
     if let Some(user) = result {
         return Ok(user);

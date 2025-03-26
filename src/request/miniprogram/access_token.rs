@@ -1,11 +1,12 @@
-use crate::model::miniprogram::wechat_access_token::AccessToken;
+use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize};
+use sqlx::Type;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Type)]
 pub enum Platform {
     Wechat,
     Huawei,
@@ -74,15 +75,15 @@ impl<'de> Deserialize<'de> for Platform {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct LoginRequest {
-    pub platform: Platform,
+    pub platform: Option<Platform>,
     pub code: Option<String>,
 }
 
 impl Validator for LoginRequest {
-    type Data = String;
+    type Data = LoginRequest;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
-        if self.platform == Platform::Unsupported {
+        if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
             return Err(Error::ParamsMiniprogramLoginPlatformUnsupported(None));
         }
 
@@ -94,7 +95,7 @@ impl Validator for LoginRequest {
             return Err(Error::ParamsMiniprogramLoginCodeLengthShort(None));
         }
 
-        Ok(self.code.to_owned().unwrap())
+        Ok(self.to_owned())
     }
 }
 

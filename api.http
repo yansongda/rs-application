@@ -3,7 +3,8 @@ POST {{domain}}/api/v1/miniprogram/access-token/login
 Content-Type: application/json
 
 {
-    "code": "code"
+    "platform": "wechat",
+    "code": "codecodecodecode"
 }
 
 ### 用户 - 详情

@@ -2,7 +2,7 @@ use axum::Extension;
 
 use crate::miniprogram_api::extract::Json;
 use crate::miniprogram_api::response::Resp;
-use crate::model::miniprogram::wechat_access_token::AccessToken;
+use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
 use crate::request::miniprogram::totp::{
