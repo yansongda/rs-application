@@ -1,4 +1,14 @@
-## TBD - v1.5.3
+## TBD-v1.6.0
+
+### changed
+
+- change(backend): 更改 url，将 /api/v1 更改为 /api/v1/miniprogram/
+
+### added
+
+- feat: 支持多平台
+
+## v1.5.3
 
 ### chore
 

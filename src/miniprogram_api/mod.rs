@@ -45,8 +45,8 @@ impl App {
     }
 
     fn listen() -> SocketAddr {
-        let listen = G_CONFIG.bin.get("miniprogram_api").unwrap().listen.as_str();
-        let port = G_CONFIG.bin.get("miniprogram_api").unwrap().port;
+        let listen = G_CONFIG.bin.get("miniprogram-api").unwrap().listen.as_str();
+        let port = G_CONFIG.bin.get("miniprogram-api").unwrap().port;
 
         SocketAddr::from((IpAddr::from_str(listen).unwrap(), port))
     }

@@ -59,7 +59,7 @@ pub async fn update_count(id: i64) -> Result<bool> {
 
     sqlx::query(sql)
         .bind(id)
-        .execute(Pool::postgres("default")?)
+        .execute(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("更新短连接访问次数失败: {:?}", e);
