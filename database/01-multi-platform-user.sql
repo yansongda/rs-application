@@ -24,8 +24,8 @@ create index idx_user_id
 create unique index uk_third_user_platform_third_id
     on third_user (platform, third_id);
 
-insert into third_user (user_id, platform, third_id, config)
-    (select id, 'wechat', open_id, '{}' from "miniprogram"."user")
+insert into third_user (user_id, platform, third_id)
+    (select id, 'wechat', open_id from "miniprogram"."user")
 
 alter table "user"
     rename column open_id to phone;
@@ -52,3 +52,6 @@ alter table "user"
 
 alter table access_token
     add platform varchar(32) default 'wechat' not null;
+
+truncate table access_token restart identity;
+
