@@ -13,7 +13,7 @@ $RECYCLE.BIN/
 # Node.js
 node_modules/
 
-miniprogram/miniprogram_npm/
+wechat/miniprogram/miniprogram_npm/
 
 # Added by cargo
 
