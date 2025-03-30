@@ -5,7 +5,7 @@ use crate::miniprogram_api::response::Resp;
 use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
-use crate::request::miniprogram::user::{DetailResponse, UpdateRequest};
+use crate::request::miniprogram::user::{DetailResponse, EditRequest};
 use crate::service;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {
@@ -14,13 +14,13 @@ pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<Det
     Ok(Response::success(user.into()))
 }
 
-pub async fn update(
+pub async fn edit(
     Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<UpdateRequest>,
+    Json(request): Json<EditRequest>,
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::user::update(access_token.user_id, params).await?;
+    service::miniprogram::user::edit(access_token.user_id, params).await?;
 
     Ok(Response::success(()))
 }

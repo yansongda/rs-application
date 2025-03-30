@@ -1,16 +1,14 @@
+use crate::model::miniprogram::third_user::{Platform, ThirdUser};
+use crate::model::result::{Error, Result};
+use crate::repository::Pool;
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::user::User;
-use crate::model::result::{Error, Result};
-use crate::repository::Pool;
-use crate::request::miniprogram::access_token::Platform;
-
-pub async fn fetch(platform: &Platform, third_id: &str) -> Result<User> {
+pub async fn fetch(platform: &Platform, third_id: &str) -> Result<ThirdUser> {
     let sql = "select * from miniprogram.third_user where platform = $1 and third_id = $2 limit 1";
     let started_at = Instant::now();
 
-    let result: Option<User> = sqlx::query_as(sql)
+    let result: Option<ThirdUser> = sqlx::query_as(sql)
         .bind(platform)
         .bind(third_id)
         .fetch_optional(Pool::postgres("miniprogram")?)
@@ -25,14 +23,14 @@ pub async fn fetch(platform: &Platform, third_id: &str) -> Result<User> {
 
     info!(elapsed, sql, third_id);
 
-    if let Some(user) = result {
-        return Ok(user);
+    if let Some(third_user) = result {
+        return Ok(third_user);
     }
 
     Err(Error::ParamsMiniprogramThirdUserNotFound(None))
 }
 
-pub async fn insert(platform: Platform, third_id: &str) -> Result<User> {
+pub async fn insert(platform: Platform, third_id: &str) -> Result<ThirdUser> {
     let sql = "insert into miniprogram.third_user (platform, third_id) values ($1, $2) returning *";
     let started_at = Instant::now();
 

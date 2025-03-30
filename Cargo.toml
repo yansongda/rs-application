@@ -25,7 +25,7 @@ axum = { version = "~0.8.1", features = ["macros"] }
 tower = { version = "~0.5.0" }
 tower-http = { version = "~0.6.0", features = ["cors", "request-id", "trace"] }
 
-sqlx = { version = "~0.8.0", features = [ "runtime-tokio", "tls-native-tls", "postgres", "chrono" ] }
+sqlx = { version = "~0.8.0", features = [ "runtime-tokio", "tls-rustls", "postgres", "chrono" ] }
 
 reqwest = { version = "~0.12.2" }
 

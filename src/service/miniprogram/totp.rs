@@ -41,7 +41,7 @@ pub async fn create(user_id: i64, uri: String) -> Result<()> {
     Ok(())
 }
 
-pub async fn update(user_id: i64, params: UpdateTotp) -> Result<()> {
+pub async fn edit(user_id: i64, params: UpdateTotp) -> Result<()> {
     let totp = miniprogram::totp::fetch(params.id).await?;
 
     if user_id != totp.user_id {

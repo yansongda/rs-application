@@ -5,9 +5,9 @@ use sqlx::types::Json;
 use tracing::{error, info};
 
 use crate::model::miniprogram::access_token::{AccessToken, AccessTokenData};
+use crate::model::miniprogram::third_user::Platform;
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
-use crate::request::miniprogram::access_token::Platform;
 
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     let sql = "select * from miniprogram.access_token where access_token = $1 limit 1";

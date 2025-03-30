@@ -16,7 +16,7 @@ pub fn api_v1_miniprogram() -> Router {
             "/users",
             Router::new()
                 .route("/detail", post(v1::users::detail))
-                .route("/update", post(v1::users::update)),
+                .route("/edit", post(v1::users::edit)),
         )
         .nest(
             "/totp",
@@ -24,7 +24,7 @@ pub fn api_v1_miniprogram() -> Router {
                 .route("/all", post(v1::totp::all))
                 .route("/detail", post(v1::totp::detail))
                 .route("/create", post(v1::totp::create))
-                .route("/update", post(v1::totp::update))
+                .route("/edit", post(v1::totp::edit))
                 .route("/delete", post(v1::totp::delete)),
         )
         .nest(

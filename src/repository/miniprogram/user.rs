@@ -1,8 +1,9 @@
+use sqlx::types::Json;
 use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::user::{UpdateUser, User};
+use crate::model::miniprogram::user::{EditUser, User};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -31,12 +32,13 @@ pub async fn fetch(user_id: i64) -> Result<User> {
     Err(Error::ParamsMiniprogramUserNotFound(None))
 }
 
-pub async fn insert(open_id: &str) -> Result<User> {
-    let sql = "insert into miniprogram.user (open_id) values ($1) returning *";
+pub async fn insert(data: EditUser) -> Result<User> {
+    let sql = "insert into miniprogram.user (phone, config) values ($1, $2) returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
-        .bind(open_id)
+        .bind(data.clone().phone.unwrap_or("".to_string()))
+        .bind(Json(data.clone().config))
         .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
@@ -47,23 +49,20 @@ pub async fn insert(open_id: &str) -> Result<User> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, open_id);
+    info!(elapsed, sql, ?data);
 
     result
 }
 
-pub async fn update(id: i64, update_user: UpdateUser) -> Result<User> {
+pub async fn update(id: i64, edit_user: EditUser) -> Result<User> {
     let mut builder =
         QueryBuilder::<Postgres>::new("update miniprogram.user set updated_at = now()");
 
-    if let Some(ref nickname) = update_user.nickname {
-        builder.push(", nickname = ").push_bind(nickname);
+    if let Some(ref phone) = edit_user.phone {
+        builder.push(", phone = ").push_bind(phone);
     }
-    if let Some(ref avatar) = update_user.avatar {
-        builder.push(", avatar = ").push_bind(avatar);
-    }
-    if let Some(ref slogan) = update_user.slogan {
-        builder.push(", slogan = ").push_bind(slogan);
+    if let Some(ref config) = edit_user.config {
+        builder.push(", config = ").push_bind(Json(config));
     }
 
     builder
@@ -86,7 +85,7 @@ pub async fn update(id: i64, update_user: UpdateUser) -> Result<User> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, id, ?update_user);
+    info!(elapsed, sql, id, ?edit_user);
 
     result
 }

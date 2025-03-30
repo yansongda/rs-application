@@ -6,7 +6,9 @@ create table third_user
     user_id  bigint default 0 not null,
     platform varchar(32)      not null,
     third_id varchar(128)     not null,
-    config   jsonb
+    config   jsonb,
+    created_at timestamp with time zone default now() not null,
+    updated_at timestamp with time zone default now() not null
 );
 
 comment on column third_user.platform is '平台';
@@ -27,6 +29,8 @@ insert into third_user (user_id, platform, third_id, config)
 
 alter table "user"
     rename column open_id to phone;
+
+update miniprogram.user set phone = '';
 
 alter table "user"
 drop column avatar;

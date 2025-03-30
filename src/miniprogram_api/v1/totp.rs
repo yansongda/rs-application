@@ -38,13 +38,13 @@ pub async fn create(
     Ok(Response::success(()))
 }
 
-pub async fn update(
+pub async fn edit(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<UpdateRequest>,
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::totp::update(access_token.user_id, params).await?;
+    service::miniprogram::totp::edit(access_token.user_id, params).await?;
 
     Ok(Response::success(()))
 }

@@ -9,27 +9,29 @@ Content-Type: application/json
 
 ### 用户 - 详情
 POST {{domain}}/api/v1/miniprogram/users/detail
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 ### 用户 - 更新
-POST {{domain}}/api/v1/miniprogram/users/update
+POST {{domain}}/api/v1/miniprogram/users/edit
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
-  "avatar": "123456789",
-  "nickname": "yansongdaa",
-  "slogan": "Coding My Life...😄"
+  "config": {
+    "avatar": "111",
+    "nickname": "yansongdaa",
+    "slogan": "Coding My Life...😄"
+  }
 }
 
 ### TOTP - 所有
 POST {{domain}}/api/v1/miniprogram/totp/all
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 ### TOTP - 详情
 POST {{domain}}/api/v1/miniprogram/totp/detail
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
     "id": 1
@@ -38,7 +40,7 @@ Authorization: Bearer {{open_id}}
 ### TOTP - 创建
 POST {{domain}}/api/v1/miniprogram/totp/create
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "uri": "otpauth://totp/GitHub:yansongda?secret=LBKODWEWIEEEMQKY&issuer=GitHub"
@@ -47,7 +49,7 @@ Authorization: Bearer {{open_id}}
 ### TOTP - 更新
 POST {{domain}}/api/v1/miniprogram/totp/update
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "id": 1,
@@ -58,7 +60,7 @@ Authorization: Bearer {{open_id}}
 ### TOTP - 删除
 POST {{domain}}/api/v1/miniprogram/totp/delete
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "id": 1
@@ -67,7 +69,7 @@ Authorization: Bearer {{open_id}}
 ### 短链 - 创建
 POST {{domain}}/api/v1/miniprogram/short-url/create
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "url": "https://yansongda.cn"
@@ -76,7 +78,7 @@ Authorization: Bearer {{open_id}}
 ### 短链 - 详情
 POST {{domain}}/api/v1/miniprogram/short-url/detail
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "short": "3ULY6"

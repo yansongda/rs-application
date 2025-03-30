@@ -1,7 +1,8 @@
 use crate::model::miniprogram::access_token::{AccessToken, AccessTokenData};
+use crate::model::miniprogram::third_user::Platform;
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
-use crate::request::miniprogram::access_token::{LoginRequest, Platform};
+use crate::request::miniprogram::access_token::LoginRequest;
 use crate::service::wechat;
 
 pub async fn login(request: LoginRequest) -> Result<AccessToken> {
@@ -39,15 +40,14 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
     let result = miniprogram::third_user::fetch(&platform, third_id).await;
 
     if let Ok(user) = result {
-        return Ok(user.id);
+        return Ok(user.user_id);
     }
 
     match result.unwrap_err() {
         Error::ParamsMiniprogramThirdUserNotFound(_) => {
-            // todo: create a new user
             miniprogram::third_user::insert(platform, third_id)
                 .await
-                .map(|u| u.id)
+                .map(|u| u.user_id)
         }
         e => Err(e),
     }

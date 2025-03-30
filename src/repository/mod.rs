@@ -45,6 +45,7 @@ impl Pool {
             .acquire_timeout(Duration::from_secs(config.acquire_timeout))
             .min_connections(config.min_connections)
             .max_connections(config.max_connections)
+            .idle_timeout(Duration::from_secs(config.idle_timeout))
             .connect_lazy_with(connection_options)
     }
 }

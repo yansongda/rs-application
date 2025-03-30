@@ -39,6 +39,7 @@ pub struct Database {
     pub max_connections: u32,
     pub min_connections: u32,
     pub acquire_timeout: u64,
+    pub idle_timeout: u64,
 }
 
 #[derive(Debug, Clone, Deserialize)]

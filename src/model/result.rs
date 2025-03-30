@@ -19,7 +19,7 @@ pub enum Error {
     ParamsMiniprogramUserNotFound(Option<&'static str>),
     ParamsMiniprogramUserAvatarLengthShort(Option<&'static str>),
     ParamsMiniprogramUserNicknameLengthInvalid(Option<&'static str>),
-    ParamsMiniprogramUserSloganLengthInvalid(Option<&'static str>),
+    ParamsMiniprogramUserPhoneLengthInvalid(Option<&'static str>),
     ParamsMiniprogramTotpNotFound(Option<&'static str>),
     ParamsMiniprogramTotpParseFailed(Option<&'static str>),
     ParamsMiniprogramTotpIdEmpty(Option<&'static str>),
@@ -103,9 +103,9 @@ impl Error {
                 2007,
                 message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
             ),
-            Error::ParamsMiniprogramUserSloganLengthInvalid(message) => (
+            Error::ParamsMiniprogramUserPhoneLengthInvalid(message) => (
                 2008,
-                message.unwrap_or_else(|| "参数错误: slogan 长度应为 1~50 之间，请正确填写"),
+                message.unwrap_or_else(|| "参数错误: 手机号码不符合规范，请正确填写"),
             ),
             Error::ParamsMiniprogramTotpNotFound(message) => {
                 (2009, message.unwrap_or_else(|| "参数错误: TOTP 信息未找到"))

@@ -1,5 +1,5 @@
+use crate::model::miniprogram::third_user::Platform;
 use crate::model::wechat::LoginResponse;
-use crate::request::miniprogram::access_token::Platform;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
@@ -31,8 +31,8 @@ pub struct WechatAccessTokenData {
 impl From<LoginResponse> for WechatAccessTokenData {
     fn from(response: LoginResponse) -> Self {
         WechatAccessTokenData {
-            open_id: response.openid.unwrap(),
-            session_key: response.session_key.unwrap(),
+            open_id: response.openid.unwrap_or_default(),
+            session_key: response.session_key.unwrap_or_default(),
             union_id: response.unionid,
         }
     }
