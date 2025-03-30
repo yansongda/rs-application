@@ -7,9 +7,17 @@ use crate::miniprogram_api::v1;
 
 pub fn api_v1_miniprogram() -> Router {
     let unauthorized = Router::new()
-        .route("/access-token/login", post(v1::access_token::login))
-        .route("/short-url/detail", post(v1::short_url::detail))
-        .route("/short-url/redirect/{short}", get(v1::short_url::redirect));
+        .nest(
+            "/access-token",
+            Router::new()
+                .route("/login", post(v1::access_token::login))
+        )
+        .nest(
+            "/short-url",
+            Router::new()
+                .route("/detail", post(v1::short_url::detail))
+                .route("/redirect/{short}", get(v1::short_url::redirect))
+        );
 
     let authorized = Router::new()
         .nest(
