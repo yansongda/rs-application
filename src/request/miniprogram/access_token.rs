@@ -1,26 +1,30 @@
 use crate::model::miniprogram::access_token::AccessToken;
+use crate::model::miniprogram::third_user::Platform;
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct LoginRequest {
+    pub platform: Option<Platform>,
     pub code: Option<String>,
 }
 
 impl Validator for LoginRequest {
-    type Data = String;
+    type Data = LoginRequest;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
-        if self.code.is_none() {
-            return Err(Error::Params(Some("小程序错误：登录秘钥不能为空")));
+        if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
+            return Err(Error::ParamsMiniprogramLoginPlatformUnsupported(None));
         }
 
-        if self.code.to_owned().unwrap().chars().count() < 8 {
-            return Err(Error::Params(Some("小程序错误：登录秘钥必须大于 8 位")));
+        if let Some(code) = &self.code {
+            if code.chars().count() > 8 {
+                return Ok(self.to_owned());
+            }
         }
 
-        Ok(self.code.to_owned().unwrap())
+        Err(Error::ParamsMiniprogramLoginCodeLengthShort(None))
     }
 }
 

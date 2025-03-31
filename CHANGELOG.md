@@ -1,4 +1,15 @@
-## TBD - v1.5.3
+## v1.6.0
+
+### changed
+
+- change(backend): 更改 url，将 /api/v1 更改为 /api/v1/miniprogram/(#75)
+- change(frontend-wechat-miniprogram): 适配后端更改(#75)
+
+### added
+
+- chore: 支持多平台底座(#75)
+
+## v1.5.3
 
 ### chore
 

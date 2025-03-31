@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use std::sync::OnceLock;
+use std::sync::LazyLock;
 use std::time::Duration;
 
 use reqwest::{Client, Request};
@@ -8,25 +8,23 @@ use tracing::{info, warn};
 use crate::model::http::HttpResponse;
 use crate::model::result::{Error, Result};
 
-static G_CLIENT: OnceLock<Client> = OnceLock::new();
+static G_CLIENT: LazyLock<Client> = LazyLock::new(|| {
+    Client::builder()
+        .user_agent("yansongda/rs-application")
+        .connect_timeout(Duration::from_secs(1))
+        .timeout(Duration::from_secs(3))
+        .build()
+        .unwrap()
+});
 
 pub async fn request(request: Request) -> Result<HttpResponse> {
-    let client = G_CLIENT.get_or_init(|| {
-        Client::builder()
-            .user_agent("yansongda/miniprogram")
-            .connect_timeout(Duration::from_secs(1))
-            .timeout(Duration::from_secs(3))
-            .build()
-            .unwrap()
-    });
-
     info!("请求第三方服务接口 {:?}", request);
 
     let started_at = std::time::Instant::now();
-    let response = client.execute(request).await.map_err(|e| {
+    let response = G_CLIENT.execute(request).await.map_err(|e| {
         warn!("请求第三方服务接口失败 {:?}", e);
 
-        Error::Http(None)
+        Error::ThirdHttpRequest(None)
     })?;
 
     let result = HttpResponse {
@@ -39,7 +37,7 @@ pub async fn request(request: Request) -> Result<HttpResponse> {
         body: response
             .text()
             .await
-            .map_err(|_| Error::HttpResponse(None))?,
+            .map_err(|_| Error::ThirdHttpResponse(None))?,
         duration: started_at.elapsed().as_secs_f32(),
     };
 

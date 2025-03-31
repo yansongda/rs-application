@@ -1,14 +1,12 @@
+use application::logger::Logger;
+use application::miniprogram_api::App;
 use tracing::info;
-use wechat::config::Config;
-use wechat::logger::Logger;
-use wechat::miniprogram_api::App;
 
 #[tokio::main]
 async fn main() {
-    Config::init();
-    Logger::non_blocking("miniprogram_api");
+    let _logger = Logger::non_blocking("miniprogram-api");
 
-    let app = App::init().await;
+    let app = App::init();
 
     let listener = tokio::net::TcpListener::bind(app.get_listen())
         .await

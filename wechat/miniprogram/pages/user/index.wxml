@@ -1,0 +1,10 @@
+<t-cell
+  title="{{config.nickname}}"
+  description="{{config.slogan}}"
+  image="{{config.avatar}}"
+  url="/pages/user/edit"
+  hover
+  arrow
+/>
+
+<view class="slogan">{{config.slogan}}</view>

@@ -5,6 +5,7 @@ use sqlx::types::Json;
 use tracing::{error, info};
 
 use crate::model::miniprogram::access_token::{AccessToken, AccessTokenData};
+use crate::model::miniprogram::third_user::Platform;
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -14,12 +15,12 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(access_token)
-        .fetch_optional(Pool::postgres("default"))
+        .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("查询 access_token 失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -30,7 +31,7 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
         return Ok(data);
     }
 
-    Err(Error::AccessTokenNotFound(None))
+    Err(Error::ParamsMiniprogramAccessTokenNotFound(None))
 }
 
 pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
@@ -39,12 +40,12 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(user_id)
-        .fetch_optional(Pool::postgres("default"))
+        .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("通过 user_id 查询 access_token 失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -55,26 +56,36 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
         return Ok(data);
     }
 
-    Err(Error::AccessTokenNotFound(None))
+    Err(Error::ParamsMiniprogramAccessTokenNotFound(None))
 }
 
-pub async fn insert(user_id: i64, data: AccessTokenData) -> Result<AccessToken> {
-    let sql = "insert into miniprogram.access_token (user_id, access_token, data) values ($1, $2, $3) returning *";
+pub async fn insert(
+    platform: Platform,
+    user_id: i64,
+    data: &AccessTokenData,
+) -> Result<AccessToken> {
+    let sql = "insert into miniprogram.access_token (user_id, access_token, data, platform) values ($1, $2, $3, $4) returning *";
+    let wechat_access_token_data = data.to_owned().wechat.unwrap();
     let access_token = base62::encode(murmur3::hash128(
-        format!("{}:{}", &data.open_id, &data.session_key).as_bytes(),
+        format!(
+            "{}:{}",
+            wechat_access_token_data.open_id, wechat_access_token_data.session_key
+        )
+        .as_bytes(),
     ));
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(user_id)
         .bind(&access_token)
-        .bind(Json(&data))
-        .fetch_one(Pool::postgres("default"))
+        .bind(Json(data))
+        .bind(platform)
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("插入 access_token 失败: {:?}", e);
 
-            Error::DatabaseInsert(None)
+            Error::InternalDatabaseInsert(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -84,23 +95,28 @@ pub async fn insert(user_id: i64, data: AccessTokenData) -> Result<AccessToken> 
     result
 }
 
-pub async fn update(id: i64, data: AccessTokenData) -> Result<AccessToken> {
+pub async fn update(id: i64, data: &AccessTokenData) -> Result<AccessToken> {
     let sql = "update miniprogram.access_token set access_token = $1, data = $2, updated_at = now() where id = $3 returning *";
+    let wechat_access_token_data = data.to_owned().wechat.unwrap();
     let access_token = base62::encode(murmur3::hash128(
-        format!("{}:{}", &data.open_id, &data.session_key).as_bytes(),
+        format!(
+            "{}:{}",
+            wechat_access_token_data.open_id, wechat_access_token_data.session_key
+        )
+        .as_bytes(),
     ));
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(access_token)
-        .bind(Json(&data))
+        .bind(Json(data))
         .bind(id)
-        .fetch_one(Pool::postgres("default"))
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("更新 access_token 失败: {:?}", e);
 
-            Error::DatabaseUpdate(None)
+            Error::InternalDatabaseUpdate(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();

@@ -14,7 +14,7 @@ impl Validator for DetailRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.id.is_none() {
-            return Err(Error::Params(Some("详情 id 不能为空")));
+            return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
         }
 
         Ok(self.id.unwrap())
@@ -54,11 +54,11 @@ impl Validator for CreateRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.uri.is_none() {
-            return Err(Error::Params(Some("totp 链接不能为空")));
+            return Err(Error::ParamsMiniprogramTotpUriEmpty(None));
         }
 
         if !self.uri.clone().unwrap().starts_with("otpauth://totp/") {
-            return Err(Error::Params(Some("totp 链接格式错误")));
+            return Err(Error::ParamsMiniprogramTotpUriFormatInvalid(None));
         }
 
         Ok(self.uri.clone().unwrap())
@@ -77,11 +77,11 @@ impl Validator for UpdateRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.id.is_none() {
-            return Err(Error::Params(Some("id 不能为空")));
+            return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
         }
 
         if self.username.is_none() || self.username.clone().unwrap().is_empty() {
-            return Err(Error::Params(Some("账号 不能为空")));
+            return Err(Error::ParamsMiniprogramTotpUsernameEmpty(None));
         }
 
         Ok(Self::Data::from(self.to_owned()))
@@ -98,7 +98,7 @@ impl Validator for DeleteRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.id.is_none() {
-            return Err(Error::Params(Some("删除 id 不能为空")));
+            return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
         }
 
         Ok(self.id.unwrap())

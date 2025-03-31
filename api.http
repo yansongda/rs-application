@@ -1,52 +1,55 @@
 ### 用户 - 登录
-POST {{domain}}/api/v1/access-token/login
+POST {{domain}}/api/v1/miniprogram/access-token/login
 Content-Type: application/json
 
 {
-    "code": "code"
+    "platform": "wechat",
+    "code": "codecodecodecode"
 }
 
 ### 用户 - 详情
-POST {{domain}}/api/v1/users/detail
-Authorization: Bearer {{open_id}}
+POST {{domain}}/api/v1/miniprogram/users/detail
+Authorization: Bearer {{access_token}}
 
 ### 用户 - 更新
-POST {{domain}}/api/v1/users/update
+POST {{domain}}/api/v1/miniprogram/users/edit
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
-  "avatar": "123456789",
-  "nickname": "yansongdaa",
-  "slogan": "Coding My Life...😄"
+  "config": {
+    "avatar": "111",
+    "nickname": "yansongdaa",
+    "slogan": "Coding My Life...😄"
+  }
 }
 
 ### TOTP - 所有
-POST {{domain}}/api/v1/totp/all
-Authorization: Bearer {{open_id}}
+POST {{domain}}/api/v1/miniprogram/totp/all
+Authorization: Bearer {{access_token}}
 
 ### TOTP - 详情
-POST {{domain}}/api/v1/totp/detail
+POST {{domain}}/api/v1/miniprogram/totp/detail
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
     "id": 1
 }
 
 ### TOTP - 创建
-POST {{domain}}/api/v1/totp/create
+POST {{domain}}/api/v1/miniprogram/totp/create
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "uri": "otpauth://totp/GitHub:yansongda?secret=LBKODWEWIEEEMQKY&issuer=GitHub"
 }
 
 ### TOTP - 更新
-POST {{domain}}/api/v1/totp/update
+POST {{domain}}/api/v1/miniprogram/totp/update
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "id": 1,
@@ -55,32 +58,32 @@ Authorization: Bearer {{open_id}}
 }
 
 ### TOTP - 删除
-POST {{domain}}/api/v1/totp/delete
+POST {{domain}}/api/v1/miniprogram/totp/delete
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "id": 1
 }
 
 ### 短链 - 创建
-POST {{domain}}/api/v1/short-url/create
+POST {{domain}}/api/v1/miniprogram/short-url/create
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "url": "https://yansongda.cn"
 }
 
 ### 短链 - 详情
-POST {{domain}}/api/v1/short-url/detail
+POST {{domain}}/api/v1/miniprogram/short-url/detail
 Content-Type: application/json
-Authorization: Bearer {{open_id}}
+Authorization: Bearer {{access_token}}
 
 {
   "short": "3ULY6"
 }
 
 ### 短链 - 访问
-GET {{domain}}/api/v1/short-url/redirect/{{short}}
+GET {{domain}}/api/v1/miniprogram/short-url/redirect/{{short}}
 

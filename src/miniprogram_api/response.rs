@@ -42,6 +42,6 @@ impl From<JsonRejection> for Error {
     fn from(r: JsonRejection) -> Self {
         info!("解析 Json 请求失败: {:?}", r);
 
-        Error::Params(None)
+        Error::ParamsJsonInvalid(None)
     }
 }

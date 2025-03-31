@@ -13,12 +13,12 @@ pub async fn all(user_id: i64) -> Result<Vec<Totp>> {
 
     let result = sqlx::query_as(sql)
         .bind(user_id)
-        .fetch_all(Pool::postgres("default"))
+        .fetch_all(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("查询用户所有的 Totp 失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -34,12 +34,12 @@ pub async fn fetch(id: i64) -> Result<Totp> {
 
     let result: Option<Totp> = sqlx::query_as(sql)
         .bind(id)
-        .fetch_optional(Pool::postgres("default"))
+        .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("查询 Totp 失败: {:?}", e);
 
-            Error::Database(None)
+            Error::InternalDatabaseQuery(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -50,7 +50,7 @@ pub async fn fetch(id: i64) -> Result<Totp> {
         return Ok(user);
     }
 
-    Err(Error::TotpNotFound(None))
+    Err(Error::ParamsMiniprogramTotpNotFound(None))
 }
 
 pub async fn insert(totp: CreateTotp) -> Result<Totp> {
@@ -65,12 +65,12 @@ pub async fn insert(totp: CreateTotp) -> Result<Totp> {
         .bind(Json(TotpConfig {
             period: totp.period,
         }))
-        .fetch_one(Pool::postgres("default"))
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("插入 Totp 失败: {:?}", e);
 
-            Error::DatabaseInsert(None)
+            Error::InternalDatabaseInsert(None)
         });
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -98,12 +98,12 @@ pub async fn update(updated: UpdateTotp) -> Result<()> {
     let started_at = Instant::now();
 
     query
-        .execute(Pool::postgres("default"))
+        .execute(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("更新 Totp 失败: {:?}", e);
 
-            Error::DatabaseUpdate(None)
+            Error::InternalDatabaseUpdate(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
@@ -119,12 +119,12 @@ pub async fn delete(id: i64) -> Result<()> {
 
     sqlx::query(sql)
         .bind(id)
-        .execute(Pool::postgres("default"))
+        .execute(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
             error!("删除 Totp 失败: {:?}", e);
 
-            Error::DatabaseDelete(None)
+            Error::InternalDatabaseDelete(None)
         })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();

@@ -1,7 +1,7 @@
 [package]
-name = "wechat"
-version = "1.5.2"
-edition = "2021"
+name = "application"
+version = "1.6.0"
+edition = "2024"
 publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,7 +11,7 @@ name = "miniprogram-api"
 path = "src/bin/miniprogram-api.rs"
 
 [dependencies]
-config = { version = "~0.14.0", default-features = false, features = ["toml", "json", "json5"] }
+config = { version = "~0.15.4", default-features = false, features = ["toml", "json", "json5"] }
 chrono = { version = "~0.4.22", features = ["serde"] }
 serde = { version = "~1.0.130", features = ["derive"] }
 serde_json = { version = "~1.0.71" }
@@ -20,17 +20,17 @@ tracing = { version = "~0.1.37" }
 tracing-subscriber = { version = "~0.3.16", default-features = false, features = ["registry"] }
 tracing-appender = { version = "~0.2.3" }
 
-tokio = { version = "~1.38.0", features = ["full"] }
-axum = { version = "~0.7.1", features = ["macros"] }
-tower = { version = "~0.4.12" }
-tower-http = { version = "~0.5.0", features = ["cors", "request-id", "trace"] }
+tokio = { version = "~1.44.0", features = ["full"] }
+axum = { version = "~0.8.1", features = ["macros"] }
+tower = { version = "~0.5.0" }
+tower-http = { version = "~0.6.0", features = ["cors", "request-id", "trace"] }
 
-sqlx = { version = "~0.7.4", features = [ "runtime-tokio", "tls-native-tls", "postgres", "chrono" ] }
+sqlx = { version = "~0.8.0", features = [ "runtime-tokio", "tls-rustls", "postgres", "chrono" ] }
 
 reqwest = { version = "~0.12.2" }
 
-totp-rs = { version = "~5.5.0", features = ["otpauth"] }
+totp-rs = { version = "~5.6.0", features = ["otpauth"] }
 fasthash = { version = "~0.4.0" }
-base62 = { version = "~2.0.2" }
+base62 = { version = "~2.2.0" }
 url = { version = "~2.5.0" }
 rs-snowflake = { version = "~0.6.0", default-features = false }

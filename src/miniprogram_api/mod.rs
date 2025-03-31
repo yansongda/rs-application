@@ -5,18 +5,17 @@ use std::time::Duration;
 
 use axum::http::Request;
 use axum::routing::get;
-use axum::{http, Router};
+use axum::{Router, http};
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 use tower_http::request_id::{
     MakeRequestUuid, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
 };
 use tower_http::trace::{MakeSpan, OnFailure, OnRequest, OnResponse, TraceLayer};
-use tracing::{error, info, info_span, Span};
+use tracing::{Span, error, info, info_span};
 
-use crate::config::Config;
+use crate::config::G_CONFIG;
 use crate::model::result::Response;
-use crate::repository::Pool;
 
 mod extract;
 mod middleware;
@@ -30,9 +29,7 @@ pub struct App {
 }
 
 impl App {
-    pub async fn init() -> Self {
-        Pool::init().await;
-
+    pub fn init() -> Self {
         App {
             listen: App::listen(),
             router: App::router(),
@@ -48,15 +45,15 @@ impl App {
     }
 
     fn listen() -> SocketAddr {
-        let listen = Config::get_bin("miniprogram_api").listen.as_str();
-        let port = Config::get_bin("miniprogram_api").port;
+        let listen = G_CONFIG.bin.get("miniprogram-api").unwrap().listen.as_str();
+        let port = G_CONFIG.bin.get("miniprogram-api").unwrap().port;
 
         SocketAddr::from((IpAddr::from_str(listen).unwrap(), port))
     }
 
     fn router() -> Router {
         Router::new()
-            .nest("/api/v1", routes::api_v1())
+            .nest("/api/v1/miniprogram", routes::api_v1_miniprogram())
             .route("/health", get(|| async { "success" }))
             .fallback(|| async {
                 Response::<String>::new(Some(404), Some("Not Found".to_string()), None)

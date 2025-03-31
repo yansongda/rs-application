@@ -1,7 +1,7 @@
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
-use sqlx::types::Json;
 use sqlx::FromRow;
+use sqlx::types::Json;
 
 use crate::request::miniprogram::totp::UpdateRequest;
 

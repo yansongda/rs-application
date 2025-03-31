@@ -4,10 +4,10 @@ use crate::miniprogram_api::extract::Json;
 use crate::miniprogram_api::response::Resp;
 use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
+use crate::request::Validator;
 use crate::request::miniprogram::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, UpdateRequest,
 };
-use crate::request::Validator;
 use crate::service;
 
 pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {
@@ -38,13 +38,13 @@ pub async fn create(
     Ok(Response::success(()))
 }
 
-pub async fn update(
+pub async fn edit(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<UpdateRequest>,
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::totp::update(access_token.user_id, params).await?;
+    service::miniprogram::totp::edit(access_token.user_id, params).await?;
 
     Ok(Response::success(()))
 }

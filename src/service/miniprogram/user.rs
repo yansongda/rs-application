@@ -1,11 +1,19 @@
-use crate::model::miniprogram::user::{UpdateUser, User};
-use crate::model::result::Result;
+use crate::model::miniprogram::user::{EditUser, User};
+use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 
-pub async fn detail_by_open_id(open_id: &str) -> Result<User> {
-    miniprogram::user::fetch_by_open_id(open_id).await
+pub async fn detail(id: i64) -> Result<User> {
+    if id <= 0 {
+        return Err(Error::ParamsMiniprogramUserNotFound(None));
+    }
+
+    miniprogram::user::fetch(id).await
 }
 
-pub async fn update(id: i64, update_user: UpdateUser) -> Result<User> {
-    miniprogram::user::update(id, update_user).await
+pub async fn edit(id: i64, params: EditUser) -> Result<User> {
+    if id < 0 {
+        return miniprogram::user::insert(params).await;
+    }
+
+    miniprogram::user::update(id, params).await
 }
