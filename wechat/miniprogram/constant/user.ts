@@ -3,7 +3,7 @@ const DEFAULT = {
     AVATAR: "/images/default-avatar.png",
     NICKNAME: "微信用户",
     SLOGAN: "让科技更便利",
-  }
+  },
 };
 
 const PATH = {

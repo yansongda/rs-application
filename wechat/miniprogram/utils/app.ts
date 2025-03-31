@@ -1,7 +1,10 @@
 import accessToken from "@api/accessToken";
 import { STORAGE } from "@constant/app";
-import { LoginResponse } from "miniprogram/types/accessToken";
-import { WxGetUpdateManagerOnCheckForUpdateResult, WxLoginSuccessCallbackResult } from "miniprogram/types/wechat";
+import type { LoginResponse } from "miniprogram/types/accessToken";
+import type {
+  WxGetUpdateManagerOnCheckForUpdateResult,
+  WxLoginSuccessCallbackResult,
+} from "miniprogram/types/wechat";
 import logger from "./logger";
 
 const valid = async (): Promise<boolean> => {
@@ -36,7 +39,7 @@ const login = async () => {
         });
 
         await wx.hideToast();
-      } catch(e) {
+      } catch (e) {
         logger.error(e);
 
         restart("获取与设置基础信息失败，即将重启小程序", null);
@@ -46,9 +49,12 @@ const login = async () => {
       restart("微信登录 API 错误，即将重启小程序", null);
     },
   });
-}
+};
 
-const restart = (content: string | null | undefined, path: string | null | undefined) => {
+const restart = (
+  content: string | null | undefined,
+  path: string | null | undefined,
+) => {
   wx.showModal({
     title: "提示",
     content: content ?? "小程序即将重启",
@@ -56,11 +62,11 @@ const restart = (content: string | null | undefined, path: string | null | undef
     confirmText: "重启",
     success(res) {
       if (res.confirm) {
-        wx.restartMiniProgram({ path: path ?? "/pages/home/index" })
+        wx.restartMiniProgram({ path: path ?? "/pages/home/index" });
       }
     },
   });
-}
+};
 
 const upgrade = () => {
   const updateManager = wx.getUpdateManager();
@@ -88,6 +94,6 @@ const upgrade = () => {
   updateManager.onUpdateFailed(() => {
     logger.error("小程序更新下载异常");
   });
-}
+};
 
 export default { valid, login, restart, upgrade };

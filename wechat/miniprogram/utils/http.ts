@@ -82,7 +82,7 @@ const wxRequest = <T>(request: Request) => {
           new HttpError(
             err.errno,
             WECHAT_MESSAGE[err.errno as keyof typeof WECHAT_MESSAGE] ||
-            `接口请求失败：${err.errMsg}`,
+              `接口请求失败：${err.errMsg}`,
           ),
         );
       },

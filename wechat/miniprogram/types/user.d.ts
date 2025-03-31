@@ -16,13 +16,13 @@ export interface EditRequest extends RequestData {
 }
 
 export interface EditResponse {
-	open_id: string;
-	avatar: string;
-	nickname: string;
-	slogan: string;
+  open_id: string;
+  avatar: string;
+  nickname: string;
+  slogan: string;
 }
 
 export interface User {
-	phone: string;
+  phone: string;
   config?: UserConfig;
 }

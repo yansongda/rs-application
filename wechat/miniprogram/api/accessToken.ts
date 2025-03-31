@@ -4,11 +4,14 @@ import { HttpError } from "@models/error";
 import error from "@utils/error";
 import http from "@utils/http";
 import logger from "@utils/logger";
-import type { LoginRequest, LoginResponse, ValidResponse } from "types/accessToken";
+import type { LoginRequest, LoginResponse } from "types/accessToken";
 
 const login = async (code: string) => {
   try {
-    return await http.post<LoginResponse>(PATH.LOGIN, { platform: "wechat", code } as LoginRequest);
+    return await http.post<LoginResponse>(PATH.LOGIN, {
+      platform: "wechat",
+      code,
+    } as LoginRequest);
   } catch (e: unknown) {
     logger.error("登录接口请求失败", e);
 
@@ -21,7 +24,7 @@ const login = async (code: string) => {
 
 const valid = async () => {
   try {
-    return await http.get<ValidResponse>(PATH.VALID);
+    return await http.get<null>(PATH.VALID);
   } catch (e: unknown) {
     logger.error("验证接口请求失败", e);
 

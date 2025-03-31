@@ -3,13 +3,16 @@
 	"files": {
 		"ignore": ["miniprogram/miniprogram_npm/**/*"]
 	},
-	"organizeImports": {
-		"enabled": true
-	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true
 		}
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"formatter": {
+		"indentStyle": "space"
 	}
 }

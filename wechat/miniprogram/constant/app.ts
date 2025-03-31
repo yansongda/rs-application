@@ -1,12 +1,12 @@
 const STORAGE = {
-	ACCESS_TOKEN: "access_token",
-	USER: "user",
+  ACCESS_TOKEN: "access_token",
+  USER: "user",
 };
 
 const URL = {
-    release: "https://wechat.yanda.net.cn",
-    develop: "http://127.0.0.1:8080",
-    trial: "",
+  release: "https://wechat.yanda.net.cn",
+  develop: "http://127.0.0.1:8080",
+  trial: "",
 };
 
 export { STORAGE, URL };
