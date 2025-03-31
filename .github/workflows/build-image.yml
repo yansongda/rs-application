@@ -20,9 +20,9 @@ jobs:
           docker build -t app .
       - name: Tag the image
         run: |
-          docker tag app registry.cn-shenzhen.aliyuncs.com/yansongda-app/miniprogram-api:$GITHUB_REF_NAME
+          docker tag app registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application:$GITHUB_REF_NAME
       - name: Push the image to aliyun registry
         run: |
           echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
-          docker push registry.cn-shenzhen.aliyuncs.com/yansongda-app/miniprogram-api:$GITHUB_REF_NAME
+          docker push registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application:$GITHUB_REF_NAME
           docker logout
