@@ -1,5 +1,5 @@
 import { CODE } from "@constant/error";
-import { URL } from "@constant/totp";
+import { PATH } from "@constant/totp";
 import { HttpError } from "@models/error";
 import error from "@utils/error";
 import http from "@utils/http";
@@ -15,7 +15,7 @@ import type {
 
 const all = async () => {
 	try {
-		return await http.post<Item[]>(URL.ALL);
+		return await http.post<Item[]>(PATH.ALL);
 	} catch (e: unknown) {
 		logger.error("查询 TOTP 列表失败", e);
 
@@ -25,7 +25,7 @@ const all = async () => {
 
 const detail = async (id: number) => {
 	try {
-		return await http.post<Item>(URL.DETAIL, { id } as DetailRequest);
+		return await http.post<Item>(PATH.DETAIL, { id } as DetailRequest);
 	} catch (e: unknown) {
 		logger.error("查询 TOTP 详情失败", e);
 
@@ -35,7 +35,7 @@ const detail = async (id: number) => {
 
 const create = async (uri: string) => {
 	try {
-		return await http.post<Response>(URL.CREATE, { uri } as CreateRequest);
+		return await http.post<Response>(PATH.CREATE, { uri } as CreateRequest);
 	} catch (e: unknown) {
 		logger.error("创建 TOTP 失败", e);
 
@@ -45,7 +45,7 @@ const create = async (uri: string) => {
 
 const update = async (data: UpdateRequest) => {
 	try {
-		return await http.post<Response>(URL.UPDATE, data);
+		return await http.post<Response>(PATH.UPDATE, data);
 	} catch (e: unknown) {
 		logger.error("更新 TOTP 信息失败", e);
 
@@ -55,7 +55,7 @@ const update = async (data: UpdateRequest) => {
 
 const deleteTotp = async (id: number) => {
 	try {
-		return await http.post<Response>(URL.DELETE, { id } as DeleteRequest);
+		return await http.post<Response>(PATH.DELETE, { id } as DeleteRequest);
 	} catch (e: unknown) {
 		logger.error("删除 TOTP 失败", e);
 

@@ -4,17 +4,21 @@ import type { User } from "types/user";
 
 Page({
 	data: {
-		avatar: DEFAULT.avatar,
-		nickname: DEFAULT.nickname,
-		slogan: DEFAULT.slogan,
-	},
+    config: {
+      nickname: "",
+      avatar: "",
+      slogan: "",
+    },
+  },
 	async onShow() {
 		const user: User = await utils.detail();
 
 		this.setData({
-			avatar: user.avatar,
-			nickname: user.nickname,
-			slogan: user.slogan,
+      config: {
+        nickname: user.config?.nickname ?? DEFAULT.CONFIG.NICKNAME,
+        avatar: user.config?.avatar ?? DEFAULT.CONFIG.AVATAR,
+        slogan: user.config?.slogan ?? DEFAULT.CONFIG.SLOGAN,
+      }
 		});
 	},
 	onHide() {},

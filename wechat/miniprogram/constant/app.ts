@@ -4,7 +4,9 @@ const STORAGE = {
 };
 
 const URL = {
-	BASE: "https://wechat.yanda.net.cn",
+    release: "https://wechat.yanda.net.cn",
+    develop: "http://127.0.0.1:8080",
+    trial: "",
 };
 
 export { STORAGE, URL };

@@ -1,12 +1,14 @@
 const DEFAULT = {
-	avatar: "/images/default-avatar.png",
-	nickname: "微信用户",
-	slogan: "让科技更便利",
+  CONFIG: {
+    AVATAR: "/images/default-avatar.png",
+    NICKNAME: "微信用户",
+    SLOGAN: "让科技更便利",
+  }
 };
 
-const URL = {
-	DETAIL: "/miniprogram/api/v1/users/detail",
-	UPDATE: "/miniprogram/api/v1/users/update",
+const PATH = {
+  DETAIL: "/api/v1/miniprogram/users/detail",
+  EDIT: "/api/v1/miniprogram/users/edit",
 };
 
-export { DEFAULT, URL };
+export { DEFAULT, PATH };

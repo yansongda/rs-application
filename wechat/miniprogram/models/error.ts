@@ -17,12 +17,6 @@ export class WeixinError extends EE {
 	}
 }
 
-export class LoginError extends EE {
-	constructor(code?: number, message?: string) {
-		super(code || CODE.LOGIN, message);
-	}
-}
-
 export class HttpError extends EE {
 	url?: string;
 	headers?: RequestHeaders;

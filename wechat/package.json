@@ -1,6 +1,6 @@
 {
   "name": "yansongda",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "wechat for yansongda",
   "type": "module",
   "scripts": {
@@ -15,10 +15,11 @@
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "1.7.2",
-    "miniprogram-api-typings": "^3.12.3",
-    "typescript": "^5.7.2"
+    "miniprogram-api-typings": "^4.0.5",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
-    "tdesign-miniprogram": "^1.8.1"
-  }
+    "tdesign-miniprogram": "^1.8.8"
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
 }

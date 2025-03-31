@@ -1,5 +1,5 @@
-const URL = {
-	CREATE: "/miniprogram/api/v1/short-url/create",
+const PATH = {
+	CREATE: "/api/v1/miniprogram/short-url/create",
 };
 
-export { URL };
+export { PATH };

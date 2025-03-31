@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       tdesign-miniprogram:
-        specifier: ^1.8.1
-        version: 1.8.1
+        specifier: ^1.8.8
+        version: 1.8.8
     devDependencies:
       '@biomejs/biome':
         specifier: 1.7.2
         version: 1.7.2
       miniprogram-api-typings:
-        specifier: ^3.12.3
-        version: 3.12.3
+        specifier: ^4.0.5
+        version: 4.0.5
       typescript:
-        specifier: ^5.7.2
-        version: 5.7.2
+        specifier: ^5.8.2
+        version: 5.8.2
 
 packages:
 
@@ -80,17 +80,17 @@ packages:
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
-  miniprogram-api-typings@3.12.3:
-    resolution: {integrity: sha512-o7bOfrU28MEMCBWo83nXv0ROQSBFxJcfCl4f2wTYqah64ipC5RGqLJfvWJTWhlQt2ECVwspSzM8LgvnfMo7TEQ==}
+  miniprogram-api-typings@4.0.5:
+    resolution: {integrity: sha512-34pYYg4pwjsE752x/zs7QYLL0x0UGBL/IxTuVRRIXbFcv1msDRCWGyZK5KpsDm2P78Fdaw+B80B8R1qbvX6YhQ==}
 
-  tdesign-miniprogram@1.8.1:
-    resolution: {integrity: sha512-WeBQysX5IvxNqeZytOPS10gUZY9tlQmR7qCxrjOyJKd0jlijf3IcwtX2OgNRgaLb7loeoEzr+mIejh2lwc+2EQ==}
+  tdesign-miniprogram@1.8.8:
+    resolution: {integrity: sha512-3Ci/2YJYUDjP04MQHanmqPwQsoIcOORcVMO8aGbnMDkMgDNiJi5hZc0z9AwpiHsHjBAiKhWIdUo2MRacgl4vcg==}
 
   tinycolor2@1.6.0:
     resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
 
-  typescript@5.7.2:
-    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
+  typescript@5.8.2:
+    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -133,13 +133,13 @@ snapshots:
 
   dayjs@1.11.13: {}
 
-  miniprogram-api-typings@3.12.3: {}
+  miniprogram-api-typings@4.0.5: {}
 
-  tdesign-miniprogram@1.8.1:
+  tdesign-miniprogram@1.8.8:
     dependencies:
       dayjs: 1.11.13
       tinycolor2: 1.6.0
 
   tinycolor2@1.6.0: {}
 
-  typescript@5.7.2: {}
+  typescript@5.8.2: {}

@@ -1,6 +1,6 @@
 import api from "@api/totp";
 import { CODE } from "@constant/error";
-import { type HttpError, WeixinError } from "@models/error";
+import { HttpError, WeixinError } from "@models/error";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
 import type { SwipeTap } from "types/tdesign";

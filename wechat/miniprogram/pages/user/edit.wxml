@@ -4,15 +4,15 @@
 <form bindsubmit="submit">
   <view class="avatar">
     <t-button open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" shape="square" size="large">
-      <t-avatar image="{{avatar}}" size="large" shape="round">
-        <t-input type="text" name="avatar" value="{{ avatar }}" maxlength="-1"/>
+      <t-avatar image="{{config.avatar}}" size="large" shape="round">
+        <t-input type="text" name="avatar" value="{{ config.avatar }}" maxlength="-1"/>
       </t-avatar>
     </t-button>
   </view>
   
   <view class="input">
-    <t-input type="nickname" name="nickname" label="昵称" placeholder="请填写昵称" value="{{nickname}}" tips="长度在1～10之间" maxlength="10" align="right"/>
-    <t-input type="text" name="slogan" label="Slogan" placeholder="请填写 Slogan" value="{{slogan}}" tips="长度在1～50之间" maxlength="50" align="right"/>
+    <t-input type="nickname" name="nickname" label="昵称" placeholder="请填写昵称" value="{{config.nickname}}" tips="长度在1～10之间" maxlength="10" align="right"/>
+    <t-input type="text" name="slogan" label="Slogan" placeholder="请填写 Slogan" value="{{config.slogan}}" tips="长度在1～50之间" maxlength="50" align="right"/>
   </view>
   
   <view class="operation">

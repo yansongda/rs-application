@@ -9,17 +9,20 @@ pub fn api_v1_miniprogram() -> Router {
     let unauthorized = Router::new()
         .nest(
             "/access-token",
-            Router::new()
-                .route("/login", post(v1::access_token::login))
+            Router::new().route("/login", post(v1::access_token::login)),
         )
         .nest(
             "/short-url",
             Router::new()
                 .route("/detail", post(v1::short_url::detail))
-                .route("/redirect/{short}", get(v1::short_url::redirect))
+                .route("/redirect/{short}", get(v1::short_url::redirect)),
         );
 
     let authorized = Router::new()
+        .nest(
+            "/access-token",
+            Router::new().route("/valid", get(v1::access_token::valid)),
+        )
         .nest(
             "/users",
             Router::new()

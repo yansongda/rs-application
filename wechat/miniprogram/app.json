@@ -1,43 +1,43 @@
 {
-	"pages": [
-		"pages/home/index",
-		"pages/user/index",
-		"pages/user/edit",
-		"pages/totp/index",
-		"pages/totp/edit",
-		"pages/shortUrl/index"
-	],
-	"window": {
-		"backgroundTextStyle": "light",
-		"navigationBarBackgroundColor": "#fff",
-		"navigationBarTitleText": "闫嵩达",
-		"navigationBarTextStyle": "black"
-	},
-	"tabBar": {
-		"custom": true,
-		"color": "#000000",
-		"selectedColor": "#000000",
-		"backgroundColor": "#000000",
-		"list": [
-			{
-				"pagePath": "pages/home/index",
-				"text": "首页"
-			},
-			{
-				"pagePath": "pages/user/index",
-				"text": "我"
-			}
-		]
-	},
-	"networkTimeout": {
-		"request": 5000
-	},
-	"lazyCodeLoading": "requiredComponents",
-	"sitemapLocation": "sitemap.json",
-	"resolveAlias": {
-		"@api/*": "/api/*",
-		"@utils/*": "/utils/*",
-		"@constant/*": "/constant/*",
-		"@models/*": "/models/*"
-	}
+  "pages": [
+    "pages/home/index",
+    "pages/user/index",
+    "pages/user/edit",
+    "pages/totp/index",
+    "pages/totp/edit",
+    "pages/shortUrl/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "闫嵩达",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#000000",
+    "selectedColor": "#000000",
+    "backgroundColor": "#000000",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "text": "我"
+      }
+    ]
+  },
+  "networkTimeout": {
+    "request": 5000
+  },
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json",
+  "resolveAlias": {
+    "@api/*": "/api/*",
+    "@utils/*": "/utils/*",
+    "@constant/*": "/constant/*",
+    "@models/*": "/models/*"
+  }
 }

@@ -5,7 +5,7 @@ import error from "@utils/error";
 import user from "@utils/user";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
-import type { UpdateRequest, User } from "types/user";
+import type { EditRequest, User, UserConfig } from "types/user";
 import type {
 	ChooseAvatarButtonTap,
 	FormSubmit,
@@ -21,20 +21,24 @@ interface FormData {
 
 Page({
 	data: {
-		avatar: DEFAULT.avatar,
-		nickname: DEFAULT.nickname,
-		slogan: DEFAULT.slogan,
+		config: {
+      nickname: "",
+      avatar: "",
+      slogan: "",
+    },
 	},
 	async onShow() {
 		const storage: WxGetStorageSuccess<User> = await wx.getStorage({
 			key: STORAGE.USER,
 		});
 
-		this.setData({
-			avatar: storage.data.avatar,
-			nickname: storage.data.nickname,
-			slogan: storage.data.slogan,
-		});
+    this.setData({
+      config: {
+        nickname: storage.data.config?.nickname ?? DEFAULT.CONFIG.NICKNAME,
+        avatar: storage.data.config?.avatar ?? DEFAULT.CONFIG.AVATAR,
+        slogan: storage.data.config?.slogan ?? DEFAULT.CONFIG.SLOGAN,
+      }
+    });
 	},
 	async onChooseAvatar(e: ChooseAvatarButtonTap<unknown, unknown>) {
 		await wx.showLoading({ title: "上传中", icon: "loading", mask: true });
@@ -48,7 +52,7 @@ Page({
 			filePath: res.tempFilePath,
 			encoding: "base64",
 			success: async (res: WxGetFileSystemManagerReadFileSuccess) => {
-				this.setData({ avatar: `data:image/jpeg;base64,${res.data}` });
+				this.setData({ "config.avatar": `data:image/jpeg;base64,${res.data}` });
 
 				await wx.hideLoading();
 			},
@@ -64,7 +68,7 @@ Page({
 		});
 
 		try {
-			await api.update(e.detail.value as UpdateRequest);
+			await api.edit({ config: e.detail.value as UserConfig } as EditRequest);
 
 			// 同步完成之后更新下全局的用户信息状态
 			await user.sync();

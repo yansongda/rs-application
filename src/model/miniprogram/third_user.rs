@@ -1,13 +1,13 @@
+use crate::model::miniprogram::user::Config;
+use chrono::{DateTime, Local};
 use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize};
 use sqlx::encode::IsNull;
 use sqlx::error::BoxDynError;
 use sqlx::postgres::{PgArgumentBuffer, PgTypeInfo, PgValueRef};
+use sqlx::types::Json;
 use sqlx::{Encode, FromRow, Postgres, Type};
 use std::fmt::{Display, Formatter};
-use chrono::{DateTime, Local};
-use sqlx::types::Json;
-use crate::model::miniprogram::user::Config;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct ThirdUser {

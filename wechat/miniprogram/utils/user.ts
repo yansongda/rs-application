@@ -1,6 +1,5 @@
 import api from "@api/user";
 import { STORAGE } from "@constant/app";
-import { DEFAULT } from "@constant/user";
 import type { User } from "types/user";
 import type { WxGetStorageSuccess } from "types/wechat";
 
@@ -22,9 +21,8 @@ const sync = async (): Promise<User> => {
 	const detail = await api.detail();
 
 	const user: User = {
-		avatar: detail.avatar || DEFAULT.avatar,
-		nickname: detail.nickname || DEFAULT.nickname,
-		slogan: detail.slogan || DEFAULT.slogan,
+    phone: detail.phone,
+    config: detail.config,
 	};
 
 	wx.setStorageSync(STORAGE.USER, user);

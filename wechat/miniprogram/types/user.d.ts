@@ -1,19 +1,21 @@
 import type { RequestData } from "./http";
 
+export interface UserConfig {
+  avatar: string;
+  nickname: string;
+  slogan: string;
+}
 export interface DetailResponse {
-	open_id: string;
-	avatar: string;
-	nickname: string;
-	slogan: string;
+  phone: string;
+  config?: UserConfig;
 }
 
-export interface UpdateRequest extends RequestData {
-	avatar?: string;
-	nickname?: string;
-	slogan?: string;
+export interface EditRequest extends RequestData {
+  phone: string;
+  config?: UserConfig;
 }
 
-export interface UpdateResponse {
+export interface EditResponse {
 	open_id: string;
 	avatar: string;
 	nickname: string;
@@ -21,7 +23,6 @@ export interface UpdateResponse {
 }
 
 export interface User {
-	avatar: string;
-	nickname: string;
-	slogan: string;
+	phone: string;
+  config?: UserConfig;
 }

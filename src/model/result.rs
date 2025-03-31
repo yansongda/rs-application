@@ -12,12 +12,10 @@ pub enum Error {
 
     ParamsJsonInvalid(Option<&'static str>),
     ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
-    ParamsMiniprogramLoginCodeEmpty(Option<&'static str>),
     ParamsMiniprogramLoginCodeLengthShort(Option<&'static str>),
     ParamsMiniprogramThirdUserNotFound(Option<&'static str>),
     ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
     ParamsMiniprogramUserNotFound(Option<&'static str>),
-    ParamsMiniprogramUserAvatarLengthShort(Option<&'static str>),
     ParamsMiniprogramUserNicknameLengthInvalid(Option<&'static str>),
     ParamsMiniprogramUserPhoneLengthInvalid(Option<&'static str>),
     ParamsMiniprogramTotpNotFound(Option<&'static str>),
@@ -75,15 +73,10 @@ impl Error {
                 2001,
                 message.unwrap_or_else(|| "参数错误: platform 参数值不支持"),
             ),
-            Error::ParamsMiniprogramLoginCodeEmpty(message) => (
-                2002,
-                message.unwrap_or_else(|| "参数错误: 登录秘钥不能为空"),
-            ),
             Error::ParamsMiniprogramLoginCodeLengthShort(message) => (
-                2003,
+                2002,
                 message.unwrap_or_else(|| "参数错误: 登录秘钥长度错误"),
             ),
-            // TODO: update error codes
             Error::ParamsMiniprogramThirdUserNotFound(message) => (
                 2003,
                 message.unwrap_or_else(|| "参数错误: 第三方平台关联用户未找到"),
@@ -95,50 +88,46 @@ impl Error {
             Error::ParamsMiniprogramUserNotFound(message) => {
                 (2005, message.unwrap_or_else(|| "参数错误: 用户未找到"))
             }
-            Error::ParamsMiniprogramUserAvatarLengthShort(message) => (
-                2006,
-                message.unwrap_or_else(|| "参数错误: 用户头像不符合规范"),
-            ),
             Error::ParamsMiniprogramUserNicknameLengthInvalid(message) => (
-                2007,
+                2006,
                 message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
             ),
             Error::ParamsMiniprogramUserPhoneLengthInvalid(message) => (
-                2008,
+                2007,
                 message.unwrap_or_else(|| "参数错误: 手机号码不符合规范，请正确填写"),
             ),
             Error::ParamsMiniprogramTotpNotFound(message) => {
-                (2009, message.unwrap_or_else(|| "参数错误: TOTP 信息未找到"))
+                (2008, message.unwrap_or_else(|| "参数错误: TOTP 信息未找到"))
             }
             Error::ParamsMiniprogramTotpParseFailed(message) => (
-                2010,
+                2009,
                 message
                     .unwrap_or_else(|| "参数错误: TOTP 链接解析失败, 请确认是否是正确的 TOTP 链接"),
             ),
             Error::ParamsMiniprogramTotpIdEmpty(message) => (
-                2011,
+                2010,
                 message.unwrap_or_else(|| "参数错误: 详情 id 不能为空"),
             ),
             Error::ParamsMiniprogramTotpUriEmpty(message) => (
-                2012,
+                2011,
                 message.unwrap_or_else(|| "参数错误: TOTP 链接不能为空"),
             ),
             Error::ParamsMiniprogramTotpUriFormatInvalid(message) => (
-                2013,
+                2012,
                 message.unwrap_or_else(|| "参数错误: TOTP 链接格式不正确"),
             ),
             Error::ParamsMiniprogramTotpUsernameEmpty(message) => (
-                2014,
+                2013,
                 message.unwrap_or_else(|| "参数错误: TOTP 用户名不能为空"),
             ),
             Error::ParamsMiniprogramShortlinkNotFound(message) => {
-                (2015, message.unwrap_or_else(|| "参数错误: 短连接未找到"))
+                (2014, message.unwrap_or_else(|| "参数错误: 短连接未找到"))
             }
             Error::ParamsMiniprogramShortlinkEmpty(message) => {
-                (2016, message.unwrap_or_else(|| "参数错误: URL 不能为空"))
+                (2015, message.unwrap_or_else(|| "参数错误: URL 不能为空"))
             }
             Error::ParamsMiniprogramShortlinkFormatInvalid(message) => {
-                (2017, message.unwrap_or_else(|| "参数错误: URL 格式不正确"))
+                (2016, message.unwrap_or_else(|| "参数错误: URL 格式不正确"))
             }
 
             Error::ThirdHttpRequest(message) => (

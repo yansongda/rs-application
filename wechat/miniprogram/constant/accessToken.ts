@@ -1,5 +1,6 @@
-const URL = {
-	LOGIN: "/miniprogram/api/v1/access-token/login",
+const PATH = {
+  LOGIN: "/api/v1/miniprogram/access-token/login",
+  VALID: "/api/v1/miniprogram/access-token/valid",
 };
 
-export { URL };
+export { PATH };
