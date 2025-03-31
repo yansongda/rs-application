@@ -4,7 +4,7 @@ import { HttpError } from "@models/error";
 import error from "@utils/error";
 import http from "@utils/http";
 import logger from "@utils/logger";
-import type { DetailResponse, EditRequest, EditResponse } from "types/user";
+import type { DetailResponse, EditRequest } from "types/user";
 
 const detail = async () => {
   try {
@@ -16,9 +16,9 @@ const detail = async () => {
   }
 };
 
-const update = async (updated: EditRequest) => {
+const edit = async (updated: EditRequest) => {
   try {
-    return await http.post<EditResponse>(PATH.EDIT, updated);
+    return await http.post<null>(PATH.EDIT, updated);
   } catch (e: unknown) {
     logger.error("更新用户信息失败", e);
 
@@ -26,4 +26,4 @@ const update = async (updated: EditRequest) => {
   }
 };
 
-export default { detail, edit: update };
+export default { detail, edit };

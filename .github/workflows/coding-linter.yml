@@ -71,6 +71,9 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
+      - name: Cd frontend directory
+        run: |
+          cd wechat
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
@@ -91,9 +94,6 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - name: Cd frontend directory
-        run: |
-          cd wechat
       - name: Run pnpm install
         run: |
           pnpm i

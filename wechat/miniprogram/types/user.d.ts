@@ -15,13 +15,6 @@ export interface EditRequest extends RequestData {
   config?: UserConfig;
 }
 
-export interface EditResponse {
-  open_id: string;
-  avatar: string;
-  nickname: string;
-  slogan: string;
-}
-
 export interface User {
   phone: string;
   config?: UserConfig;
