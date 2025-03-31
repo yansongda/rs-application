@@ -25,10 +25,12 @@ create unique index uk_third_user_platform_third_id
     on third_user (platform, third_id);
 
 insert into third_user (user_id, platform, third_id)
-    (select id, 'wechat', open_id from "miniprogram"."user")
+    (select id, 'wechat', open_id from "miniprogram"."user");
 
 alter table "user"
     rename column open_id to phone;
+
+drop index uk_user_open_id;
 
 update miniprogram.user set phone = '';
 
@@ -40,8 +42,6 @@ drop column nickname;
 
 alter table "user"
 drop column slogan;
-
-drop index uk_user_open_id;
 
 create index idx_user_phone
     on "user" (phone);
