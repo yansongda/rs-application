@@ -20,7 +20,7 @@ tracing = { version = "~0.1.37" }
 tracing-subscriber = { version = "~0.3.16", default-features = false, features = ["registry"] }
 tracing-appender = { version = "~0.2.3" }
 
-tokio = { version = "~1.44.0", features = ["full"] }
+tokio = { version = "~1.44.2", features = ["full"] }
 axum = { version = "~0.8.1", features = ["macros"] }
 tower = { version = "~0.5.0" }
 tower-http = { version = "~0.6.0", features = ["cors", "request-id", "trace"] }
