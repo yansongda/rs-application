@@ -85,9 +85,10 @@ impl Error {
                 2004,
                 message.unwrap_or_else(|| "参数错误: Access Token 未找到"),
             ),
-            Error::ParamsMiniprogramUserNotFound(message) => {
-                (2005, message.unwrap_or_else(|| "参数错误: 用户未找到"))
-            }
+            Error::ParamsMiniprogramUserNotFound(message) => (
+                2005,
+                message.unwrap_or_else(|| "参数错误: 用户未找到"),
+            ),
             Error::ParamsMiniprogramUserNicknameLengthInvalid(message) => (
                 2006,
                 message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
@@ -96,9 +97,10 @@ impl Error {
                 2007,
                 message.unwrap_or_else(|| "参数错误: 手机号码不符合规范，请正确填写"),
             ),
-            Error::ParamsMiniprogramTotpNotFound(message) => {
-                (2008, message.unwrap_or_else(|| "参数错误: TOTP 信息未找到"))
-            }
+            Error::ParamsMiniprogramTotpNotFound(message) => (
+                2008,
+                message.unwrap_or_else(|| "参数错误: TOTP 信息未找到")
+            ),
             Error::ParamsMiniprogramTotpParseFailed(message) => (
                 2009,
                 message
@@ -120,15 +122,18 @@ impl Error {
                 2013,
                 message.unwrap_or_else(|| "参数错误: TOTP 用户名不能为空"),
             ),
-            Error::ParamsMiniprogramShortlinkNotFound(message) => {
-                (2014, message.unwrap_or_else(|| "参数错误: 短连接未找到"))
-            }
-            Error::ParamsMiniprogramShortlinkEmpty(message) => {
-                (2015, message.unwrap_or_else(|| "参数错误: URL 不能为空"))
-            }
-            Error::ParamsMiniprogramShortlinkFormatInvalid(message) => {
-                (2016, message.unwrap_or_else(|| "参数错误: URL 格式不正确"))
-            }
+            Error::ParamsMiniprogramShortlinkNotFound(message) => (
+                2014,
+                message.unwrap_or_else(|| "参数错误: 短连接未找到")
+            ),
+            Error::ParamsMiniprogramShortlinkEmpty(message) => (
+                2015,
+                message.unwrap_or_else(|| "参数错误: URL 不能为空")
+            ),
+            Error::ParamsMiniprogramShortlinkFormatInvalid(message) => (
+                2016,
+                message.unwrap_or_else(|| "参数错误: URL 格式不正确")
+            ),
 
             Error::ThirdHttpRequest(message) => (
                 9800,

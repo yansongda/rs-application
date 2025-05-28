@@ -31,6 +31,29 @@ impl Validator for EditRequest {
     }
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct EditNicknameRequest {
+    pub nickname: Option<String>,
+}
+
+impl Validator for EditNicknameRequest {
+    type Data = EditUser;
+
+    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+        if self.nickname.is_none() { 
+            return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
+        }
+        
+        if let Some(nickname) = &self.nickname {
+            if nickname.chars().count() > 10 {
+                return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
+            }
+        }
+        
+        Ok(Self::Data::from(self.to_owned()))
+    }
+}
+
 #[derive(Debug, Serialize)]
 pub struct DetailResponse {
     pub phone: String,

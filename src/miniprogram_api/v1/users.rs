@@ -5,13 +5,30 @@ use crate::miniprogram_api::response::Resp;
 use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
-use crate::request::miniprogram::user::{DetailResponse, EditRequest};
+use crate::request::miniprogram::user::{DetailResponse, EditNicknameRequest, EditRequest};
 use crate::service;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {
     let user = service::miniprogram::user::detail(access_token.user_id).await?;
 
     Ok(Response::success(user.into()))
+}
+
+pub async fn edit_nickname(
+    Extension(access_token): Extension<AccessToken>,
+    Json(request): Json<EditNicknameRequest>,
+) -> Resp<()> {
+    let params = request.validate()?;
+    
+    todo!()
+}
+
+pub async fn edit_slogan() -> Resp<()> {
+    todo!()
+}
+
+pub async fn edit_phone() -> Resp<()> {
+    todo!()
 }
 
 pub async fn edit(

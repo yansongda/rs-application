@@ -1,4 +1,4 @@
-use crate::request::miniprogram::user::EditRequest;
+use crate::request::miniprogram::user::{EditNicknameRequest, EditRequest};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
@@ -24,6 +24,19 @@ pub struct Config {
 pub struct EditUser {
     pub phone: Option<String>,
     pub config: Option<Config>,
+}
+
+impl From<EditNicknameRequest> for EditUser {
+    fn from(request: EditNicknameRequest) -> Self {
+        Self {
+            phone: None,
+            config: Some(Config {
+                avatar: None,
+                nickname: request.nickname,
+                slogan: None,
+            }),
+        }
+    }
 }
 
 impl From<EditRequest> for EditUser {
