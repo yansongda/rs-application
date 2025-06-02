@@ -23,7 +23,7 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         repository::miniprogram::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
             .await
             .map_err(|e| match e {
-                _ => Error::AuthorizationMiniprogramNotFound(None)
+                _ => Error::AuthorizationMiniprogramNotFound(None),
             });
 
     if access_token.is_err() {

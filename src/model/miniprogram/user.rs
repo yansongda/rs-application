@@ -1,4 +1,6 @@
-use crate::request::miniprogram::user::{EditNicknameRequest, EditRequest};
+use crate::request::miniprogram::user::{
+    EditNicknameRequest, EditPhoneRequest, EditRequest, EditSloganRequest,
+};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
@@ -21,12 +23,12 @@ pub struct Config {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct EditUser {
+pub struct UpdatedUser {
     pub phone: Option<String>,
     pub config: Option<Config>,
 }
 
-impl From<EditNicknameRequest> for EditUser {
+impl From<EditNicknameRequest> for UpdatedUser {
     fn from(request: EditNicknameRequest) -> Self {
         Self {
             phone: None,
@@ -39,7 +41,29 @@ impl From<EditNicknameRequest> for EditUser {
     }
 }
 
-impl From<EditRequest> for EditUser {
+impl From<EditSloganRequest> for UpdatedUser {
+    fn from(request: EditSloganRequest) -> Self {
+        Self {
+            phone: None,
+            config: Some(Config {
+                avatar: None,
+                nickname: None,
+                slogan: request.slogan,
+            }),
+        }
+    }
+}
+
+impl From<EditPhoneRequest> for UpdatedUser {
+    fn from(request: EditPhoneRequest) -> Self {
+        Self {
+            phone: request.phone,
+            config: None,
+        }
+    }
+}
+
+impl From<EditRequest> for UpdatedUser {
     fn from(request: EditRequest) -> Self {
         Self {
             phone: request.phone,

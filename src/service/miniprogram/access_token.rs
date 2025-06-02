@@ -19,7 +19,9 @@ pub async fn login(request: LoginRequest) -> Result<AccessToken> {
     }
 
     match exist.unwrap_err() {
-        Error::ParamsMiniprogramAccessTokenNotFound(_) => miniprogram::access_token::insert(platform, user_id, &access_token_data).await,
+        Error::ParamsMiniprogramAccessTokenNotFound(_) => {
+            miniprogram::access_token::insert(platform, user_id, &access_token_data).await
+        }
         e => Err(e),
     }
 }

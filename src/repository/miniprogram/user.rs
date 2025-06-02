@@ -3,7 +3,7 @@ use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::user::{EditUser, User};
+use crate::model::miniprogram::user::{UpdatedUser, User};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -32,7 +32,7 @@ pub async fn fetch(user_id: i64) -> Result<User> {
     Err(Error::ParamsMiniprogramUserNotFound(None))
 }
 
-pub async fn insert(data: EditUser) -> Result<User> {
+pub async fn insert(data: UpdatedUser) -> Result<User> {
     let sql = "insert into miniprogram.user (phone, config) values ($1, $2) returning *";
     let started_at = Instant::now();
 
@@ -54,14 +54,14 @@ pub async fn insert(data: EditUser) -> Result<User> {
     result
 }
 
-pub async fn update(id: i64, edit_user: EditUser) -> Result<User> {
+pub async fn update(id: i64, updated_user: UpdatedUser) -> Result<User> {
     let mut builder =
         QueryBuilder::<Postgres>::new("update miniprogram.user set updated_at = now()");
 
-    if let Some(ref phone) = edit_user.phone {
+    if let Some(ref phone) = updated_user.phone {
         builder.push(", phone = ").push_bind(phone);
     }
-    if let Some(ref config) = edit_user.config {
+    if let Some(ref config) = updated_user.config {
         builder.push(", config = ").push_bind(Json(config));
     }
 
@@ -85,7 +85,7 @@ pub async fn update(id: i64, edit_user: EditUser) -> Result<User> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, id, ?edit_user);
+    info!(elapsed, sql, id, ?updated_user);
 
     result
 }

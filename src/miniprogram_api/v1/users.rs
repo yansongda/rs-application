@@ -5,7 +5,9 @@ use crate::miniprogram_api::response::Resp;
 use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
-use crate::request::miniprogram::user::{DetailResponse, EditNicknameRequest, EditRequest};
+use crate::request::miniprogram::user::{
+    DetailResponse, EditNicknameRequest, EditPhoneRequest, EditRequest, EditSloganRequest,
+};
 use crate::service;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {
@@ -19,16 +21,32 @@ pub async fn edit_nickname(
     Json(request): Json<EditNicknameRequest>,
 ) -> Resp<()> {
     let params = request.validate()?;
-    
-    todo!()
+
+    service::miniprogram::user::update(access_token.user_id, params).await?;
+
+    Ok(Response::success(()))
 }
 
-pub async fn edit_slogan() -> Resp<()> {
-    todo!()
+pub async fn edit_slogan(
+    Extension(access_token): Extension<AccessToken>,
+    Json(request): Json<EditSloganRequest>,
+) -> Resp<()> {
+    let params = request.validate()?;
+
+    service::miniprogram::user::update(access_token.user_id, params).await?;
+
+    Ok(Response::success(()))
 }
 
-pub async fn edit_phone() -> Resp<()> {
-    todo!()
+pub async fn edit_phone(
+    Extension(access_token): Extension<AccessToken>,
+    Json(request): Json<EditPhoneRequest>,
+) -> Resp<()> {
+    let params = request.validate()?;
+
+    service::miniprogram::user::update(access_token.user_id, params).await?;
+
+    Ok(Response::success(()))
 }
 
 pub async fn edit(
@@ -37,7 +55,7 @@ pub async fn edit(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::user::edit(access_token.user_id, params).await?;
+    service::miniprogram::user::update(access_token.user_id, params).await?;
 
     Ok(Response::success(()))
 }
