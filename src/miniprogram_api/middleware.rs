@@ -25,9 +25,9 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
             .map_err(|e| match e {
                 _ => Error::AuthorizationMiniprogramNotFound(None),
             });
-
-    if access_token.is_err() {
-        return access_token.unwrap_err().into_response();
+    
+    if let Err(e) = access_token {
+        return e.into_response();
     }
 
     request.extensions_mut().insert(access_token.unwrap());
