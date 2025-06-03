@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
 
-use crate::request::miniprogram::totp::UpdateRequest;
+use crate::request::miniprogram::totp::{EditIssuerRequest, EditUsernameRequest, UpdateRequest};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Totp {
@@ -29,7 +29,7 @@ impl Default for TotpConfig {
 }
 
 #[derive(Debug, Clone)]
-pub struct CreateTotp {
+pub struct CreatedTotp {
     pub user_id: i64,
     pub username: String,
     pub issuer: Option<String>,
@@ -38,13 +38,33 @@ pub struct CreateTotp {
 }
 
 #[derive(Debug, Clone)]
-pub struct UpdateTotp {
+pub struct UpdatedTotp {
     pub id: i64,
     pub issuer: Option<String>,
     pub username: Option<String>,
 }
 
-impl From<UpdateRequest> for UpdateTotp {
+impl From<EditIssuerRequest> for UpdatedTotp {
+    fn from(request: EditIssuerRequest) -> Self {
+        Self {
+            id: request.id.unwrap(),
+            username: None,
+            issuer: request.issuer,
+        }
+    }
+}
+
+impl From<EditUsernameRequest> for UpdatedTotp {
+    fn from(request: EditUsernameRequest) -> Self {
+        Self {
+            id: request.id.unwrap(),
+            username: request.username,
+            issuer: None,
+        }
+    }
+}
+
+impl From<UpdateRequest> for UpdatedTotp {
     fn from(request: UpdateRequest) -> Self {
         Self {
             id: request.id.unwrap(),

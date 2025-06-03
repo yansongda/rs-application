@@ -38,8 +38,10 @@ pub fn api_v1_miniprogram() -> Router {
                 .route("/all", post(v1::totp::all))
                 .route("/detail", post(v1::totp::detail))
                 .route("/create", post(v1::totp::create))
-                .route("/edit", post(v1::totp::edit))
-                .route("/delete", post(v1::totp::delete)),
+                .route("/edit/username", post(v1::totp::edit_username))
+                .route("/edit/issuer", post(v1::totp::edit_issuer))
+                .route("/delete", post(v1::totp::delete))
+                .route("/edit", post(v1::totp::edit)),
         )
         .nest(
             "/short-url",

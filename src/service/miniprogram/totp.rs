@@ -1,7 +1,7 @@
 use totp_rs::{Algorithm, Secret, TOTP};
 use tracing::error;
 
-use crate::model::miniprogram::totp::{CreateTotp, Totp, UpdateTotp};
+use crate::model::miniprogram::totp::{CreatedTotp, Totp, UpdatedTotp};
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::request::miniprogram::totp::DetailResponse;
@@ -29,7 +29,7 @@ pub async fn create(user_id: i64, uri: String) -> Result<()> {
         Error::ParamsMiniprogramTotpParseFailed(None)
     })?;
 
-    miniprogram::totp::insert(CreateTotp {
+    miniprogram::totp::insert(CreatedTotp {
         user_id,
         username: totp.account_name,
         issuer: totp.issuer,
@@ -41,7 +41,7 @@ pub async fn create(user_id: i64, uri: String) -> Result<()> {
     Ok(())
 }
 
-pub async fn edit(user_id: i64, params: UpdateTotp) -> Result<()> {
+pub async fn edit(user_id: i64, params: UpdatedTotp) -> Result<()> {
     let totp = miniprogram::totp::fetch(params.id).await?;
 
     if user_id != totp.user_id {

@@ -38,6 +38,7 @@ pub async fn edit_slogan(
     Ok(Response::success(()))
 }
 
+// todo: 对相同手机号进行账号数据合并
 pub async fn edit_phone(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<EditPhoneRequest>,
