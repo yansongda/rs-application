@@ -9,18 +9,18 @@ importers:
   .:
     dependencies:
       tdesign-miniprogram:
-        specifier: ^1.8.8
-        version: 1.8.8
+        specifier: ^1.9.4
+        version: 1.9.4
     devDependencies:
       '@biomejs/biome':
         specifier: 1.7.2
         version: 1.7.2
       miniprogram-api-typings:
-        specifier: ^4.0.5
-        version: 4.0.5
+        specifier: ^4.0.7
+        version: 4.0.7
       typescript:
-        specifier: ^5.8.2
-        version: 5.8.2
+        specifier: ^5.8.3
+        version: 5.8.3
 
 packages:
 
@@ -77,20 +77,14 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  dayjs@1.11.13:
-    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
+  miniprogram-api-typings@4.0.7:
+    resolution: {integrity: sha512-sUxqpA1+JxnDWYjO6ihiLWNJl94WzjlhnDpozfBeC+w8Mpejjsc8JuxyC3Xisimj/gp5OYaJ7nd4fM6wepzhEQ==}
 
-  miniprogram-api-typings@4.0.5:
-    resolution: {integrity: sha512-34pYYg4pwjsE752x/zs7QYLL0x0UGBL/IxTuVRRIXbFcv1msDRCWGyZK5KpsDm2P78Fdaw+B80B8R1qbvX6YhQ==}
+  tdesign-miniprogram@1.9.4:
+    resolution: {integrity: sha512-dc/V53tTmmrHGzrXclBK56h06nq3vo7GQgBTgiVtlAU5Mp/R/a50axswUKf7W3311rKb8Cuj3F3c45kmkBVPRQ==}
 
-  tdesign-miniprogram@1.8.8:
-    resolution: {integrity: sha512-3Ci/2YJYUDjP04MQHanmqPwQsoIcOORcVMO8aGbnMDkMgDNiJi5hZc0z9AwpiHsHjBAiKhWIdUo2MRacgl4vcg==}
-
-  tinycolor2@1.6.0:
-    resolution: {integrity: sha512-XPaBkWQJdsf3pLKJV9p4qN/S+fm2Oj8AIPo1BTUhg5oxkvm9+SVEGFdhyOz7tTdUTfvxMiAs4sp6/eZO2Ew+pw==}
-
-  typescript@5.8.2:
-    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
+  typescript@5.8.3:
+    resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -131,15 +125,8 @@ snapshots:
   '@biomejs/cli-win32-x64@1.7.2':
     optional: true
 
-  dayjs@1.11.13: {}
+  miniprogram-api-typings@4.0.7: {}
 
-  miniprogram-api-typings@4.0.5: {}
+  tdesign-miniprogram@1.9.4: {}
 
-  tdesign-miniprogram@1.8.8:
-    dependencies:
-      dayjs: 1.11.13
-      tinycolor2: 1.6.0
-
-  tinycolor2@1.6.0: {}
-
-  typescript@5.8.2: {}
+  typescript@5.8.3: {}

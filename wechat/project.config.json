@@ -27,7 +27,16 @@
     "ignoreDevUnusedFiles": false,
     "ignoreUploadUnusedFiles": false,
     "condition": false,
-    "es6": true
+    "es6": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "swc": false,
+    "disableSWC": true
   },
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},

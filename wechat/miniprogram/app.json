@@ -2,7 +2,7 @@
   "pages": [
     "pages/home/index",
     "pages/user/index",
-    "pages/user/edit",
+    "pages/user/detail",
     "pages/totp/index",
     "pages/totp/edit",
     "pages/shortUrl/index"

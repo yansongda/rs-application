@@ -5,9 +5,9 @@ import type { User } from "types/user";
 Page({
   data: {
     config: {
-      nickname: "",
-      avatar: "",
-      slogan: "",
+      nickname: DEFAULT.CONFIG.NICKNAME,
+      avatar: DEFAULT.CONFIG.AVATAR,
+      slogan: DEFAULT.CONFIG.SLOGAN,
     },
   },
   async onShow() {
