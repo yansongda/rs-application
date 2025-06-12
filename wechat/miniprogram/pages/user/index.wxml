@@ -4,7 +4,7 @@
       title="{{config.nickname}}"
       description="{{config.slogan}}"
       image="{{config.avatar}}"
-      url="/pages/user/detail"
+      url="/pages/user/detail/index"
       hover
     />
   </t-cell-group>

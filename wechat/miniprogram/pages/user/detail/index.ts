@@ -16,12 +16,20 @@ Page({
       key: STORAGE.USER,
     });
 
+    let slogan = storage.data.config?.slogan ?? DEFAULT.CONFIG.SLOGAN;
+    if (slogan.length > 35) {
+      slogan = `${slogan.substr(0, 35)}...`;
+    }
+
     this.setData({
       config: {
         nickname: storage.data.config?.nickname ?? DEFAULT.CONFIG.NICKNAME,
         avatar: storage.data.config?.avatar ?? DEFAULT.CONFIG.AVATAR,
-        slogan: storage.data.config?.slogan ?? DEFAULT.CONFIG.SLOGAN,
+        slogan,
       },
     });
+  },
+  async editAvatar() {
+    await wx.navigateTo({ url: "/pages/user/edit/avatar" });
   },
 });

@@ -1,0 +1,12 @@
+.avatar {
+  --td-button-large-height: 64px;
+  text-align: center;
+  margin: 50px 0px;
+}
+
+.operation {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 15px;
+  padding: 0 10px;
+}
