@@ -8,6 +8,7 @@ const DEFAULT = {
 
 const PATH = {
   DETAIL: "/api/v1/miniprogram/users/detail",
+  EDIT_AVATAR: "/api/v1/miniprogram/users/edit/avatara",
   EDIT: "/api/v1/miniprogram/users/edit",
 };
 

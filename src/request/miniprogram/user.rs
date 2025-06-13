@@ -4,6 +4,29 @@ use crate::request::Validator;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
+pub struct EditAvatarRequest {
+    pub avatar: Option<String>,
+}
+
+impl Validator for EditAvatarRequest {
+    type Data = UpdatedUser;
+
+    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+        if self.avatar.is_none() {
+            return Err(Error::ParamsMiniprogramUserAvatarLengthInvalid(None));
+        }
+
+        if let Some(avatar) = &self.avatar {
+            if !avatar.starts_with("data:image/jpeg;base64,") {
+                return Err(Error::ParamsMiniprogramUserAvatarLengthInvalid(None));
+            }
+        }
+
+        Ok(Self::Data::from(self.to_owned()))
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
 pub struct EditNicknameRequest {
     pub nickname: Option<String>,
 }

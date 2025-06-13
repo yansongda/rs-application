@@ -1,3 +1,4 @@
+import api from "@api/user";
 import { STORAGE } from "@constant/app";
 import { DEFAULT } from "@constant/user";
 import error from "@utils/error";
@@ -8,7 +9,8 @@ import type {
   WxGetFileSystemManagerReadFileSuccess,
   WxGetStorageSuccess,
 } from "miniprogram/types/wechat";
-import { Message, Toast } from "tdesign-miniprogram/index";
+import Message from "tdesign-miniprogram/message/index";
+import Toast from "tdesign-miniprogram/toast/index";
 
 Page({
   data: {
@@ -51,7 +53,7 @@ Page({
     });
 
     try {
-      await api.edit({ config: e.detail.value as UserConfig } as EditRequest);
+      await api.editAvatar(this.data.avatar);
 
       // 同步完成之后更新下全局的用户信息状态
       await user.sync();

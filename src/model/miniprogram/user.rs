@@ -1,5 +1,5 @@
 use crate::request::miniprogram::user::{
-    EditNicknameRequest, EditPhoneRequest, EditRequest, EditSloganRequest,
+    EditAvatarRequest, EditNicknameRequest, EditPhoneRequest, EditRequest, EditSloganRequest,
 };
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
@@ -26,6 +26,19 @@ pub struct Config {
 pub struct UpdatedUser {
     pub phone: Option<String>,
     pub config: Option<Config>,
+}
+
+impl From<EditAvatarRequest> for UpdatedUser {
+    fn from(request: EditAvatarRequest) -> Self {
+        Self {
+            phone: None,
+            config: Some(Config {
+                avatar: request.avatar,
+                nickname: None,
+                slogan: None,
+            }),
+        }
+    }
 }
 
 impl From<EditNicknameRequest> for UpdatedUser {

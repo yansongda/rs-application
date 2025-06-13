@@ -4,7 +4,11 @@ import { HttpError } from "@models/error";
 import error from "@utils/error";
 import http from "@utils/http";
 import logger from "@utils/logger";
-import type { DetailResponse, EditRequest } from "types/user";
+import type {
+  DetailResponse,
+  EditAvatarRequest,
+  EditRequest,
+} from "types/user";
 
 const detail = async () => {
   try {
@@ -13,6 +17,21 @@ const detail = async () => {
     logger.error("查询用户详情失败", e);
 
     throw new HttpError(CODE.HTTP_API_USER_DETAIL, error.getErrorMessage(e));
+  }
+};
+
+const editAvatar = async (avatar: string) => {
+  try {
+    return await http.post<null>(PATH.EDIT_AVATAR, {
+      avatar,
+    } as EditAvatarRequest);
+  } catch (e: unknown) {
+    logger.error("更新头像信息失败", e);
+
+    throw new HttpError(
+      CODE.HTTP_API_USER_EDIT_AVATAR,
+      error.getErrorMessage(e),
+    );
   }
 };
 
@@ -26,4 +45,4 @@ const edit = async (updated: EditRequest) => {
   }
 };
 
-export default { detail, edit };
+export default { detail, editAvatar, edit };

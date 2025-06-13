@@ -1,5 +1,10 @@
 import type { RequestData } from "./http";
 
+export interface User {
+  phone: string;
+  config?: UserConfig;
+}
+
 export interface UserConfig {
   avatar: string;
   nickname: string;
@@ -10,12 +15,11 @@ export interface DetailResponse {
   config?: UserConfig;
 }
 
-export interface EditRequest extends RequestData {
-  phone: string;
-  config?: UserConfig;
+export interface EditAvatarRequest extends RequestData {
+  avatar: string;
 }
 
-export interface User {
+export interface EditRequest extends RequestData {
   phone: string;
   config?: UserConfig;
 }

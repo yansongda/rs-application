@@ -28,6 +28,7 @@ pub enum Error {
     ParamsMiniprogramShortlinkEmpty(Option<&'static str>),
     ParamsMiniprogramShortlinkFormatInvalid(Option<&'static str>),
     ParamsMiniprogramUserSloganLengthInvalid(Option<&'static str>),
+    ParamsMiniprogramUserAvatarLengthInvalid(Option<&'static str>),
 
     ThirdHttpRequest(Option<&'static str>),
     ThirdHttpResponse(Option<&'static str>),
@@ -133,6 +134,10 @@ impl Error {
             Error::ParamsMiniprogramUserSloganLengthInvalid(message) => (
                 2017,
                 message.unwrap_or_else(|| "参数错误: Slogan 长度应大于 3，请正确填写"),
+            ),
+            Error::ParamsMiniprogramUserAvatarLengthInvalid(message) => (
+                2018,
+                message.unwrap_or_else(|| "参数错误: 头像格式不正确，请正确填写"),
             ),
 
             Error::ThirdHttpRequest(message) => (
