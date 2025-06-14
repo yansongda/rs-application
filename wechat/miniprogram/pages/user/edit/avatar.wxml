@@ -1,0 +1,19 @@
+<t-toast id="t-toast" />
+<t-message id="t-message" />
+
+<t-notice-bar theme="success" visible="true" prefixIcon="gesture-click" content="请点击头像进行修改"></t-notice-bar>
+
+<view class="page">
+  <view class="avatar">
+    <t-button open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" shape="square" size="large">
+      <t-avatar image="{{ avatar }}" size="large" shape="round">
+        <t-input type="text" value="{{ avatar }}" maxlength="-1"/>
+      </t-avatar>
+    </t-button>
+  </view>
+
+  <view class="operation">
+    <t-button theme="primary" size="large" bind:tap="submit" block>修改</t-button>
+    <t-button size="large" bind:tap="cancel" block>取消</t-button>
+  </view>
+</view>

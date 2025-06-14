@@ -2,10 +2,13 @@
   "pages": [
     "pages/home/index",
     "pages/user/index",
-    "pages/user/edit",
+    "pages/user/detail/index",
     "pages/totp/index",
-    "pages/totp/edit",
-    "pages/shortUrl/index"
+    "pages/totp/edit/index",
+    "pages/shortUrl/index",
+    "pages/user/edit/nickname",
+    "pages/user/edit/slogan",
+    "pages/user/edit/avatar"
   ],
   "window": {
     "backgroundTextStyle": "light",

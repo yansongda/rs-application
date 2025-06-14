@@ -6,7 +6,8 @@ use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
 use crate::request::miniprogram::totp::{
-    CreateRequest, DeleteRequest, DetailRequest, DetailResponse, UpdateRequest,
+    CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
+    EditUsernameRequest, UpdateRequest,
 };
 use crate::service;
 
@@ -38,9 +39,20 @@ pub async fn create(
     Ok(Response::success(()))
 }
 
-pub async fn edit(
+pub async fn edit_issuer(
     Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<UpdateRequest>,
+    Json(request): Json<EditIssuerRequest>,
+) -> Resp<()> {
+    let params = request.validate()?;
+
+    service::miniprogram::totp::edit(access_token.user_id, params).await?;
+
+    Ok(Response::success(()))
+}
+
+pub async fn edit_username(
+    Extension(access_token): Extension<AccessToken>,
+    Json(request): Json<EditUsernameRequest>,
 ) -> Resp<()> {
     let params = request.validate()?;
 
@@ -56,6 +68,17 @@ pub async fn delete(
     let id = request.validate()?;
 
     service::miniprogram::totp::delete(access_token.user_id, id).await?;
+
+    Ok(Response::success(()))
+}
+
+pub async fn edit(
+    Extension(access_token): Extension<AccessToken>,
+    Json(request): Json<UpdateRequest>,
+) -> Resp<()> {
+    let params = request.validate()?;
+
+    service::miniprogram::totp::edit(access_token.user_id, params).await?;
 
     Ok(Response::success(()))
 }

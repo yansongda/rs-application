@@ -3,7 +3,7 @@ use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::totp::{CreateTotp, Totp, TotpConfig, UpdateTotp};
+use crate::model::miniprogram::totp::{CreatedTotp, Totp, TotpConfig, UpdatedTotp};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -37,7 +37,7 @@ pub async fn fetch(id: i64) -> Result<Totp> {
         .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
-            error!("查询 Totp 失败: {:?}", e);
+            error!("查询 Totp 详情失败: {:?}", e);
 
             Error::InternalDatabaseQuery(None)
         })?;
@@ -53,7 +53,7 @@ pub async fn fetch(id: i64) -> Result<Totp> {
     Err(Error::ParamsMiniprogramTotpNotFound(None))
 }
 
-pub async fn insert(totp: CreateTotp) -> Result<Totp> {
+pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     let sql = "insert into miniprogram.totp (user_id, username, issuer, secret, config) values ($1, $2, $3, $4, $5) returning *";
     let started_at = Instant::now();
 
@@ -80,7 +80,7 @@ pub async fn insert(totp: CreateTotp) -> Result<Totp> {
     result
 }
 
-pub async fn update(updated: UpdateTotp) -> Result<()> {
+pub async fn update(updated: UpdatedTotp) -> Result<()> {
     let mut builder =
         QueryBuilder::<Postgres>::new("update miniprogram.totp set updated_at = now()");
 

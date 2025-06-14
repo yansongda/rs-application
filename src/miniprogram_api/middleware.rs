@@ -5,6 +5,7 @@ use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 
 use crate::model::result::{Error, Result};
+
 pub async fn authorization(mut request: Request, next: Next) -> Response {
     let authorization = request.headers().get("Authorization");
 
@@ -20,10 +21,11 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
 
     let access_token: Result<model::miniprogram::access_token::AccessToken> =
         repository::miniprogram::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
-            .await;
+            .await
+            .map_err(|_| Error::AuthorizationMiniprogramNotFound(None));
 
-    if access_token.is_err() {
-        return Error::AuthorizationMiniprogramNotFound(None).into_response();
+    if let Err(e) = access_token {
+        return e.into_response();
     }
 
     request.extensions_mut().insert(access_token.unwrap());

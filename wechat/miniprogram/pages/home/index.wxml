@@ -1,4 +1,4 @@
-<view class="home">
+<view class="page">
   <t-cell-group theme="card">
     <block wx:for="{{ tools }}" wx:for-index="idx" wx:for-item="tool" wx:key="idx">
       <t-cell title="{{ tool.name }}" leftIcon="{{ tool.icon }}" url="{{ tool.url }}" hover arrow />

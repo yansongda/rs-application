@@ -1,15 +1,11 @@
 import api from "@api/totp";
 import { CODE } from "@constant/error";
-import { type HttpError, WeixinError } from "@models/error";
+import type { HttpError } from "@models/error";
+import { WeixinError } from "@models/error";
+import type { Tap } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
-import type { SwipeTap } from "types/tdesign";
 import type { Item } from "types/totp";
-
-interface SwipeButton {
-  text: string;
-  className: string;
-}
 
 interface Dataset {
   id: string;
@@ -17,12 +13,7 @@ interface Dataset {
 
 Page({
   data: {
-    swipeButtons: [
-      { text: "备注", className: "btn edit-btn" },
-      { text: "删除", className: "btn delete-btn" },
-    ] as SwipeButton[],
     dialogVisible: false,
-    dialogConfirmBtn: { content: "删除", variant: "base" },
     dialogDataId: 0,
     intervalIdentity: -1,
     items: [] as Item[],
@@ -92,10 +83,17 @@ Page({
       )
       .finally(() => this.all());
   },
-  async edit(id: number) {
+  async edit(e: Tap<Dataset, Dataset>) {
+    const id = Number(e.currentTarget.dataset.id);
+
     this.clearRefreshInterval();
 
-    await wx.navigateTo({ url: `/pages/totp/edit?id=${id}` });
+    await wx.navigateTo({ url: `/pages/totp/edit/index?id=${id}` });
+  },
+  delete(e: Tap<Dataset, Dataset>) {
+    const dialogDataId = Number(e.currentTarget.dataset.id);
+
+    this.setData({ dialogVisible: true, dialogDataId });
   },
   refreshCode(id: number, index: number) {
     api
@@ -112,19 +110,7 @@ Page({
         }),
       );
   },
-  async swipeClick(e: SwipeTap<SwipeButton, Dataset, Dataset>) {
-    const id = Number(e.currentTarget.dataset.id);
-
-    switch (e.detail.text) {
-      case "备注":
-        await this.edit(id);
-        break;
-      case "删除":
-        this.setData({ dialogVisible: true, dialogDataId: id });
-        break;
-    }
-  },
-  dialogConfirm(e: SwipeTap<SwipeButton, Dataset, Dataset>) {
+  dialogConfirm(e: Tap<Dataset, Dataset>) {
     const id = Number(e.currentTarget.dataset.id);
 
     api
@@ -137,7 +123,10 @@ Page({
           context: this,
         }),
       )
-      .finally(() => this.all());
+      .finally(() => {
+        this.dialogCancel();
+        this.all();
+      });
   },
   dialogCancel() {
     this.setData({ dialogVisible: false, dialogDataId: 0 });

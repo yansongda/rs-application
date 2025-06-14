@@ -12,12 +12,12 @@ pub enum Error {
 
     ParamsJsonInvalid(Option<&'static str>),
     ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
-    ParamsMiniprogramLoginCodeLengthShort(Option<&'static str>),
+    ParamsMiniprogramLoginCodeFormatInvalid(Option<&'static str>),
     ParamsMiniprogramThirdUserNotFound(Option<&'static str>),
     ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
     ParamsMiniprogramUserNotFound(Option<&'static str>),
     ParamsMiniprogramUserNicknameLengthInvalid(Option<&'static str>),
-    ParamsMiniprogramUserPhoneLengthInvalid(Option<&'static str>),
+    ParamsMiniprogramUserPhoneFormatInvalid(Option<&'static str>),
     ParamsMiniprogramTotpNotFound(Option<&'static str>),
     ParamsMiniprogramTotpParseFailed(Option<&'static str>),
     ParamsMiniprogramTotpIdEmpty(Option<&'static str>),
@@ -27,6 +27,8 @@ pub enum Error {
     ParamsMiniprogramShortlinkNotFound(Option<&'static str>),
     ParamsMiniprogramShortlinkEmpty(Option<&'static str>),
     ParamsMiniprogramShortlinkFormatInvalid(Option<&'static str>),
+    ParamsMiniprogramUserSloganLengthInvalid(Option<&'static str>),
+    ParamsMiniprogramUserAvatarLengthInvalid(Option<&'static str>),
 
     ThirdHttpRequest(Option<&'static str>),
     ThirdHttpResponse(Option<&'static str>),
@@ -73,7 +75,7 @@ impl Error {
                 2001,
                 message.unwrap_or_else(|| "参数错误: platform 参数值不支持"),
             ),
-            Error::ParamsMiniprogramLoginCodeLengthShort(message) => (
+            Error::ParamsMiniprogramLoginCodeFormatInvalid(message) => (
                 2002,
                 message.unwrap_or_else(|| "参数错误: 登录秘钥长度错误"),
             ),
@@ -92,7 +94,7 @@ impl Error {
                 2006,
                 message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
             ),
-            Error::ParamsMiniprogramUserPhoneLengthInvalid(message) => (
+            Error::ParamsMiniprogramUserPhoneFormatInvalid(message) => (
                 2007,
                 message.unwrap_or_else(|| "参数错误: 手机号码不符合规范，请正确填写"),
             ),
@@ -129,6 +131,14 @@ impl Error {
             Error::ParamsMiniprogramShortlinkFormatInvalid(message) => {
                 (2016, message.unwrap_or_else(|| "参数错误: URL 格式不正确"))
             }
+            Error::ParamsMiniprogramUserSloganLengthInvalid(message) => (
+                2017,
+                message.unwrap_or_else(|| "参数错误: Slogan 长度应大于 3，请正确填写"),
+            ),
+            Error::ParamsMiniprogramUserAvatarLengthInvalid(message) => (
+                2018,
+                message.unwrap_or_else(|| "参数错误: 头像格式不正确，请正确填写"),
+            ),
 
             Error::ThirdHttpRequest(message) => (
                 9800,

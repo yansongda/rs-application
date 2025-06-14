@@ -1,9 +1,8 @@
 use sqlx::types::Json;
-use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::user::{EditUser, User};
+use crate::model::miniprogram::user::{Config, User};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -32,13 +31,13 @@ pub async fn fetch(user_id: i64) -> Result<User> {
     Err(Error::ParamsMiniprogramUserNotFound(None))
 }
 
-pub async fn insert(data: EditUser) -> Result<User> {
+pub async fn insert(phone: Option<&str>, config: Config) -> Result<User> {
     let sql = "insert into miniprogram.user (phone, config) values ($1, $2) returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
-        .bind(data.clone().phone.unwrap_or("".to_string()))
-        .bind(Json(data.clone().config))
+        .bind(phone)
+        .bind(Json(&config))
         .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
@@ -49,32 +48,18 @@ pub async fn insert(data: EditUser) -> Result<User> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, ?data);
+    info!(elapsed, sql, phone, ?config);
 
     result
 }
 
-pub async fn update(id: i64, edit_user: EditUser) -> Result<User> {
-    let mut builder =
-        QueryBuilder::<Postgres>::new("update miniprogram.user set updated_at = now()");
-
-    if let Some(ref phone) = edit_user.phone {
-        builder.push(", phone = ").push_bind(phone);
-    }
-    if let Some(ref config) = edit_user.config {
-        builder.push(", config = ").push_bind(Json(config));
-    }
-
-    builder
-        .push(" where id = ")
-        .push_bind(id)
-        .push(" returning *");
-
-    let query = builder.build_query_as();
-    let sql = query.sql();
+pub async fn update_avatar(id: i64, avatar: &str) -> Result<User> {
+    let sql = "update miniprogram.user set updated_at = now(), config = jsonb_set(config, '{avatar}', $1) where id = $2 returning *";
     let started_at = Instant::now();
 
-    let result = query
+    let result = sqlx::query_as(sql)
+        .bind(Json(avatar))
+        .bind(id)
         .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
@@ -85,7 +70,74 @@ pub async fn update(id: i64, edit_user: EditUser) -> Result<User> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, id, ?edit_user);
+    info!(elapsed, sql, id);
+
+    result
+}
+
+pub async fn update_nickname(id: i64, nickname: &str) -> Result<User> {
+    let sql = "update miniprogram.user set updated_at = now(), config = jsonb_set(config, '{nickname}', $1) where id = $2 returning *";
+    let started_at = Instant::now();
+
+    let result = sqlx::query_as(sql)
+        .bind(Json(nickname))
+        .bind(id)
+        .fetch_one(Pool::postgres("miniprogram")?)
+        .await
+        .map_err(|e| {
+            error!("更新昵称失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, id);
+
+    result
+}
+
+pub async fn update_slogan(id: i64, slogan: &str) -> Result<User> {
+    let sql = "update miniprogram.user set updated_at = now(), config = jsonb_set(config, '{slogan}', $1) where id = $2 returning *";
+    let started_at = Instant::now();
+
+    let result = sqlx::query_as(sql)
+        .bind(Json(slogan))
+        .bind(id)
+        .fetch_one(Pool::postgres("miniprogram")?)
+        .await
+        .map_err(|e| {
+            error!("更新 Slogan 失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, id);
+
+    result
+}
+
+pub async fn update_phone(id: i64, phone: &str) -> Result<User> {
+    let sql =
+        "update miniprogram.user set updated_at = now(), phone = $1 where id = $2 returning *";
+    let started_at = Instant::now();
+
+    let result = sqlx::query_as(sql)
+        .bind(phone)
+        .bind(id)
+        .fetch_one(Pool::postgres("miniprogram")?)
+        .await
+        .map_err(|e| {
+            error!("更新手机号失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, id);
 
     result
 }

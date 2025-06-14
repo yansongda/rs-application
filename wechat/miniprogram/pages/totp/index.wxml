@@ -1,32 +1,40 @@
 <t-message id="t-message" />
 <t-toast id="t-toast" />
-
-<t-empty wx:if="{{items.length <= 0}}" icon="info-circle-filled" description="暂无数据" />
-
 <t-dialog
   visible="{{dialogVisible}}"
   title="是否确定删除？"
   content="删除后数据不可恢复"
-  confirm-btn="{{ dialogConfirmBtn }}"
+  confirm-btn="{{ { content: '删除', variant: 'base' } }}"
   cancel-btn="取消"
   bind:confirm="dialogConfirm"
   bind:cancel="dialogCancel"
   data-id="{{dialogDataId}}"
 />
+<t-empty wx:if="{{items.length <= 0}}" icon="info-circle-filled" description="暂无数据" />
 
-<view class="items">
-  <view class="item" wx:for="{{items}}" wx:key="id" wx:for-index="index" wx:for-item="item" >
-    <t-swipe-cell right="{{swipeButtons}}" bind:click="swipeClick" data-id="{{ item.id }}">
-      <view class="item-body">
-        <view class="item-body-info">
-          <view class="item-body-info-issuer">{{item.issuer}}</view>
-          <view class="item-body-info-username">{{item.username}}</view>
+<view class="page">
+  <view class="items" wx:if="{{items.length > 0}}">
+    <view class="item" wx:for="{{items}}" wx:key="id" wx:for-index="index" wx:for-item="item" >
+      <t-swipe-cell>
+        <view class="item-body">
+          <view class="item-body-info">
+            <view class="item-body-info-issuer">{{item.issuer}}</view>
+            <view class="item-body-info-username">{{item.username}}</view>
+          </view>
+          <view class="item-body-code">{{item.code}}</view>
         </view>
-        <view class="item-body-code">{{item.code}}</view>
-      </view>
-    </t-swipe-cell>
-    <progress class="item-progress" percent="{{ item.remainSeconds / item.period * 100 }}" stroke-width="2" ></progress>
+        <view slot="right" class="item-btn">
+          <view class="btn btn-edit" data-id="{{ item.id }}" bind:tap="edit">
+            编辑
+          </view>
+          <view class="btn btn-delete" data-id="{{ item.id }}" bind:tap="delete">
+            删除
+          </view>
+        </view>
+      </t-swipe-cell>
+      <progress class="item-progress" percent="{{ item.remainSeconds / item.period * 100 }}" stroke-width="2" ></progress>
+    </view>
   </view>
-</view>
 
-<t-fab icon="add" bind:click="create" aria-label="增加" text="增加"></t-fab>
+  <t-fab icon="add" bind:click="create" aria-label="增加" text="增加"></t-fab>
+</view>

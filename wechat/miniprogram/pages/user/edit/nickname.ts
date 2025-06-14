@@ -3,29 +3,18 @@ import { STORAGE } from "@constant/app";
 import { DEFAULT } from "@constant/user";
 import error from "@utils/error";
 import user from "@utils/user";
+import type { User } from "miniprogram/types/user";
+import type { FormSubmit, WxGetStorageSuccess } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
-import type { EditRequest, User, UserConfig } from "types/user";
-import type {
-  ChooseAvatarButtonTap,
-  FormSubmit,
-  WxGetFileSystemManagerReadFileSuccess,
-  WxGetStorageSuccess,
-} from "types/wechat";
 
 interface FormData {
-  avatar: string;
   nickname: string;
-  slogan: string;
 }
 
 Page({
   data: {
-    config: {
-      nickname: "",
-      avatar: "",
-      slogan: "",
-    },
+    nickname: "",
   },
   async onShow() {
     const storage: WxGetStorageSuccess<User> = await wx.getStorage({
@@ -33,29 +22,7 @@ Page({
     });
 
     this.setData({
-      config: {
-        nickname: storage.data.config?.nickname ?? DEFAULT.CONFIG.NICKNAME,
-        avatar: storage.data.config?.avatar ?? DEFAULT.CONFIG.AVATAR,
-        slogan: storage.data.config?.slogan ?? DEFAULT.CONFIG.SLOGAN,
-      },
-    });
-  },
-  async onChooseAvatar(e: ChooseAvatarButtonTap<unknown, unknown>) {
-    await wx.showLoading({ title: "上传中", icon: "loading", mask: true });
-
-    const res = await wx.compressImage({
-      src: e.detail.avatarUrl.toString(),
-      quality: 50,
-    });
-
-    wx.getFileSystemManager().readFile({
-      filePath: res.tempFilePath,
-      encoding: "base64",
-      success: async (res: WxGetFileSystemManagerReadFileSuccess) => {
-        this.setData({ "config.avatar": `data:image/jpeg;base64,${res.data}` });
-
-        await wx.hideLoading();
-      },
+      nickname: storage.data.config?.nickname ?? DEFAULT.CONFIG.NICKNAME,
     });
   },
   async submit(e: FormSubmit<FormData>) {
@@ -68,7 +35,7 @@ Page({
     });
 
     try {
-      await api.edit({ config: e.detail.value as UserConfig } as EditRequest);
+      await api.editNickname(e.detail.value.nickname);
 
       // 同步完成之后更新下全局的用户信息状态
       await user.sync();

@@ -1,10 +1,11 @@
-<t-cell
-  title="{{config.nickname}}"
-  description="{{config.slogan}}"
-  image="{{config.avatar}}"
-  url="/pages/user/edit"
-  hover
-  arrow
-/>
-
-<view class="slogan">{{config.slogan}}</view>
+<view class="page">
+  <t-cell-group theme="card">
+    <t-cell
+      title="{{config.nickname}}"
+      description="{{config.slogan}}"
+      image="{{config.avatar}}"
+      url="/pages/user/detail/index"
+      hover
+    />
+  </t-cell-group>
+</view>

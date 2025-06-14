@@ -1,6 +1,23 @@
-<t-message id="t-message" />
-<t-toast id="t-toast" />
+<view class="page">
+  <view class="avatar" bind:tap="editAvatar">
+    <t-avatar image="{{config.avatar}}" size="large" shape="round"></t-avatar>
+  </view>
 
+  <view class="t-cell-group-margin">
+    <t-cell-group theme="card">
+      <t-cell title="昵称" note="{{config.nickname}}" url="/pages/user/edit/nickname" hover arrow></t-cell>
+      <t-cell title="Slogan" note="{{config.slogan}}" url="/pages/user/edit/slogan" hover arrow></t-cell>
+    </t-cell-group>
+  </view>
+
+  <view class="t-cell-group-margin">
+    <t-cell-group theme="card">
+      <t-cell title="手机号" note="敬请期待" hover></t-cell>
+    </t-cell-group>
+  </view>
+</view>
+
+<!-- 
 <form bindsubmit="submit">
   <view class="avatar">
     <t-button open-type="chooseAvatar" bindchooseavatar="onChooseAvatar" shape="square" size="large">
@@ -19,4 +36,4 @@
     <t-button theme="primary" size="large" type="submit" block>修改</t-button>
     <t-button size="large" bind:tap="cancel" block>取消</t-button>
   </view>
-</form>
+</form> -->
