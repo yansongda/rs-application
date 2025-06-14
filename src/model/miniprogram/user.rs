@@ -18,9 +18,3 @@ pub struct Config {
     pub nickname: Option<String>,
     pub slogan: Option<String>,
 }
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct UpdatedUser {
-    pub phone: Option<String>,
-    pub config: Option<Config>,
-}
