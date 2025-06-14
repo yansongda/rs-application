@@ -19,7 +19,10 @@ export interface EditAvatarRequest extends RequestData {
   avatar: string;
 }
 
-export interface EditRequest extends RequestData {
-  phone: string;
-  config?: UserConfig;
+export interface EditNicknameRequest extends RequestData {
+  nickname: string;
+}
+
+export interface EditSloganRequest extends RequestData {
+  slogan: string;
 }

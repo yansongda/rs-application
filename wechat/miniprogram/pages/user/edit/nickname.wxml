@@ -1,2 +1,15 @@
-<!--pages/user/edit-nickname.wxml-->
-<text>pages/user/edit-nickname.wxml</text>
+<t-toast id="t-toast" />
+<t-message id="t-message" />
+
+<view class="page">
+  <form bindsubmit="submit">
+    <view class="input">
+      <t-input type="nickname" label="昵称" name="nickname" placeholder="请填写昵称" value="{{nickname}}" tips="长度在1～10之间" maxlength="10" align="right"/>
+    </view>
+
+    <view class="operation">
+      <t-button theme="primary" size="large" type="submit" block>修改</t-button>
+      <t-button size="large" bind:tap="cancel" block>取消</t-button>
+    </view>
+  </form>
+</view>

@@ -125,3 +125,25 @@ pub async fn update(id: i64, data: &AccessTokenData) -> Result<AccessToken> {
 
     result
 }
+
+pub async fn update_user_id(id: i64, user_id: i64) -> Result<AccessToken> {
+    let sql = "update miniprogram.access_token set user_id = $1 where id = $2 returning *";
+    let started_at = Instant::now();
+
+    let result = sqlx::query_as(sql)
+        .bind(user_id)
+        .bind(id)
+        .fetch_one(Pool::postgres("miniprogram")?)
+        .await
+        .map_err(|e| {
+            error!("更新 access_token 的 user_id 失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, id, user_id);
+
+    result
+}

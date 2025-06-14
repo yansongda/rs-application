@@ -30,8 +30,7 @@ pub fn api_v1_miniprogram() -> Router {
                 .route("/edit/avatar", post(v1::users::edit_avatar))
                 .route("/edit/nickname", post(v1::users::edit_nickname))
                 .route("/edit/slogan", post(v1::users::edit_slogan))
-                .route("/edit/phone", post(v1::users::edit_phone))
-                .route("/edit", post(v1::users::edit)),
+                .route("/edit/phone", post(v1::users::edit_phone)),
         )
         .nest(
             "/totp",

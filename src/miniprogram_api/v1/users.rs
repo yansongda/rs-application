@@ -6,8 +6,7 @@ use crate::model::miniprogram::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
 use crate::request::miniprogram::user::{
-    DetailResponse, EditAvatarRequest, EditNicknameRequest, EditPhoneRequest, EditRequest,
-    EditSloganRequest,
+    DetailResponse, EditAvatarRequest, EditNicknameRequest, EditPhoneRequest, EditSloganRequest,
 };
 use crate::service;
 
@@ -21,9 +20,9 @@ pub async fn edit_avatar(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<EditAvatarRequest>,
 ) -> Resp<()> {
-    let params = request.validate()?;
+    let avatar = request.validate()?;
 
-    service::miniprogram::user::update(access_token.user_id, params).await?;
+    service::miniprogram::user::update_avatar(access_token, &avatar).await?;
 
     Ok(Response::success(()))
 }
@@ -32,9 +31,9 @@ pub async fn edit_nickname(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<EditNicknameRequest>,
 ) -> Resp<()> {
-    let params = request.validate()?;
+    let nickname = request.validate()?;
 
-    service::miniprogram::user::update(access_token.user_id, params).await?;
+    service::miniprogram::user::update_nickname(access_token, &nickname).await?;
 
     Ok(Response::success(()))
 }
@@ -43,32 +42,20 @@ pub async fn edit_slogan(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<EditSloganRequest>,
 ) -> Resp<()> {
-    let params = request.validate()?;
+    let slogan = request.validate()?;
 
-    service::miniprogram::user::update(access_token.user_id, params).await?;
+    service::miniprogram::user::update_slogan(access_token, &slogan).await?;
 
     Ok(Response::success(()))
 }
 
-// todo: 对相同手机号进行账号数据合并
 pub async fn edit_phone(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<EditPhoneRequest>,
 ) -> Resp<()> {
-    let params = request.validate()?;
+    let phone = request.validate()?;
 
-    service::miniprogram::user::update(access_token.user_id, params).await?;
-
-    Ok(Response::success(()))
-}
-
-pub async fn edit(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<EditRequest>,
-) -> Resp<()> {
-    let params = request.validate()?;
-
-    service::miniprogram::user::update(access_token.user_id, params).await?;
+    service::miniprogram::user::update_phone(access_token, &phone).await?;
 
     Ok(Response::success(()))
 }

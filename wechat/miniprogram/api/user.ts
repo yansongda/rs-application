@@ -7,7 +7,8 @@ import logger from "@utils/logger";
 import type {
   DetailResponse,
   EditAvatarRequest,
-  EditRequest,
+  EditNicknameRequest,
+  EditSloganRequest,
 } from "types/user";
 
 const detail = async () => {
@@ -35,14 +36,34 @@ const editAvatar = async (avatar: string) => {
   }
 };
 
-const edit = async (updated: EditRequest) => {
+const editNickname = async (nickname: string) => {
   try {
-    return await http.post<null>(PATH.EDIT, updated);
+    return await http.post<null>(PATH.EDIT_NICKNAME, {
+      nickname,
+    } as EditNicknameRequest);
   } catch (e: unknown) {
-    logger.error("更新用户信息失败", e);
+    logger.error("更新昵称失败", e);
 
-    throw new HttpError(CODE.HTTP_API_USER_UPDATE, error.getErrorMessage(e));
+    throw new HttpError(
+      CODE.HTTP_API_USER_EDIT_NICKNAME,
+      error.getErrorMessage(e),
+    );
   }
 };
 
-export default { detail, editAvatar, edit };
+const editSlogan = async (slogan: string) => {
+  try {
+    return await http.post<null>(PATH.EDIT_SLOGAN, {
+      slogan,
+    } as EditSloganRequest);
+  } catch (e: unknown) {
+    logger.error("更新 slogan 失败", e);
+
+    throw new HttpError(
+      CODE.HTTP_API_USER_EDIT_SLOGAN,
+      error.getErrorMessage(e),
+    );
+  }
+};
+
+export default { detail, editAvatar, editNickname, editSlogan };

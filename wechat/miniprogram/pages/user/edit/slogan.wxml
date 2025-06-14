@@ -1,2 +1,15 @@
-<!--pages/user/edit-slogan.wxml-->
-<text>pages/user/edit-slogan.wxml</text>
+<t-toast id="t-toast" />
+<t-message id="t-message" />
+
+<view class="page">
+  <form bindsubmit="submit">
+    <view class="input">
+      <t-input type="text" label="Slogan" name="slogan" placeholder="请填写 Slogan" value="{{slogan}}" tips="长度在1～50之间" maxlength="50" align="right"/>
+    </view>
+
+    <view class="operation">
+      <t-button theme="primary" size="large" type="submit" block>修改</t-button>
+      <t-button size="large" bind:tap="cancel" block>取消</t-button>
+    </view>
+  </form>
+</view>

@@ -1,4 +1,4 @@
-use crate::model::miniprogram::user::{Config, UpdatedUser, User};
+use crate::model::miniprogram::user::{Config, User};
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};
@@ -9,7 +9,7 @@ pub struct EditAvatarRequest {
 }
 
 impl Validator for EditAvatarRequest {
-    type Data = UpdatedUser;
+    type Data = String;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.avatar.is_none() {
@@ -22,7 +22,7 @@ impl Validator for EditAvatarRequest {
             }
         }
 
-        Ok(Self::Data::from(self.to_owned()))
+        Ok(self.avatar.clone().unwrap())
     }
 }
 
@@ -32,7 +32,7 @@ pub struct EditNicknameRequest {
 }
 
 impl Validator for EditNicknameRequest {
-    type Data = UpdatedUser;
+    type Data = String;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.nickname.is_none() {
@@ -45,7 +45,7 @@ impl Validator for EditNicknameRequest {
             }
         }
 
-        Ok(Self::Data::from(self.to_owned()))
+        Ok(self.nickname.clone().unwrap())
     }
 }
 
@@ -55,7 +55,7 @@ pub struct EditSloganRequest {
 }
 
 impl Validator for EditSloganRequest {
-    type Data = UpdatedUser;
+    type Data = String;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.slogan.is_none() {
@@ -68,7 +68,7 @@ impl Validator for EditSloganRequest {
             }
         }
 
-        Ok(Self::Data::from(self.to_owned()))
+        Ok(self.slogan.clone().unwrap())
     }
 }
 
@@ -78,7 +78,7 @@ pub struct EditPhoneRequest {
 }
 
 impl Validator for EditPhoneRequest {
-    type Data = UpdatedUser;
+    type Data = String;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.phone.is_none() {
@@ -91,13 +91,13 @@ impl Validator for EditPhoneRequest {
             }
         }
 
-        Ok(Self::Data::from(self.to_owned()))
+        Ok(self.phone.clone().unwrap())
     }
 }
 
 #[derive(Debug, Serialize)]
 pub struct DetailResponse {
-    pub phone: String,
+    pub phone: Option<String>,
     pub config: Option<Config>,
 }
 
@@ -107,33 +107,5 @@ impl From<User> for DetailResponse {
             phone: user.phone,
             config: user.config.map(|v| v.0),
         }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct EditRequest {
-    pub phone: Option<String>,
-    pub config: Option<Config>,
-}
-
-impl Validator for EditRequest {
-    type Data = UpdatedUser;
-
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
-        if let Some(phone) = &self.phone {
-            if phone.chars().count() < 11 {
-                return Err(Error::ParamsMiniprogramUserPhoneFormateInvalid(None));
-            }
-        }
-
-        if let Some(config) = &self.config {
-            if let Some(nickname) = &config.nickname {
-                if nickname.chars().count() > 10 {
-                    return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
-                }
-            }
-        }
-
-        Ok(Self::Data::from(self.to_owned()))
     }
 }
