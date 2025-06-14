@@ -37,7 +37,7 @@ pub async fn fetch(id: i64) -> Result<Totp> {
         .fetch_optional(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
-            error!("查询 Totp 失败: {:?}", e);
+            error!("查询 Totp 详情失败: {:?}", e);
 
             Error::InternalDatabaseQuery(None)
         })?;

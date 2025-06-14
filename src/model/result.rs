@@ -12,12 +12,12 @@ pub enum Error {
 
     ParamsJsonInvalid(Option<&'static str>),
     ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
-    ParamsMiniprogramLoginCodeLengthShort(Option<&'static str>),
+    ParamsMiniprogramLoginCodeFormatInvalid(Option<&'static str>),
     ParamsMiniprogramThirdUserNotFound(Option<&'static str>),
     ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
     ParamsMiniprogramUserNotFound(Option<&'static str>),
     ParamsMiniprogramUserNicknameLengthInvalid(Option<&'static str>),
-    ParamsMiniprogramUserPhoneFormateInvalid(Option<&'static str>),
+    ParamsMiniprogramUserPhoneFormatInvalid(Option<&'static str>),
     ParamsMiniprogramTotpNotFound(Option<&'static str>),
     ParamsMiniprogramTotpParseFailed(Option<&'static str>),
     ParamsMiniprogramTotpIdEmpty(Option<&'static str>),
@@ -75,7 +75,7 @@ impl Error {
                 2001,
                 message.unwrap_or_else(|| "参数错误: platform 参数值不支持"),
             ),
-            Error::ParamsMiniprogramLoginCodeLengthShort(message) => (
+            Error::ParamsMiniprogramLoginCodeFormatInvalid(message) => (
                 2002,
                 message.unwrap_or_else(|| "参数错误: 登录秘钥长度错误"),
             ),
@@ -94,7 +94,7 @@ impl Error {
                 2006,
                 message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
             ),
-            Error::ParamsMiniprogramUserPhoneFormateInvalid(message) => (
+            Error::ParamsMiniprogramUserPhoneFormatInvalid(message) => (
                 2007,
                 message.unwrap_or_else(|| "参数错误: 手机号码不符合规范，请正确填写"),
             ),

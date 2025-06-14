@@ -82,12 +82,12 @@ impl Validator for EditPhoneRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.phone.is_none() {
-            return Err(Error::ParamsMiniprogramUserPhoneFormateInvalid(None));
+            return Err(Error::ParamsMiniprogramUserPhoneFormatInvalid(None));
         }
 
         if let Some(phone) = &self.phone {
             if phone.chars().count() < 11 {
-                return Err(Error::ParamsMiniprogramUserPhoneFormateInvalid(None));
+                return Err(Error::ParamsMiniprogramUserPhoneFormatInvalid(None));
             }
         }
 

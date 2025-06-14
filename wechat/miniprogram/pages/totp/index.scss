@@ -1,18 +1,6 @@
-.btn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 100%;
-  color: white;
-}
-
-.delete-btn {
-  background-color: #e34d59;
-}
-
-.edit-btn {
-  background-color: #ed7b2f;
+.page {
+  padding: 0;
+  height: auto;
 }
 
 .items {
@@ -21,6 +9,7 @@
   .item {
     height: 100px;
     padding: 0 10px;
+    background-color: white;
 
     .item-body {
       height: 98px;
@@ -55,6 +44,27 @@
         flex: 3;
         font-size: 50px;
         text-align: center;
+      }
+    }
+
+    .item-btn {
+      height: 100%;
+    
+      .btn {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        width: 60px;
+        height: 100%;
+        color: white;
+      }
+      
+      .btn-edit {
+        background-color: #ed7b2f;
+      }
+      
+      .btn-delete {
+        background-color: #e34d59;
       }
     }
   }

@@ -24,7 +24,7 @@ impl Validator for LoginRequest {
             }
         }
 
-        Err(Error::ParamsMiniprogramLoginCodeLengthShort(None))
+        Err(Error::ParamsMiniprogramLoginCodeFormatInvalid(None))
     }
 }
 
