@@ -1,9 +1,9 @@
 use sqlx::types::Json;
-use sqlx::{Execute, Postgres, QueryBuilder};
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::totp::{CreatedTotp, Totp, TotpConfig, UpdatedTotp};
+use crate::model::miniprogram::totp::{CreatedTotp, Totp, TotpConfig};
+use crate::model::miniprogram::user::User;
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -80,37 +80,50 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     result
 }
 
-pub async fn update(updated: UpdatedTotp) -> Result<()> {
-    let mut builder =
-        QueryBuilder::<Postgres>::new("update miniprogram.totp set updated_at = now()");
-
-    if let Some(ref issuer) = updated.issuer {
-        builder.push(", issuer = ").push_bind(issuer);
-    }
-    if let Some(ref username) = updated.username {
-        builder.push(", username = ").push_bind(username);
-    }
-
-    builder.push(" where id = ").push_bind(updated.id);
-
-    let query = builder.build();
-    let sql = query.sql();
+pub async fn update_issuer(id: i64, issuer: &str) -> Result<User> {
+    let sql =
+        "update miniprogram.totp set updated_at = now(), issuer = $1 where id = $2 returning *";
     let started_at = Instant::now();
 
-    query
-        .execute(Pool::postgres("miniprogram")?)
+    let result = sqlx::query_as(sql)
+        .bind(issuer)
+        .bind(id)
+        .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {
-            error!("更新 Totp 失败: {:?}", e);
+            error!("更新 TOTP 的 issuer 失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
-        })?;
+        });
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, ?updated);
+    info!(elapsed, sql, id);
 
-    Ok(())
+    result
+}
+
+pub async fn update_username(id: i64, username: &str) -> Result<User> {
+    let sql =
+        "update miniprogram.totp set updated_at = now(), username = $1 where id = $2 returning *";
+    let started_at = Instant::now();
+
+    let result = sqlx::query_as(sql)
+        .bind(username)
+        .bind(id)
+        .fetch_one(Pool::postgres("miniprogram")?)
+        .await
+        .map_err(|e| {
+            error!("更新 TOTP 的 username 失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, id);
+
+    result
 }
 
 pub async fn delete(id: i64) -> Result<()> {

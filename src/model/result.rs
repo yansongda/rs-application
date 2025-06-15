@@ -6,9 +6,10 @@ pub type Result<D> = std::result::Result<D, Error>;
 
 #[derive(PartialEq, Eq, Hash, Debug, Copy, Clone)]
 pub enum Error {
-    AuthorizationMiniprogramMissing(Option<&'static str>),
-    AuthorizationMiniprogramNotFound(Option<&'static str>),
-    AuthorizationMiniprogramInvalid(Option<&'static str>),
+    AuthorizationMiniprogramHeaderMissing(Option<&'static str>),
+    AuthorizationMiniprogramDataNotFound(Option<&'static str>),
+    AuthorizationMiniprogramInvalidFormat(Option<&'static str>),
+    AuthorizationMiniprogramPermissionUngranted(Option<&'static str>),
 
     ParamsJsonInvalid(Option<&'static str>),
     ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
@@ -54,17 +55,21 @@ pub struct Response<D: Serialize> {
 impl Error {
     pub fn get_code_message(&self) -> (u16, &'static str) {
         match self {
-            Error::AuthorizationMiniprogramMissing(message) => (
+            Error::AuthorizationMiniprogramHeaderMissing(message) => (
                 1000,
                 message.unwrap_or_else(|| "认证失败: 缺少认证信息，请重新打开小程序"),
             ),
-            Error::AuthorizationMiniprogramNotFound(message) => (
+            Error::AuthorizationMiniprogramDataNotFound(message) => (
                 1001,
                 message.unwrap_or_else(|| "认证失败: 认证信息不正确，请重新打开小程序"),
             ),
-            Error::AuthorizationMiniprogramInvalid(message) => (
+            Error::AuthorizationMiniprogramInvalidFormat(message) => (
                 1002,
                 message.unwrap_or_else(|| "认证失败: 认证信息格式不正确，请重新打开小程序"),
+            ),
+            Error::AuthorizationMiniprogramPermissionUngranted(message) => (
+                1002,
+                message.unwrap_or_else(|| "认证失败: 未授权，请勿越权使用"),
             ),
 
             Error::ParamsJsonInvalid(message) => (

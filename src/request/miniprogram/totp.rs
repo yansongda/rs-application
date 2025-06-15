@@ -1,4 +1,4 @@
-use crate::model::miniprogram::totp::{Totp, UpdatedTotp};
+use crate::model::miniprogram::totp::Totp;
 use crate::model::result::Error;
 use crate::request::Validator;
 use crate::service::miniprogram::totp;
@@ -71,15 +71,24 @@ pub struct EditIssuerRequest {
     pub issuer: Option<String>,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct EditIssuerRequestParams {
+    pub id: i64,
+    pub issuer: String,
+}
+
 impl Validator for EditIssuerRequest {
-    type Data = UpdatedTotp;
+    type Data = EditIssuerRequestParams;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
         }
 
-        Ok(Self::Data::from(self.to_owned()))
+        Ok(Self::Data {
+            id: self.id.unwrap(),
+            issuer: self.issuer.clone().unwrap_or_default(),
+        })
     }
 }
 
@@ -89,8 +98,14 @@ pub struct EditUsernameRequest {
     pub username: Option<String>,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct EditUsernameRequestParams {
+    pub id: i64,
+    pub username: String,
+}
+
 impl Validator for EditUsernameRequest {
-    type Data = UpdatedTotp;
+    type Data = EditUsernameRequestParams;
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.id.is_none() {
@@ -101,7 +116,10 @@ impl Validator for EditUsernameRequest {
             return Err(Error::ParamsMiniprogramTotpUsernameEmpty(None));
         }
 
-        Ok(Self::Data::from(self.to_owned()))
+        Ok(Self::Data {
+            id: self.id.unwrap(),
+            username: self.username.clone().unwrap(),
+        })
     }
 }
 
@@ -119,28 +137,5 @@ impl Validator for DeleteRequest {
         }
 
         Ok(self.id.unwrap())
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct UpdateRequest {
-    pub id: Option<i64>,
-    pub issuer: Option<String>,
-    pub username: Option<String>,
-}
-
-impl Validator for UpdateRequest {
-    type Data = UpdatedTotp;
-
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
-        if self.id.is_none() {
-            return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
-        }
-
-        if self.username.is_none() || self.username.clone().unwrap().is_empty() {
-            return Err(Error::ParamsMiniprogramTotpUsernameEmpty(None));
-        }
-
-        Ok(Self::Data::from(self.to_owned()))
     }
 }

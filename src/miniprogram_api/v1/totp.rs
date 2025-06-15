@@ -7,13 +7,13 @@ use crate::model::result::Response;
 use crate::request::Validator;
 use crate::request::miniprogram::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
-    EditUsernameRequest, UpdateRequest,
+    EditUsernameRequest,
 };
 use crate::service;
 
 pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {
     Ok(Response::success(
-        service::miniprogram::totp::all(access_token.user_id).await?,
+        service::miniprogram::totp::all(access_token).await?,
     ))
 }
 
@@ -24,7 +24,7 @@ pub async fn detail(
     let id = request.validate()?;
 
     Ok(Response::success(
-        service::miniprogram::totp::detail(access_token.user_id, id).await?,
+        service::miniprogram::totp::detail(access_token, id).await?,
     ))
 }
 
@@ -34,7 +34,7 @@ pub async fn create(
 ) -> Resp<()> {
     let uri = request.validate()?;
 
-    service::miniprogram::totp::create(access_token.user_id, uri).await?;
+    service::miniprogram::totp::create(access_token, uri).await?;
 
     Ok(Response::success(()))
 }
@@ -45,7 +45,7 @@ pub async fn edit_issuer(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::totp::edit(access_token.user_id, params).await?;
+    service::miniprogram::totp::edit_issuer(access_token, params).await?;
 
     Ok(Response::success(()))
 }
@@ -56,7 +56,7 @@ pub async fn edit_username(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::totp::edit(access_token.user_id, params).await?;
+    service::miniprogram::totp::edit_username(access_token, params).await?;
 
     Ok(Response::success(()))
 }
@@ -67,18 +67,7 @@ pub async fn delete(
 ) -> Resp<()> {
     let id = request.validate()?;
 
-    service::miniprogram::totp::delete(access_token.user_id, id).await?;
-
-    Ok(Response::success(()))
-}
-
-pub async fn edit(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<UpdateRequest>,
-) -> Resp<()> {
-    let params = request.validate()?;
-
-    service::miniprogram::totp::edit(access_token.user_id, params).await?;
+    service::miniprogram::totp::delete(access_token, id).await?;
 
     Ok(Response::success(()))
 }
