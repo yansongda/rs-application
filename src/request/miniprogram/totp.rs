@@ -32,14 +32,14 @@ pub struct DetailResponse {
 
 impl From<Totp> for DetailResponse {
     fn from(totp: Totp) -> Self {
-        let config = totp.clone().config.unwrap_or_default();
+        let config = totp.config;
 
         Self {
             id: totp.id,
             issuer: totp.issuer.clone().unwrap_or("未知发行方".to_string()),
             period: config.period,
             username: totp.username.clone(),
-            code: totp::generate_code(totp.clone()),
+            code: totp.generate_code(),
         }
     }
 }

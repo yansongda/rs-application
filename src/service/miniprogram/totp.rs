@@ -73,19 +73,3 @@ pub async fn delete(access_token: AccessToken, id: i64) -> Result<()> {
 
     Ok(())
 }
-
-pub fn generate_code(totp: Totp) -> String {
-    let config = totp.config.unwrap_or_default();
-
-    let totp = TOTP::new_unchecked(
-        Algorithm::SHA1,
-        6,
-        1,
-        config.period as u64,
-        Secret::Encoded(totp.secret).to_bytes().unwrap(),
-        totp.issuer,
-        totp.username,
-    );
-
-    totp.generate_current().unwrap()
-}

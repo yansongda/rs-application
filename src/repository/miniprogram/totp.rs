@@ -63,6 +63,7 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
         .bind(&totp.issuer)
         .bind(&totp.secret)
         .bind(Json(TotpConfig {
+            secret: totp.secret.clone(),
             period: totp.period,
         }))
         .fetch_one(Pool::postgres("miniprogram")?)

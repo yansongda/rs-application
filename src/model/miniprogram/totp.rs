@@ -3,6 +3,7 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
+use totp_rs::{Algorithm, Secret, TOTP};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Totp {
@@ -10,8 +11,7 @@ pub struct Totp {
     pub user_id: i64,
     pub username: String,
     pub issuer: Option<String>,
-    pub secret: String,
-    pub config: Option<Json<TotpConfig>>,
+    pub config: Json<TotpConfig>,
     pub created_at: DateTime<Local>,
     pub updated_at: DateTime<Local>,
 }
@@ -24,17 +24,28 @@ impl Totp {
 
         Err(Error::AuthorizationMiniprogramPermissionUngranted(None))
     }
+
+    pub fn generate_code(&self) -> String {
+        let config = self.config;
+
+        let totp = TOTP::new_unchecked(
+            Algorithm::SHA1,
+            6,
+            1,
+            config.period as u64,
+            Secret::Encoded(config.secret).to_bytes().unwrap(),
+            totp.issuer,
+            totp.username,
+        );
+
+        totp.generate_current().unwrap()
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TotpConfig {
+    pub secret: String,
     pub period: i64,
-}
-
-impl Default for TotpConfig {
-    fn default() -> Self {
-        Self { period: 30 }
-    }
 }
 
 #[derive(Debug, Clone)]
