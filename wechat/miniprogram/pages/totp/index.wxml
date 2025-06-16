@@ -10,9 +10,10 @@
   bind:cancel="dialogCancel"
   data-id="{{dialogDataId}}"
 />
-<t-empty wx:if="{{items.length <= 0}}" icon="info-circle-filled" description="暂无数据" />
 
 <view class="page">
+  <t-empty wx:if="{{items.length <= 0}}" icon="info-circle-filled" description="暂无数据" />
+
   <view class="items" wx:if="{{items.length > 0}}">
     <view class="item" wx:for="{{items}}" wx:key="id" wx:for-index="index" wx:for-item="item" >
       <t-swipe-cell>
@@ -24,15 +25,15 @@
           <view class="item-body-code">{{item.code}}</view>
         </view>
         <view slot="right" class="item-btn">
-          <view class="btn btn-edit" data-id="{{ item.id }}" bind:tap="edit">
-            编辑
+          <view class="btn btn-detail" data-id="{{ item.id }}" bind:tap="detail">
+            详情
           </view>
           <view class="btn btn-delete" data-id="{{ item.id }}" bind:tap="delete">
             删除
           </view>
         </view>
       </t-swipe-cell>
-      <progress class="item-progress" percent="{{ item.remainSeconds / item.period * 100 }}" stroke-width="2" ></progress>
+      <progress class="item-progress" percent="{{ item.remainSeconds / item.config.period * 100 }}" stroke-width="2" ></progress>
     </view>
   </view>
 

@@ -1,9 +1,9 @@
+use crate::model::result::{Error, Result};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
-
-use crate::request::miniprogram::totp::{EditIssuerRequest, EditUsernameRequest, UpdateRequest};
+use totp_rs::{Algorithm, Secret, TOTP};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Totp {
@@ -11,65 +11,47 @@ pub struct Totp {
     pub user_id: i64,
     pub username: String,
     pub issuer: Option<String>,
-    pub secret: String,
-    pub config: Option<Json<TotpConfig>>,
+    pub config: Json<TotpConfig>,
     pub created_at: DateTime<Local>,
     pub updated_at: DateTime<Local>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TotpConfig {
-    pub period: i64,
-}
+impl Totp {
+    pub fn ensure_permission(&self, user_id: i64) -> Result<()> {
+        if self.user_id == user_id {
+            return Ok(());
+        }
 
-impl Default for TotpConfig {
-    fn default() -> Self {
-        Self { period: 30 }
+        Err(Error::AuthorizationMiniprogramPermissionUngranted(None))
+    }
+
+    pub fn generate_code(&self) -> String {
+        let config = self.config.clone();
+
+        let totp = TOTP::new_unchecked(
+            Algorithm::SHA1,
+            6,
+            1,
+            config.period,
+            Secret::Encoded(config.secret.clone()).to_bytes().unwrap(),
+            self.issuer.clone(),
+            self.username.clone(),
+        );
+
+        totp.generate_current().unwrap()
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TotpConfig {
+    pub secret: String,
+    pub period: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreatedTotp {
     pub user_id: i64,
     pub username: String,
     pub issuer: Option<String>,
-    pub period: i64,
-    pub secret: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct UpdatedTotp {
-    pub id: i64,
-    pub issuer: Option<String>,
-    pub username: Option<String>,
-}
-
-impl From<EditIssuerRequest> for UpdatedTotp {
-    fn from(request: EditIssuerRequest) -> Self {
-        Self {
-            id: request.id.unwrap(),
-            username: None,
-            issuer: request.issuer,
-        }
-    }
-}
-
-impl From<EditUsernameRequest> for UpdatedTotp {
-    fn from(request: EditUsernameRequest) -> Self {
-        Self {
-            id: request.id.unwrap(),
-            username: request.username,
-            issuer: None,
-        }
-    }
-}
-
-impl From<UpdateRequest> for UpdatedTotp {
-    fn from(request: UpdateRequest) -> Self {
-        Self {
-            id: request.id.unwrap(),
-            username: request.username,
-            issuer: request.issuer,
-        }
-    }
+    pub config: TotpConfig,
 }

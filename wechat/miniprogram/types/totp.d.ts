@@ -5,17 +5,25 @@ export interface Item {
   issuer: string;
   username: string;
   code: string;
-  period: number;
+  config: ItemConfig;
   remainSeconds?: number;
+}
+
+export interface ItemConfig {
+  period: number;
 }
 
 export interface DetailRequest extends RequestData {
   id: number;
 }
 
-export interface UpdateRequest extends RequestData {
+export interface EditIssuerRequest extends RequestData {
   id: number;
   issuer: string;
+}
+
+export interface EditUsernameRequest extends RequestData {
+  id: number;
   username: string;
 }
 

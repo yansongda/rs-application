@@ -3,8 +3,8 @@
 
 <view class="page">
   <form bindsubmit="submit">
-    <view class="input">
-      <t-input type="nickname" label="昵称" name="nickname" placeholder="请填写昵称" value="{{nickname}}" tips="长度在1～10之间" maxlength="10" align="right"/>
+    <view>
+      <t-input type="nickname" name="nickname" placeholder="请填写昵称" value="{{nickname}}" maxlength="10" align="left"/>
     </view>
 
     <view class="operation">

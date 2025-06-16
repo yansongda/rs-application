@@ -30,13 +30,14 @@ pub async fn fetch(platform: &Platform, third_id: &str) -> Result<ThirdUser> {
     Err(Error::ParamsMiniprogramThirdUserNotFound(None))
 }
 
-pub async fn insert(platform: Platform, third_id: &str) -> Result<ThirdUser> {
-    let sql = "insert into miniprogram.third_user (platform, third_id) values ($1, $2) returning *";
+pub async fn insert(platform: Platform, third_id: &str, user_id: i64) -> Result<ThirdUser> {
+    let sql = "insert into miniprogram.third_user (platform, third_id, user_id) values ($1, $2, $3) returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(platform)
         .bind(third_id)
+        .bind(user_id)
         .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {

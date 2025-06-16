@@ -1,5 +1,6 @@
 use crate::model::miniprogram::access_token::{AccessToken, AccessTokenData};
 use crate::model::miniprogram::third_user::Platform;
+use crate::model::miniprogram::user::Config;
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::request::miniprogram::access_token::LoginRequest;
@@ -45,9 +46,19 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
 
     match result.unwrap_err() {
         Error::ParamsMiniprogramThirdUserNotFound(_) => {
-            miniprogram::third_user::insert(platform, third_id)
-                .await
-                .map(|u| u.user_id)
+            let user = miniprogram::user::insert(
+                None,
+                Config {
+                    avatar: None,
+                    nickname: None,
+                    slogan: None,
+                },
+            )
+            .await?;
+
+            miniprogram::third_user::insert(platform, third_id, user.id).await?;
+
+            Ok(user.id)
         }
         e => Err(e),
     }
