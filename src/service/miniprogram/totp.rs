@@ -1,11 +1,11 @@
 use crate::model::miniprogram::access_token::AccessToken;
-use crate::model::miniprogram::totp::{CreatedTotp, Totp};
+use crate::model::miniprogram::totp::CreatedTotp;
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::request::miniprogram::totp::{
     DetailResponse, EditIssuerRequestParams, EditUsernameRequestParams,
 };
-use totp_rs::{Algorithm, Secret, TOTP};
+use totp_rs::{Secret, TOTP};
 use tracing::error;
 
 pub async fn all(access_token: AccessToken) -> Result<Vec<DetailResponse>> {

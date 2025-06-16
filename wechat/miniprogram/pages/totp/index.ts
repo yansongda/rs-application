@@ -83,12 +83,12 @@ Page({
       )
       .finally(() => this.all());
   },
-  async edit(e: Tap<Dataset, Dataset>) {
+  async detail(e: Tap<Dataset, Dataset>) {
     const id = Number(e.currentTarget.dataset.id);
 
     this.clearRefreshInterval();
 
-    await wx.navigateTo({ url: `/pages/totp/edit/index?id=${id}` });
+    await wx.navigateTo({ url: `/pages/totp/detail/index?id=${id}` });
   },
   delete(e: Tap<Dataset, Dataset>) {
     const dialogDataId = Number(e.currentTarget.dataset.id);

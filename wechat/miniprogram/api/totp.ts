@@ -8,6 +8,8 @@ import type {
   CreateRequest,
   DeleteRequest,
   DetailRequest,
+  EditIssuerRequest,
+  EditUsernameRequest,
   Item,
   UpdateRequest,
 } from "types/totp";
@@ -42,13 +44,29 @@ const create = async (uri: string) => {
   }
 };
 
-const update = async (data: UpdateRequest) => {
+const editIssuer = async (data: EditIssuerRequest) => {
   try {
-    return await http.post<null>(PATH.UPDATE, data);
+    return await http.post<null>(PATH.EDIT_ISSUER, data);
   } catch (e: unknown) {
-    logger.error("更新 TOTP 信息失败", e);
+    logger.error("更新 TOTP 的 Issuer 信息失败", e);
 
-    throw new HttpError(CODE.HTTP_API_TOTP_UPDATE, error.getErrorMessage(e));
+    throw new HttpError(
+      CODE.HTTP_API_TOTP_EDIT_ISSUER,
+      error.getErrorMessage(e),
+    );
+  }
+};
+
+const editUsername = async (data: EditUsernameRequest) => {
+  try {
+    return await http.post<null>(PATH.EDIT_USERNAME, data);
+  } catch (e: unknown) {
+    logger.error("更新 TOTP 的 username 信息失败", e);
+
+    throw new HttpError(
+      CODE.HTTP_API_TOTP_EDIT_USERNAME,
+      error.getErrorMessage(e),
+    );
   }
 };
 
@@ -62,4 +80,4 @@ const deleteTotp = async (id: number) => {
   }
 };
 
-export default { all, detail, create, update, deleteTotp };
+export default { all, detail, create, editIssuer, editUsername, deleteTotp };

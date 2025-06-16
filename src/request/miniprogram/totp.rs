@@ -1,8 +1,8 @@
-use crate::model::miniprogram::totp::Totp;
+use crate::model::miniprogram::totp::{Totp, TotpConfig};
 use crate::model::result::Error;
 use crate::request::Validator;
-use crate::service::miniprogram::totp;
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DetailRequest {
@@ -25,21 +25,34 @@ impl Validator for DetailRequest {
 pub struct DetailResponse {
     pub id: i64,
     pub issuer: String,
-    pub period: i64,
     pub username: String,
+    pub config: DetailResponseConfig,
     pub code: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct DetailResponseConfig {
+    pub period: i64,
 }
 
 impl From<Totp> for DetailResponse {
     fn from(totp: Totp) -> Self {
-        let config = totp.config;
+        let config = totp.config.deref().to_owned();
 
         Self {
             id: totp.id,
             issuer: totp.issuer.clone().unwrap_or("未知发行方".to_string()),
-            period: config.period,
             username: totp.username.clone(),
+            config: config.into(),
             code: totp.generate_code(),
+        }
+    }
+}
+
+impl From<TotpConfig> for DetailResponseConfig {
+    fn from(config: TotpConfig) -> Self {
+        Self {
+            period: config.period,
         }
     }
 }

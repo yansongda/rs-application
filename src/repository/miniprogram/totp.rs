@@ -3,12 +3,11 @@ use std::time::Instant;
 use tracing::{error, info};
 
 use crate::model::miniprogram::totp::{CreatedTotp, Totp, TotpConfig};
-use crate::model::miniprogram::user::User;
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
 pub async fn all(user_id: i64) -> Result<Vec<Totp>> {
-    let sql = "select * from miniprogram.totp where user_id = $1";
+    let sql = "select * from miniprogram.totp where user_id = $1 order by id asc";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
@@ -81,7 +80,7 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     result
 }
 
-pub async fn update_issuer(id: i64, issuer: &str) -> Result<User> {
+pub async fn update_issuer(id: i64, issuer: &str) -> Result<Totp> {
     let sql =
         "update miniprogram.totp set updated_at = now(), issuer = $1 where id = $2 returning *";
     let started_at = Instant::now();
@@ -104,7 +103,7 @@ pub async fn update_issuer(id: i64, issuer: &str) -> Result<User> {
     result
 }
 
-pub async fn update_username(id: i64, username: &str) -> Result<User> {
+pub async fn update_username(id: i64, username: &str) -> Result<Totp> {
     let sql =
         "update miniprogram.totp set updated_at = now(), username = $1 where id = $2 returning *";
     let started_at = Instant::now();

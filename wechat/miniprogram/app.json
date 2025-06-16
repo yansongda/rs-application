@@ -3,16 +3,18 @@
     "pages/home/index",
     "pages/user/index",
     "pages/user/detail/index",
-    "pages/totp/index",
-    "pages/totp/edit/index",
-    "pages/shortUrl/index",
     "pages/user/edit/nickname",
     "pages/user/edit/slogan",
-    "pages/user/edit/avatar"
+    "pages/user/edit/avatar",
+    "pages/totp/index",
+    "pages/totp/detail/index",
+    "pages/totp/edit/issuer",
+    "pages/totp/edit/username",
+    "pages/shortUrl/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
+    "navigationBarBackgroundColor": "#f3f3f3",
     "navigationBarTitleText": "闫嵩达",
     "navigationBarTextStyle": "black"
   },
