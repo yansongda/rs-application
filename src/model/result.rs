@@ -22,9 +22,9 @@ pub enum Error {
     ParamsMiniprogramTotpNotFound(Option<&'static str>),
     ParamsMiniprogramTotpParseFailed(Option<&'static str>),
     ParamsMiniprogramTotpIdEmpty(Option<&'static str>),
-    ParamsMiniprogramTotpUriEmpty(Option<&'static str>),
+    ParamsMiniprogramTotpIssuerMaxLengthReached(Option<&'static str>),
     ParamsMiniprogramTotpUriFormatInvalid(Option<&'static str>),
-    ParamsMiniprogramTotpUsernameEmpty(Option<&'static str>),
+    ParamsMiniprogramTotpUsernameFormatInvalid(Option<&'static str>),
     ParamsMiniprogramShortlinkNotFound(Option<&'static str>),
     ParamsMiniprogramShortlinkEmpty(Option<&'static str>),
     ParamsMiniprogramShortlinkFormatInvalid(Option<&'static str>),
@@ -115,7 +115,7 @@ impl Error {
                 2010,
                 message.unwrap_or_else(|| "参数错误: 详情 id 不能为空"),
             ),
-            Error::ParamsMiniprogramTotpUriEmpty(message) => (
+            Error::ParamsMiniprogramTotpIssuerMaxLengthReached(message) => (
                 2011,
                 message.unwrap_or_else(|| "参数错误: TOTP 链接不能为空"),
             ),
@@ -123,9 +123,9 @@ impl Error {
                 2012,
                 message.unwrap_or_else(|| "参数错误: TOTP 链接格式不正确"),
             ),
-            Error::ParamsMiniprogramTotpUsernameEmpty(message) => (
+            Error::ParamsMiniprogramTotpUsernameFormatInvalid(message) => (
                 2013,
-                message.unwrap_or_else(|| "参数错误: TOTP 用户名不能为空"),
+                message.unwrap_or_else(|| "参数错误: TOTP 用户名格式不正确"),
             ),
             Error::ParamsMiniprogramShortlinkNotFound(message) => {
                 (2014, message.unwrap_or_else(|| "参数错误: 短连接未找到"))

@@ -19,10 +19,10 @@
       <t-swipe-cell>
         <view class="item-body">
           <view class="item-body-info">
-            <view class="item-body-info-issuer">{{item.issuer}}</view>
-            <view class="item-body-info-username">{{item.username}}</view>
+            <view class="item-body-info-issuer">{{ item.issuer }}</view>
+            <view class="item-body-info-username">{{ item.username }}</view>
           </view>
-          <view class="item-body-code">{{item.code}}</view>
+          <view class="item-body-code">{{ item.code }}</view>
         </view>
         <view slot="right" class="item-btn">
           <view class="btn btn-detail" data-id="{{ item.id }}" bind:tap="detail">

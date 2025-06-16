@@ -1,3 +1,9 @@
+## v1.8.1
+
+### optimized
+
+- optimized: 优化接口及界面参数长度限定 (#82)
+
 ## v1.8.0
 
 ### changed

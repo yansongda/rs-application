@@ -67,7 +67,7 @@ impl Validator for CreateRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.uri.is_none() {
-            return Err(Error::ParamsMiniprogramTotpUriEmpty(None));
+            return Err(Error::ParamsMiniprogramTotpUriFormatInvalid(None));
         }
 
         if !self.uri.clone().unwrap().starts_with("otpauth://totp/") {
@@ -98,6 +98,12 @@ impl Validator for EditIssuerRequest {
             return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
         }
 
+        if let Some(issuer) = &self.issuer {
+            if issuer.chars().count() > 128 {
+                return Err(Error::ParamsMiniprogramTotpIssuerMaxLengthReached(None));
+            }
+        }
+
         Ok(Self::Data {
             id: self.id.unwrap(),
             issuer: self.issuer.clone().unwrap_or_default(),
@@ -125,13 +131,19 @@ impl Validator for EditUsernameRequest {
             return Err(Error::ParamsMiniprogramTotpIdEmpty(None));
         }
 
-        if self.username.is_none() || self.username.clone().unwrap().is_empty() {
-            return Err(Error::ParamsMiniprogramTotpUsernameEmpty(None));
+        if self.username.is_none() {
+            return Err(Error::ParamsMiniprogramTotpUsernameFormatInvalid(None));
+        }
+
+        let username = self.username.clone().unwrap();
+
+        if username.is_empty() || username.chars().count() > 128 {
+            return Err(Error::ParamsMiniprogramTotpUsernameFormatInvalid(None));
         }
 
         Ok(Self::Data {
             id: self.id.unwrap(),
-            username: self.username.clone().unwrap(),
+            username,
         })
     }
 }
