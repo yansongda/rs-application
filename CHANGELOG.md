@@ -1,3 +1,36 @@
+## v1.8.0
+
+### changed
+
+- delete(backend): 去掉通用 TOTP 编辑 API (#80)
+
+### optimized
+
+- optimize(frontend): 优化 totp 页面查看与编辑交互体验 (#80)
+
+### refactor
+
+- refactor(backend): 重构 TOTP 相关 API (#80)
+
+## v1.7.0
+
+### added
+
+- feat(backend): 增加用户相关编辑 API (#79)
+
+### fixed
+
+- fix(backend): 修复新用户 token 未与 user 表正确关联的问题 (#79)
+
+### changed
+
+- delete(backend): 去掉通用用户编辑 API (#79)
+
+### optimized
+
+- optimize(frontend): 优化用户查看与编辑交互体验 (#79)
+- optimize(frontend): 去掉 totp 页面非必要代码 (#79)
+
 ## v1.6.0
 
 ### changed
