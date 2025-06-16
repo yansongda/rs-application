@@ -135,7 +135,7 @@ Page({
     const intervalIdentity = setInterval(async () => {
       for (const item of this.data.items) {
         const index = this.data.items.indexOf(item);
-        const period = item.period ?? 30;
+        const period = item.config.period ?? 30;
 
         let remainSeconds = period - new Date().getSeconds();
         if (remainSeconds <= 0) {

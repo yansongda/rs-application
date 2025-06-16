@@ -4,7 +4,7 @@
 <view class="page">
   <form bindsubmit="submit">
     <view>
-      <t-input name="username" placeholder="请填写账号" value="{{username}}" maxlength="30" align="left"/>
+      <t-input name="username" placeholder="请填写账号" value="{{username}}" maxlength="25" align="left"/>
     </view>
 
     <view class="operation">

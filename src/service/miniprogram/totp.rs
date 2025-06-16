@@ -1,5 +1,5 @@
 use crate::model::miniprogram::access_token::AccessToken;
-use crate::model::miniprogram::totp::CreatedTotp;
+use crate::model::miniprogram::totp::{CreatedTotp, TotpConfig};
 use crate::model::result::{Error, Result};
 use crate::repository::miniprogram;
 use crate::request::miniprogram::totp::{
@@ -33,8 +33,10 @@ pub async fn create(access_token: AccessToken, uri: String) -> Result<()> {
         user_id: access_token.user_id,
         username: totp.account_name,
         issuer: totp.issuer,
-        period: totp.step as i64,
-        secret: Secret::Raw(totp.secret).to_encoded().to_string(),
+        config: TotpConfig {
+            period: totp.step,
+            secret: Secret::Raw(totp.secret).to_encoded().to_string(),
+        },
     })
     .await?;
 

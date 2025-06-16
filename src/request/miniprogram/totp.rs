@@ -32,7 +32,7 @@ pub struct DetailResponse {
 
 #[derive(Debug, Serialize)]
 pub struct DetailResponseConfig {
-    pub period: i64,
+    pub period: u64,
 }
 
 impl From<Totp> for DetailResponse {

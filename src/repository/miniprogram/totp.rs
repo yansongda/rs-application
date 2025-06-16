@@ -2,7 +2,7 @@ use sqlx::types::Json;
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::totp::{CreatedTotp, Totp, TotpConfig};
+use crate::model::miniprogram::totp::{CreatedTotp, Totp};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
@@ -53,18 +53,14 @@ pub async fn fetch(id: i64) -> Result<Totp> {
 }
 
 pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
-    let sql = "insert into miniprogram.totp (user_id, username, issuer, secret, config) values ($1, $2, $3, $4, $5) returning *";
+    let sql = "insert into miniprogram.totp (user_id, username, issuer, config) values ($1, $2, $3, $4) returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(totp.user_id)
         .bind(&totp.username)
         .bind(&totp.issuer)
-        .bind(&totp.secret)
-        .bind(Json(TotpConfig {
-            secret: totp.secret.clone(),
-            period: totp.period,
-        }))
+        .bind(Json(&(totp.config)))
         .fetch_one(Pool::postgres("miniprogram")?)
         .await
         .map_err(|e| {

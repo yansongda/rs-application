@@ -32,7 +32,7 @@ impl Totp {
             Algorithm::SHA1,
             6,
             1,
-            config.period as u64,
+            config.period,
             Secret::Encoded(config.secret.clone()).to_bytes().unwrap(),
             self.issuer.clone(),
             self.username.clone(),
@@ -45,14 +45,13 @@ impl Totp {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TotpConfig {
     pub secret: String,
-    pub period: i64,
+    pub period: u64,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreatedTotp {
     pub user_id: i64,
     pub username: String,
     pub issuer: Option<String>,
-    pub period: i64,
-    pub secret: String,
+    pub config: TotpConfig,
 }
