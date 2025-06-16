@@ -1,4 +1,5 @@
 import api from "@api/totp";
+import { substr } from "@utils/string";
 import type { Tap } from "miniprogram/types/wechat";
 import Toast from "tdesign-miniprogram/toast/index";
 
@@ -39,7 +40,12 @@ Page({
           direction: "column",
         });
 
-        this.setData({ id, issuer, username, config });
+        this.setData({
+          id,
+          issuer: substr(issuer),
+          username: substr(username),
+          config,
+        });
       })
       .catch(() => {
         Toast({

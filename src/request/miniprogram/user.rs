@@ -40,7 +40,7 @@ impl Validator for EditNicknameRequest {
         }
 
         if let Some(nickname) = &self.nickname {
-            if nickname.chars().count() > 10 {
+            if nickname.chars().count() > 16 {
                 return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
             }
         }
@@ -63,7 +63,7 @@ impl Validator for EditSloganRequest {
         }
 
         if let Some(slogan) = &self.slogan {
-            if slogan.chars().count() <= 3 {
+            if slogan.chars().count() <= 3 || slogan.chars().count() > 128 {
                 return Err(Error::ParamsMiniprogramUserSloganLengthInvalid(None));
             }
         }
@@ -77,6 +77,7 @@ pub struct EditPhoneRequest {
     pub phone: Option<String>,
 }
 
+// todo: 验证手机号正则.
 impl Validator for EditPhoneRequest {
     type Data = String;
 
@@ -86,7 +87,7 @@ impl Validator for EditPhoneRequest {
         }
 
         if let Some(phone) = &self.phone {
-            if phone.chars().count() < 11 {
+            if phone.chars().count() < 11 && phone.chars().count() > 128 {
                 return Err(Error::ParamsMiniprogramUserPhoneFormatInvalid(None));
             }
         }

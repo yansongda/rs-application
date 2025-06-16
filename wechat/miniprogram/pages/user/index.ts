@@ -1,4 +1,5 @@
 import { DEFAULT } from "@constant/user";
+import { substr } from "@utils/string";
 import utils from "@utils/user";
 import type { User } from "types/user";
 
@@ -15,9 +16,9 @@ Page({
 
     this.setData({
       config: {
-        nickname: user.config?.nickname ?? DEFAULT.CONFIG.NICKNAME,
+        nickname: substr(user.config?.nickname ?? DEFAULT.CONFIG.NICKNAME, 12),
         avatar: user.config?.avatar ?? DEFAULT.CONFIG.AVATAR,
-        slogan: user.config?.slogan ?? DEFAULT.CONFIG.SLOGAN,
+        slogan: substr(user.config?.slogan ?? DEFAULT.CONFIG.SLOGAN, 12),
       },
     });
   },

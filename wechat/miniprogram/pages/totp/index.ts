@@ -2,6 +2,7 @@ import api from "@api/totp";
 import { CODE } from "@constant/error";
 import type { HttpError } from "@models/error";
 import { WeixinError } from "@models/error";
+import { substr } from "@utils/string";
 import type { Tap } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
@@ -48,7 +49,13 @@ Page({
           direction: "column",
         });
 
-        this.setData({ items: response });
+        this.setData({
+          items: response.map((item) => ({
+            ...item,
+            issuer: substr(item.issuer, 8),
+            username: substr(item.username, 15),
+          })),
+        });
       })
       .catch((e: HttpError) => {
         Toast({
