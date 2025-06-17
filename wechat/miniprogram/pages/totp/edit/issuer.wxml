@@ -4,7 +4,7 @@
 <view class="page">
   <form bindsubmit="submit">
     <view>
-      <t-input name="issuer" placeholder="请填写提供商" value="{{issuer}}" maxlength="8" align="left"/>
+      <t-input name="issuer" placeholder="请填写提供商" value="{{issuer}}" maxlength="32" align="left"/>
     </view>
 
     <view class="operation">

@@ -52,8 +52,8 @@ Page({
         this.setData({
           items: response.map((item) => ({
             ...item,
-            issuer: substr(item.issuer, 8),
-            username: substr(item.username, 15),
+            issuer: substr(item.issuer, 7),
+            username: substr(item.username, 50),
           })),
         });
       })

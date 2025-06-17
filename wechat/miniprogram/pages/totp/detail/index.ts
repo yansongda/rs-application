@@ -1,5 +1,6 @@
 import api from "@api/totp";
 import { substr } from "@utils/string";
+import type { Item } from "miniprogram/types/totp";
 import type { Tap } from "miniprogram/types/wechat";
 import Toast from "tdesign-miniprogram/toast/index";
 
@@ -19,6 +20,7 @@ Page({
     username: "",
     config: { period: 30 },
   },
+  response: {} as Item,
   onLoad(query: Query) {
     this.data.id = Number(query.id || 0);
   },
@@ -32,7 +34,7 @@ Page({
 
     api
       .detail(this.data.id)
-      .then(({ id, issuer, username, config }) => {
+      .then((response: Item) => {
         Toast({
           message: "加载成功",
           theme: "success",
@@ -40,11 +42,12 @@ Page({
           direction: "column",
         });
 
+        this.response = response;
         this.setData({
-          id,
-          issuer: substr(issuer),
-          username: substr(username),
-          config,
+          id: response.id,
+          issuer: substr(response.issuer),
+          username: substr(response.username),
+          config: response.config,
         });
       })
       .catch(() => {
@@ -63,16 +66,14 @@ Page({
 
     switch (e.currentTarget.dataset.type) {
       case "issuer":
-        url = `/pages/totp/edit/issuer?id=${this.data.id}&issuer=${this.data.issuer}`;
+        url = `/pages/totp/edit/issuer?id=${this.data.id}&issuer=${this.response.issuer}`;
         break;
       case "username":
-        url = `/pages/totp/edit/username?id=${this.data.id}&username=${this.data.username}`;
+        url = `/pages/totp/edit/username?id=${this.data.id}&username=${this.response.username}`;
         break;
       default:
         break;
     }
-
-    console.log(url);
 
     if (url.length > 0) {
       await wx.navigateTo({ url });
