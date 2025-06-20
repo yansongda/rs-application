@@ -1,3 +1,9 @@
+## v1.8.2
+
+### optimized
+
+- optimized(frontend): 优化输入框与显示框的最大现实字符数 (#83)
+
 ## v1.8.1
 
 ### optimized
