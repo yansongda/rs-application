@@ -16,5 +16,5 @@
       </view>
     </view>
   </t-swipe-cell>
-  <progress class="item-progress" percent="{{ item.remainSeconds / item.config.period * 100 }}" stroke-width="2" ></progress>
+  <progress class="item-progress" percent="{{ remainSeconds / item.config.period * 100 }}" stroke-width="2" ></progress>
 </view>

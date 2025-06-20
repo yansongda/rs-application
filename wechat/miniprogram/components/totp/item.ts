@@ -52,7 +52,7 @@ Component({
     refreshCode(id: number) {
       api
         .detail(id)
-        .then((response) => this.setData({ code: response.code }))
+        .then((response) => this.setData({ [`item.code`]: response.code }))
         .catch((e: HttpError) => this.triggerEvent("refreshCodeFailed", e));
     },
     clear() {
