@@ -5,7 +5,7 @@
     "t-empty": "tdesign-miniprogram/empty/empty",
     "t-fab": "tdesign-miniprogram/fab/fab",
     "t-dialog": "tdesign-miniprogram/dialog/dialog",
-    "t-swipe-cell": "tdesign-miniprogram/swipe-cell/swipe-cell"
+    "app-totp-item": "/components/totp/item"
   },
   "navigationBarTitleText": "TOTP身份验证器"
 }
