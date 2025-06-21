@@ -28,6 +28,7 @@
       "@utils/*": ["miniprogram/utils/*"],
       "@constant/*": ["miniprogram/constant/*"],
       "@models/*": ["miniprogram/models/*"],
+      "@components/*": ["miniprogram/components/*"],
     }
   },
   "exclude": [

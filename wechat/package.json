@@ -1,11 +1,12 @@
 {
   "name": "yansongda",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "wechat for yansongda",
   "type": "module",
   "scripts": {
     "biome:check": "biome check miniprogram",
-    "biome:fix": "biome check --apply miniprogram"
+    "biome:fix": "biome check --apply miniprogram",
+    "biome:fix-unsafe": "biome check --apply-unsafe miniprogram"
   },
   "keywords": [
     "miniprogram",
