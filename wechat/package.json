@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "biome:check": "biome check miniprogram",
-    "biome:fix": "biome check --apply miniprogram"
+    "biome:fix": "biome check --apply miniprogram",
+    "biome:fix-unsafe": "biome check --apply-unsafe miniprogram"
   },
   "keywords": [
     "miniprogram",

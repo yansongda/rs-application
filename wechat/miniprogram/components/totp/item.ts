@@ -3,9 +3,11 @@ import type { HttpError } from "@models/error";
 
 Component({
   properties: {
-    item: {
-      type: Object,
-    },
+    itemId: Number,
+    username: String,
+    issuer: String,
+    code: String,
+    period: Number,
   },
 
   data: {
@@ -16,11 +18,18 @@ Component({
 
   lifetimes: {
     attached() {
-      console.log("attached: ", this.data.item);
       this.countdownRefresh();
     },
     detached() {
-      console.log("detached: ", this.data.item);
+      this.clear();
+    },
+  },
+
+  pageLifetimes: {
+    show() {
+      this.countdownRefresh();
+    },
+    hide() {
       this.clear();
     },
   },
@@ -29,13 +38,13 @@ Component({
     countdownRefresh() {
       this.clear();
 
-      const period = this.data.item.config.period ?? 30;
+      const period = this.data.period ?? 30;
       const now = new Date();
       const remainSeconds = period - (now.getSeconds() % period);
       const msUntilNextPeriod = remainSeconds * 1000 - now.getMilliseconds();
 
       this.data.refreshCodeTimeoutIdentity = setTimeout(() => {
-        this.refreshCode(this.data.item.id);
+        this.refreshCode(this.data.itemId);
         this.countdownRefresh();
       }, msUntilNextPeriod);
 
@@ -52,8 +61,16 @@ Component({
     refreshCode(id: number) {
       api
         .detail(id)
-        .then((response) => this.setData({ [`item.code`]: response.code }))
-        .catch((e: HttpError) => this.triggerEvent("refreshCodeFailed", e));
+        .then((response) => this.setData({ code: response.code }))
+        .catch((e: HttpError) =>
+          this.triggerEvent("message", `更新验证码失败：${e.message}`),
+        );
+    },
+    async detail() {
+      this.triggerEvent("detail", this.data.itemId);
+    },
+    delete() {
+      this.triggerEvent("delete", this.data.itemId);
     },
     clear() {
       if (this.data.refreshCodeTimeoutIdentity) {

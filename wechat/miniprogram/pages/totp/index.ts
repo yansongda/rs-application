@@ -3,26 +3,23 @@ import { CODE } from "@constant/error";
 import type { HttpError } from "@models/error";
 import { WeixinError } from "@models/error";
 import { substr } from "@utils/string";
-import type { Tap } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
-import type { Item, RefreshCodeFailed } from "types/totp";
-
-interface Dataset {
-  id: string;
-}
+import type {
+  Item,
+  ItemDeleteEvent,
+  ItemDetailEvent,
+  ItemMessageEvent,
+} from "types/totp";
 
 Page({
   data: {
     dialogVisible: false,
-    dialogDataId: 0,
+    currentItemId: 0,
     items: [] as Item[],
   },
   onShow() {
     this.all();
-  },
-  onHide() {
-    // this.clearRefreshInterval();
   },
   onUnload() {
     // this.clearRefreshInterval();
@@ -87,29 +84,27 @@ Page({
       )
       .finally(() => this.all());
   },
-  async detail(e: Tap<Dataset, Dataset>) {
-    const id = Number(e.currentTarget.dataset.id);
+  async itemDetail(e: ItemDetailEvent) {
+    const id = Number(e.detail);
 
     await wx.navigateTo({ url: `/pages/totp/detail/index?id=${id}` });
   },
-  delete(e: Tap<Dataset, Dataset>) {
-    const dialogDataId = Number(e.currentTarget.dataset.id);
+  itemDelete(e: ItemDeleteEvent) {
+    const currentItemId = Number(e.detail);
 
-    this.setData({ dialogVisible: true, dialogDataId });
+    this.setData({ dialogVisible: true, currentItemId });
   },
-  refreshCodeFailed(e: RefreshCodeFailed) {
+  itemMessage(e: ItemMessageEvent) {
     Message.error({
-      content: `更新验证码失败：${e.detail.message}`,
+      content: e.detail,
       duration: 5000,
       offset: [20, 32],
       context: this,
     });
   },
-  dialogConfirm(e: Tap<Dataset, Dataset>) {
-    const id = Number(e.currentTarget.dataset.id);
-
+  dialogConfirm() {
     api
-      .deleteTotp(id)
+      .deleteTotp(this.data.currentItemId)
       .catch((e: HttpError) =>
         Message.error({
           content: `删除失败：${e.message}`,
@@ -124,7 +119,7 @@ Page({
       });
   },
   dialogCancel() {
-    this.setData({ dialogVisible: false, dialogDataId: 0 });
+    this.setData({ dialogVisible: false, currentItemId: 0 });
   },
 });
 

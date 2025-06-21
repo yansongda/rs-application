@@ -35,6 +35,14 @@ export interface DeleteRequest extends RequestData {
   id: number;
 }
 
-export interface RefreshCodeFailed {
-  detail: HttpError;
+export interface ItemMessageEvent {
+  detail: string;
+}
+
+export interface ItemDetailEvent {
+  detail: number;
+}
+
+export interface ItemDeleteEvent {
+  detail: number;
 }
