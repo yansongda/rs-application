@@ -1,3 +1,13 @@
+## v1.9.0
+
+### perf
+
+- perf(frontend): 抽离 totp 的 item 组件提升性能 (#84)
+
+### changed
+
+- changed(frontend): 修改请求域名 (#84)
+
 ## v1.8.2
 
 ### optimized

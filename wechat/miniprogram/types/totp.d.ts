@@ -1,3 +1,4 @@
+import type { HttpError } from "@models/error";
 import type { RequestData } from "./http";
 
 export interface Item {
@@ -6,7 +7,6 @@ export interface Item {
   username: string;
   code: string;
   config: ItemConfig;
-  remainSeconds?: number;
 }
 
 export interface ItemConfig {
@@ -33,4 +33,16 @@ export interface CreateRequest extends RequestData {
 
 export interface DeleteRequest extends RequestData {
   id: number;
+}
+
+export interface ItemMessageEvent {
+  detail: string;
+}
+
+export interface ItemDetailEvent {
+  detail: number;
+}
+
+export interface ItemDeleteEvent {
+  detail: number;
 }

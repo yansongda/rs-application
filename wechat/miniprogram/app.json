@@ -43,6 +43,7 @@
     "@api/*": "/api/*",
     "@utils/*": "/utils/*",
     "@constant/*": "/constant/*",
-    "@models/*": "/models/*"
+    "@models/*": "/models/*",
+    "@components/*": "/components/*"
   }
 }
