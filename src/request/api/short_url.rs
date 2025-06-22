@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::config::G_CONFIG;
-use crate::model::miniprogram::short_url::ShortUrl;
+use crate::model::entity::short_url::ShortUrl;
 use crate::model::result::Error;
 use crate::request::Validator;
 

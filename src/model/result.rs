@@ -16,8 +16,8 @@ pub enum Error {
     ParamsMiniprogramLoginCodeFormatInvalid(Option<&'static str>),
     ParamsMiniprogramThirdUserNotFound(Option<&'static str>),
     ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
-    ParamsMiniprogramUserNotFound(Option<&'static str>),
-    ParamsMiniprogramUserNicknameLengthInvalid(Option<&'static str>),
+    ParamsUserNotFound(Option<&'static str>),
+    ParamsUserNicknameLengthInvalid(Option<&'static str>),
     ParamsMiniprogramUserPhoneFormatInvalid(Option<&'static str>),
     ParamsMiniprogramTotpNotFound(Option<&'static str>),
     ParamsMiniprogramTotpParseFailed(Option<&'static str>),
@@ -92,10 +92,10 @@ impl Error {
                 2004,
                 message.unwrap_or_else(|| "参数错误: Access Token 未找到"),
             ),
-            Error::ParamsMiniprogramUserNotFound(message) => {
+            Error::ParamsUserNotFound(message) => {
                 (2005, message.unwrap_or_else(|| "参数错误: 用户未找到"))
             }
-            Error::ParamsMiniprogramUserNicknameLengthInvalid(message) => (
+            Error::ParamsUserNicknameLengthInvalid(message) => (
                 2006,
                 message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
             ),

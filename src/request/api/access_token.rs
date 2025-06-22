@@ -1,5 +1,5 @@
-use crate::model::miniprogram::access_token::AccessToken;
-use crate::model::miniprogram::third_user::Platform;
+use crate::model::entity::access_token::AccessToken;
+use crate::model::entity::third_user::Platform;
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};

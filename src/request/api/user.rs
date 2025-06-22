@@ -1,4 +1,4 @@
-use crate::model::miniprogram::user::{Config, User};
+use crate::model::entity::user::{Config, User};
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};
@@ -36,12 +36,12 @@ impl Validator for EditNicknameRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.nickname.is_none() {
-            return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
+            return Err(Error::ParamsUserNicknameLengthInvalid(None));
         }
 
         if let Some(nickname) = &self.nickname {
             if nickname.chars().count() > 16 {
-                return Err(Error::ParamsMiniprogramUserNicknameLengthInvalid(None));
+                return Err(Error::ParamsUserNicknameLengthInvalid(None));
             }
         }
 

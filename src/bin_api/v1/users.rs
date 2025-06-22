@@ -1,17 +1,17 @@
 use axum::Extension;
 
-use crate::miniprogram_api::extract::Json;
-use crate::miniprogram_api::response::Resp;
-use crate::model::miniprogram::access_token::AccessToken;
+use crate::bin_api::extract::Json;
+use crate::bin_api::response::Resp;
+use crate::model::entity::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
-use crate::request::miniprogram::user::{
+use crate::request::api::user::{
     DetailResponse, EditAvatarRequest, EditNicknameRequest, EditPhoneRequest, EditSloganRequest,
 };
 use crate::service;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {
-    let user = service::miniprogram::user::detail(access_token.user_id).await?;
+    let user = service::api::user::detail(access_token.user_id).await?;
 
     Ok(Response::success(user.into()))
 }
@@ -22,7 +22,7 @@ pub async fn edit_avatar(
 ) -> Resp<()> {
     let avatar = request.validate()?;
 
-    service::miniprogram::user::update_avatar(access_token, &avatar).await?;
+    service::api::user::update_avatar(access_token, &avatar).await?;
 
     Ok(Response::success(()))
 }
@@ -33,7 +33,7 @@ pub async fn edit_nickname(
 ) -> Resp<()> {
     let nickname = request.validate()?;
 
-    service::miniprogram::user::update_nickname(access_token, &nickname).await?;
+    service::api::user::update_nickname(access_token, &nickname).await?;
 
     Ok(Response::success(()))
 }
@@ -44,7 +44,7 @@ pub async fn edit_slogan(
 ) -> Resp<()> {
     let slogan = request.validate()?;
 
-    service::miniprogram::user::update_slogan(access_token, &slogan).await?;
+    service::api::user::update_slogan(access_token, &slogan).await?;
 
     Ok(Response::success(()))
 }
@@ -55,7 +55,7 @@ pub async fn edit_phone(
 ) -> Resp<()> {
     let phone = request.validate()?;
 
-    service::miniprogram::user::update_phone(access_token, &phone).await?;
+    service::api::user::update_phone(access_token, &phone).await?;
 
     Ok(Response::success(()))
 }

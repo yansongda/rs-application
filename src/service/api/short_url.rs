@@ -1,17 +1,17 @@
-use crate::model::miniprogram::short_url::{CreateShortUrl, ShortUrl};
+use crate::model::entity::short_url::{CreateShortUrl, ShortUrl};
 use crate::model::result::Result;
-use crate::repository::miniprogram;
+use crate::repository;
 use fasthash::murmur3;
 
 pub async fn create(url: &str) -> Result<ShortUrl> {
     let short = base62::encode(murmur3::hash32(url.as_bytes()));
 
-    let result = miniprogram::short_url::fetch(&short).await;
+    let result = repository::short_url::fetch(&short).await;
     if result.is_ok() {
         return result;
     }
 
-    miniprogram::short_url::insert(CreateShortUrl {
+    repository::short_url::insert(CreateShortUrl {
         url: url.to_string(),
         short,
     })
@@ -19,10 +19,10 @@ pub async fn create(url: &str) -> Result<ShortUrl> {
 }
 
 pub async fn detail(url: &str) -> Result<ShortUrl> {
-    let result = miniprogram::short_url::fetch(url).await;
+    let result = repository::short_url::fetch(url).await;
 
     if result.is_ok() {
-        miniprogram::short_url::update_count(result.clone()?.id).await?;
+        repository::short_url::update_count(result.clone()?.id).await?;
     }
 
     result

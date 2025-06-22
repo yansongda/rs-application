@@ -1,10 +1,10 @@
+use application::bin_api::App;
 use application::logger::Logger;
-use application::miniprogram_api::App;
 use tracing::info;
 
 #[tokio::main]
 async fn main() {
-    let _logger = Logger::non_blocking("miniprogram-api");
+    let _logger = Logger::non_blocking("bin-api");
 
     let app = App::init();
 

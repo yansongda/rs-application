@@ -1,6 +1,6 @@
 const PATH = {
-  LOGIN: "/api/v1/miniprogram/access-token/login",
-  VALID: "/api/v1/miniprogram/access-token/valid",
+  LOGIN: "/api/v1/entity/access-token/login",
+  VALID: "/api/v1/entity/access-token/valid",
 };
 
 export { PATH };

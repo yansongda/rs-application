@@ -1,4 +1,4 @@
-use crate::model::miniprogram::totp::{Totp, TotpConfig};
+use crate::model::entity::totp::{Totp, TotpConfig};
 use crate::model::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};

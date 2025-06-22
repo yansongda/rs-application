@@ -1,17 +1,17 @@
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::miniprogram::short_url::{CreateShortUrl, ShortUrl};
+use crate::model::entity::short_url::{CreateShortUrl, ShortUrl};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 
 pub async fn fetch(short: &str) -> Result<ShortUrl> {
-    let sql = "select * from miniprogram.short_url where short = $1 limit 1";
+    let sql = "select * from tool.short_url where short = $1 limit 1";
     let started_at = Instant::now();
 
     let result: Option<ShortUrl> = sqlx::query_as(sql)
         .bind(short)
-        .fetch_optional(Pool::postgres("miniprogram")?)
+        .fetch_optional(Pool::postgres("tool")?)
         .await
         .map_err(|e| {
             error!("查询短连接失败: {:?}", e);
@@ -31,13 +31,13 @@ pub async fn fetch(short: &str) -> Result<ShortUrl> {
 }
 
 pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
-    let sql = "insert into miniprogram.short_url (short, url) values ($1, $2) returning *";
+    let sql = "insert into tool.short_url (short, url) values ($1, $2) returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(&url.short)
         .bind(&url.url)
-        .fetch_one(Pool::postgres("miniprogram")?)
+        .fetch_one(Pool::postgres("tool")?)
         .await
         .map_err(|e| {
             error!("插入短连接失败: {:?}", e);
@@ -53,13 +53,12 @@ pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
 }
 
 pub async fn update_count(id: i64) -> Result<bool> {
-    let sql =
-        "update miniprogram.short_url set visit = visit + 1, updated_at = now() where id = $1";
+    let sql = "update tool.short_url set visit = visit + 1, updated_at = now() where id = $1";
     let started_at = Instant::now();
 
     sqlx::query(sql)
         .bind(id)
-        .execute(Pool::postgres("miniprogram")?)
+        .execute(Pool::postgres("tool")?)
         .await
         .map_err(|e| {
             error!("更新短连接访问次数失败: {:?}", e);

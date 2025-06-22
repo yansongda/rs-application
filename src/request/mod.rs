@@ -1,4 +1,4 @@
-pub mod miniprogram;
+pub mod api;
 
 use crate::model::result::Result;
 

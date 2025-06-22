@@ -1,2 +1,2 @@
-pub mod miniprogram;
+pub mod api;
 pub mod wechat;

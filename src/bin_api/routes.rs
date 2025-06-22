@@ -2,10 +2,10 @@ use axum::routing::{get, post};
 use axum::{Router, middleware};
 use tower::ServiceBuilder;
 
-use crate::miniprogram_api::middleware::authorization;
-use crate::miniprogram_api::v1;
+use crate::bin_api::middleware::authorization;
+use crate::bin_api::v1;
 
-pub fn api_v1_miniprogram() -> Router {
+pub fn api_v1() -> Router {
     let unauthorized = Router::new()
         .nest(
             "/access-token",

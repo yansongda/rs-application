@@ -1,9 +1,9 @@
-use crate::model::miniprogram::access_token::{AccessToken, AccessTokenData};
-use crate::model::miniprogram::third_user::Platform;
-use crate::model::miniprogram::user::Config;
+use crate::model::entity::access_token::{AccessToken, AccessTokenData};
+use crate::model::entity::third_user::Platform;
+use crate::model::entity::user::Config;
 use crate::model::result::{Error, Result};
-use crate::repository::miniprogram;
-use crate::request::miniprogram::access_token::LoginRequest;
+use crate::repository;
+use crate::request::api::access_token::LoginRequest;
 use crate::service::wechat;
 
 pub async fn login(request: LoginRequest) -> Result<AccessToken> {
@@ -13,15 +13,15 @@ pub async fn login(request: LoginRequest) -> Result<AccessToken> {
         _ => Err(Error::ParamsMiniprogramLoginPlatformUnsupported(None)),
     }?;
 
-    let exist = miniprogram::access_token::fetch_by_user_id(user_id).await;
+    let exist = repository::access_token::fetch_by_user_id(user_id).await;
 
     if exist.is_ok() {
-        return miniprogram::access_token::update(exist?.id, &access_token_data).await;
+        return repository::access_token::update(exist?.id, &access_token_data).await;
     }
 
     match exist.unwrap_err() {
         Error::ParamsMiniprogramAccessTokenNotFound(_) => {
-            miniprogram::access_token::insert(platform, user_id, &access_token_data).await
+            repository::access_token::insert(platform, user_id, &access_token_data).await
         }
         e => Err(e),
     }
@@ -38,7 +38,7 @@ async fn login_wechat(code: &str) -> Result<(i64, AccessTokenData)> {
 }
 
 async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
-    let result = miniprogram::third_user::fetch(&platform, third_id).await;
+    let result = repository::third_user::fetch(&platform, third_id).await;
 
     if let Ok(user) = result {
         return Ok(user.user_id);
@@ -46,7 +46,7 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
 
     match result.unwrap_err() {
         Error::ParamsMiniprogramThirdUserNotFound(_) => {
-            let user = miniprogram::user::insert(
+            let user = repository::user::insert(
                 None,
                 Config {
                     avatar: None,
@@ -56,7 +56,7 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
             )
             .await?;
 
-            miniprogram::third_user::insert(platform, third_id, user.id).await?;
+            repository::third_user::insert(platform, third_id, user.id).await?;
 
             Ok(user.id)
         }

@@ -1,4 +1,4 @@
-use crate::model::miniprogram::third_user::Platform;
+use crate::model::entity::third_user::Platform;
 use crate::model::wechat::LoginResponse;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};

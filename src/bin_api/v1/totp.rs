@@ -1,11 +1,11 @@
 use axum::Extension;
 
-use crate::miniprogram_api::extract::Json;
-use crate::miniprogram_api::response::Resp;
-use crate::model::miniprogram::access_token::AccessToken;
+use crate::bin_api::extract::Json;
+use crate::bin_api::response::Resp;
+use crate::model::entity::access_token::AccessToken;
 use crate::model::result::Response;
 use crate::request::Validator;
-use crate::request::miniprogram::totp::{
+use crate::request::api::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
     EditUsernameRequest,
 };
@@ -13,7 +13,7 @@ use crate::service;
 
 pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {
     Ok(Response::success(
-        service::miniprogram::totp::all(access_token).await?,
+        service::api::totp::all(access_token).await?,
     ))
 }
 
@@ -24,7 +24,7 @@ pub async fn detail(
     let id = request.validate()?;
 
     Ok(Response::success(
-        service::miniprogram::totp::detail(access_token, id).await?,
+        service::api::totp::detail(access_token, id).await?,
     ))
 }
 
@@ -34,7 +34,7 @@ pub async fn create(
 ) -> Resp<()> {
     let uri = request.validate()?;
 
-    service::miniprogram::totp::create(access_token, uri).await?;
+    service::api::totp::create(access_token, uri).await?;
 
     Ok(Response::success(()))
 }
@@ -45,7 +45,7 @@ pub async fn edit_issuer(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::totp::edit_issuer(access_token, params).await?;
+    service::api::totp::edit_issuer(access_token, params).await?;
 
     Ok(Response::success(()))
 }
@@ -56,7 +56,7 @@ pub async fn edit_username(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::miniprogram::totp::edit_username(access_token, params).await?;
+    service::api::totp::edit_username(access_token, params).await?;
 
     Ok(Response::success(()))
 }
@@ -67,7 +67,7 @@ pub async fn delete(
 ) -> Resp<()> {
     let id = request.validate()?;
 
-    service::miniprogram::totp::delete(access_token, id).await?;
+    service::api::totp::delete(access_token, id).await?;
 
     Ok(Response::success(()))
 }

@@ -19,8 +19,8 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         return Error::AuthorizationMiniprogramInvalidFormat(None).into_response();
     }
 
-    let access_token: Result<model::miniprogram::access_token::AccessToken> =
-        repository::miniprogram::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
+    let access_token: Result<model::entity::access_token::AccessToken> =
+        repository::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
             .await
             .map_err(|_| Error::AuthorizationMiniprogramDataNotFound(None));
 

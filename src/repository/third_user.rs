@@ -1,17 +1,17 @@
-use crate::model::miniprogram::third_user::{Platform, ThirdUser};
+use crate::model::entity::third_user::{Platform, ThirdUser};
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
 use std::time::Instant;
 use tracing::{error, info};
 
 pub async fn fetch(platform: &Platform, third_id: &str) -> Result<ThirdUser> {
-    let sql = "select * from miniprogram.third_user where platform = $1 and third_id = $2 limit 1";
+    let sql = "select * from account.third_user where platform = $1 and third_id = $2 limit 1";
     let started_at = Instant::now();
 
     let result: Option<ThirdUser> = sqlx::query_as(sql)
         .bind(platform)
         .bind(third_id)
-        .fetch_optional(Pool::postgres("miniprogram")?)
+        .fetch_optional(Pool::postgres("account")?)
         .await
         .map_err(|e| {
             error!("查询第三方平台用户失败: {:?}", e);
@@ -31,14 +31,14 @@ pub async fn fetch(platform: &Platform, third_id: &str) -> Result<ThirdUser> {
 }
 
 pub async fn insert(platform: Platform, third_id: &str, user_id: i64) -> Result<ThirdUser> {
-    let sql = "insert into miniprogram.third_user (platform, third_id, user_id) values ($1, $2, $3) returning *";
+    let sql = "insert into account.third_user (platform, third_id, user_id) values ($1, $2, $3) returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(platform)
         .bind(third_id)
         .bind(user_id)
-        .fetch_one(Pool::postgres("miniprogram")?)
+        .fetch_one(Pool::postgres("account")?)
         .await
         .map_err(|e| {
             error!("查询第三方平台用户失败: {:?}", e);

@@ -7,8 +7,8 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "miniprogram-api"
-path = "src/bin/miniprogram-api.rs"
+name = "bin-api"
+path = "src/bin/bin-api.rs"
 
 [dependencies]
 config = { version = "~0.15.4", default-features = false, features = ["toml", "json", "json5"] }
@@ -20,7 +20,7 @@ tracing = { version = "~0.1.37" }
 tracing-subscriber = { version = "~0.3.16", default-features = false, features = ["registry"] }
 tracing-appender = { version = "~0.2.3" }
 
-tokio = { version = "~1.44.0", features = ["full"] }
+tokio = { version = "~1.45.0", features = ["full"] }
 axum = { version = "~0.8.1", features = ["macros"] }
 tower = { version = "~0.5.0" }
 tower-http = { version = "~0.6.0", features = ["cors", "request-id", "trace"] }
@@ -29,7 +29,7 @@ sqlx = { version = "~0.8.0", features = [ "runtime-tokio", "tls-rustls", "postgr
 
 reqwest = { version = "~0.12.2" }
 
-totp-rs = { version = "~5.6.0", features = ["otpauth"] }
+totp-rs = { version = "~5.7.0", features = ["otpauth"] }
 fasthash = { version = "~0.4.0" }
 base62 = { version = "~2.2.0" }
 url = { version = "~2.5.0" }
