@@ -10,7 +10,7 @@ pub async fn login(request: LoginRequest) -> Result<AccessToken> {
     let platform = request.platform.unwrap();
     let (user_id, access_token_data) = match platform {
         Platform::Wechat => login_wechat(request.code.unwrap().as_str()).await,
-        _ => Err(Error::ParamsMiniprogramLoginPlatformUnsupported(None)),
+        _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
     let exist = repository::access_token::fetch_by_user_id(user_id).await;
@@ -20,7 +20,7 @@ pub async fn login(request: LoginRequest) -> Result<AccessToken> {
     }
 
     match exist.unwrap_err() {
-        Error::ParamsMiniprogramAccessTokenNotFound(_) => {
+        Error::ParamsAccessTokenNotFound(_) => {
             repository::access_token::insert(platform, user_id, &access_token_data).await
         }
         e => Err(e),
@@ -45,7 +45,7 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
     }
 
     match result.unwrap_err() {
-        Error::ParamsMiniprogramThirdUserNotFound(_) => {
+        Error::ParamsThirdUserNotFound(_) => {
             let user = repository::user::insert(
                 None,
                 Config {

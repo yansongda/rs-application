@@ -6,30 +6,30 @@ pub type Result<D> = std::result::Result<D, Error>;
 
 #[derive(PartialEq, Eq, Hash, Debug, Copy, Clone)]
 pub enum Error {
-    AuthorizationMiniprogramHeaderMissing(Option<&'static str>),
-    AuthorizationMiniprogramDataNotFound(Option<&'static str>),
-    AuthorizationMiniprogramInvalidFormat(Option<&'static str>),
-    AuthorizationMiniprogramPermissionUngranted(Option<&'static str>),
+    AuthorizationHeaderMissing(Option<&'static str>),
+    AuthorizationDataNotFound(Option<&'static str>),
+    AuthorizationInvalidFormat(Option<&'static str>),
+    AuthorizationPermissionUngranted(Option<&'static str>),
 
     ParamsJsonInvalid(Option<&'static str>),
-    ParamsMiniprogramLoginPlatformUnsupported(Option<&'static str>),
-    ParamsMiniprogramLoginCodeFormatInvalid(Option<&'static str>),
-    ParamsMiniprogramThirdUserNotFound(Option<&'static str>),
-    ParamsMiniprogramAccessTokenNotFound(Option<&'static str>),
+    ParamsLoginPlatformUnsupported(Option<&'static str>),
+    ParamsLoginCodeFormatInvalid(Option<&'static str>),
+    ParamsThirdUserNotFound(Option<&'static str>),
+    ParamsAccessTokenNotFound(Option<&'static str>),
     ParamsUserNotFound(Option<&'static str>),
     ParamsUserNicknameLengthInvalid(Option<&'static str>),
-    ParamsMiniprogramUserPhoneFormatInvalid(Option<&'static str>),
-    ParamsMiniprogramTotpNotFound(Option<&'static str>),
-    ParamsMiniprogramTotpParseFailed(Option<&'static str>),
-    ParamsMiniprogramTotpIdEmpty(Option<&'static str>),
-    ParamsMiniprogramTotpIssuerMaxLengthReached(Option<&'static str>),
-    ParamsMiniprogramTotpUriFormatInvalid(Option<&'static str>),
-    ParamsMiniprogramTotpUsernameFormatInvalid(Option<&'static str>),
-    ParamsMiniprogramShortlinkNotFound(Option<&'static str>),
-    ParamsMiniprogramShortlinkEmpty(Option<&'static str>),
-    ParamsMiniprogramShortlinkFormatInvalid(Option<&'static str>),
-    ParamsMiniprogramUserSloganLengthInvalid(Option<&'static str>),
-    ParamsMiniprogramUserAvatarLengthInvalid(Option<&'static str>),
+    ParamsUserPhoneFormatInvalid(Option<&'static str>),
+    ParamsTotpNotFound(Option<&'static str>),
+    ParamsTotpParseFailed(Option<&'static str>),
+    ParamsTotpIdEmpty(Option<&'static str>),
+    ParamsTotpIssuerMaxLengthReached(Option<&'static str>),
+    ParamsTotpUriFormatInvalid(Option<&'static str>),
+    ParamsTotpUsernameFormatInvalid(Option<&'static str>),
+    ParamsShortlinkNotFound(Option<&'static str>),
+    ParamsShortlinkEmpty(Option<&'static str>),
+    ParamsShortlinkFormatInvalid(Option<&'static str>),
+    ParamsUserSloganLengthInvalid(Option<&'static str>),
+    ParamsUserAvatarLengthInvalid(Option<&'static str>),
 
     ThirdHttpRequest(Option<&'static str>),
     ThirdHttpResponse(Option<&'static str>),
@@ -55,19 +55,19 @@ pub struct Response<D: Serialize> {
 impl Error {
     pub fn get_code_message(&self) -> (u16, &'static str) {
         match self {
-            Error::AuthorizationMiniprogramHeaderMissing(message) => (
+            Error::AuthorizationHeaderMissing(message) => (
                 1000,
-                message.unwrap_or_else(|| "认证失败: 缺少认证信息，请重新打开小程序"),
+                message.unwrap_or_else(|| "认证失败: 缺少认证信息，请重新登录"),
             ),
-            Error::AuthorizationMiniprogramDataNotFound(message) => (
+            Error::AuthorizationDataNotFound(message) => (
                 1001,
-                message.unwrap_or_else(|| "认证失败: 认证信息不正确，请重新打开小程序"),
+                message.unwrap_or_else(|| "认证失败: 认证信息不正确，请重新登录"),
             ),
-            Error::AuthorizationMiniprogramInvalidFormat(message) => (
+            Error::AuthorizationInvalidFormat(message) => (
                 1002,
-                message.unwrap_or_else(|| "认证失败: 认证信息格式不正确，请重新打开小程序"),
+                message.unwrap_or_else(|| "认证失败: 认证信息格式不正确，请重新登录"),
             ),
-            Error::AuthorizationMiniprogramPermissionUngranted(message) => (
+            Error::AuthorizationPermissionUngranted(message) => (
                 1002,
                 message.unwrap_or_else(|| "认证失败: 未授权，请勿越权使用"),
             ),
@@ -76,19 +76,19 @@ impl Error {
                 2000,
                 message.unwrap_or_else(|| "参数错误: Json 解析失败，请确认您的参数是否符合规范"),
             ),
-            Error::ParamsMiniprogramLoginPlatformUnsupported(message) => (
+            Error::ParamsLoginPlatformUnsupported(message) => (
                 2001,
                 message.unwrap_or_else(|| "参数错误: platform 参数值不支持"),
             ),
-            Error::ParamsMiniprogramLoginCodeFormatInvalid(message) => (
+            Error::ParamsLoginCodeFormatInvalid(message) => (
                 2002,
-                message.unwrap_or_else(|| "参数错误: 登录秘钥长度错误"),
+                message.unwrap_or_else(|| "参数错误: 登录秘钥格式错误"),
             ),
-            Error::ParamsMiniprogramThirdUserNotFound(message) => (
+            Error::ParamsThirdUserNotFound(message) => (
                 2003,
                 message.unwrap_or_else(|| "参数错误: 第三方平台关联用户未找到"),
             ),
-            Error::ParamsMiniprogramAccessTokenNotFound(message) => (
+            Error::ParamsAccessTokenNotFound(message) => (
                 2004,
                 message.unwrap_or_else(|| "参数错误: Access Token 未找到"),
             ),
@@ -97,50 +97,50 @@ impl Error {
             }
             Error::ParamsUserNicknameLengthInvalid(message) => (
                 2006,
-                message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~10 之间，请正确填写"),
+                message.unwrap_or_else(|| "参数错误: 昵称长度应为 1~16 之间，请正确填写"),
             ),
-            Error::ParamsMiniprogramUserPhoneFormatInvalid(message) => (
+            Error::ParamsUserPhoneFormatInvalid(message) => (
                 2007,
-                message.unwrap_or_else(|| "参数错误: 手机号码不符合规范，请正确填写"),
+                message.unwrap_or_else(|| "参数错误: 手机号码格式不正确，请正确填写"),
             ),
-            Error::ParamsMiniprogramTotpNotFound(message) => {
+            Error::ParamsTotpNotFound(message) => {
                 (2008, message.unwrap_or_else(|| "参数错误: TOTP 信息未找到"))
             }
-            Error::ParamsMiniprogramTotpParseFailed(message) => (
+            Error::ParamsTotpParseFailed(message) => (
                 2009,
                 message
                     .unwrap_or_else(|| "参数错误: TOTP 链接解析失败, 请确认是否是正确的 TOTP 链接"),
             ),
-            Error::ParamsMiniprogramTotpIdEmpty(message) => (
+            Error::ParamsTotpIdEmpty(message) => (
                 2010,
                 message.unwrap_or_else(|| "参数错误: 详情 id 不能为空"),
             ),
-            Error::ParamsMiniprogramTotpIssuerMaxLengthReached(message) => (
+            Error::ParamsTotpIssuerMaxLengthReached(message) => (
                 2011,
                 message.unwrap_or_else(|| "参数错误: TOTP 链接不能为空"),
             ),
-            Error::ParamsMiniprogramTotpUriFormatInvalid(message) => (
+            Error::ParamsTotpUriFormatInvalid(message) => (
                 2012,
                 message.unwrap_or_else(|| "参数错误: TOTP 链接格式不正确"),
             ),
-            Error::ParamsMiniprogramTotpUsernameFormatInvalid(message) => (
+            Error::ParamsTotpUsernameFormatInvalid(message) => (
                 2013,
                 message.unwrap_or_else(|| "参数错误: TOTP 用户名格式不正确"),
             ),
-            Error::ParamsMiniprogramShortlinkNotFound(message) => {
+            Error::ParamsShortlinkNotFound(message) => {
                 (2014, message.unwrap_or_else(|| "参数错误: 短连接未找到"))
             }
-            Error::ParamsMiniprogramShortlinkEmpty(message) => {
+            Error::ParamsShortlinkEmpty(message) => {
                 (2015, message.unwrap_or_else(|| "参数错误: URL 不能为空"))
             }
-            Error::ParamsMiniprogramShortlinkFormatInvalid(message) => {
+            Error::ParamsShortlinkFormatInvalid(message) => {
                 (2016, message.unwrap_or_else(|| "参数错误: URL 格式不正确"))
             }
-            Error::ParamsMiniprogramUserSloganLengthInvalid(message) => (
+            Error::ParamsUserSloganLengthInvalid(message) => (
                 2017,
                 message.unwrap_or_else(|| "参数错误: Slogan 长度应大于 3，请正确填写"),
             ),
-            Error::ParamsMiniprogramUserAvatarLengthInvalid(message) => (
+            Error::ParamsUserAvatarLengthInvalid(message) => (
                 2018,
                 message.unwrap_or_else(|| "参数错误: 头像格式不正确，请正确填写"),
             ),

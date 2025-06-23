@@ -22,7 +22,7 @@ impl Totp {
             return Ok(());
         }
 
-        Err(Error::AuthorizationMiniprogramPermissionUngranted(None))
+        Err(Error::AuthorizationPermissionUngranted(None))
     }
 
     pub fn generate_code(&self) -> String {

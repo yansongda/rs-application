@@ -13,12 +13,12 @@ impl Validator for EditAvatarRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.avatar.is_none() {
-            return Err(Error::ParamsMiniprogramUserAvatarLengthInvalid(None));
+            return Err(Error::ParamsUserAvatarLengthInvalid(None));
         }
 
         if let Some(avatar) = &self.avatar {
             if !avatar.starts_with("data:image/jpeg;base64,") {
-                return Err(Error::ParamsMiniprogramUserAvatarLengthInvalid(None));
+                return Err(Error::ParamsUserAvatarLengthInvalid(None));
             }
         }
 
@@ -59,12 +59,12 @@ impl Validator for EditSloganRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.slogan.is_none() {
-            return Err(Error::ParamsMiniprogramUserSloganLengthInvalid(None));
+            return Err(Error::ParamsUserSloganLengthInvalid(None));
         }
 
         if let Some(slogan) = &self.slogan {
             if slogan.chars().count() <= 3 || slogan.chars().count() > 128 {
-                return Err(Error::ParamsMiniprogramUserSloganLengthInvalid(None));
+                return Err(Error::ParamsUserSloganLengthInvalid(None));
             }
         }
 
@@ -83,12 +83,12 @@ impl Validator for EditPhoneRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.phone.is_none() {
-            return Err(Error::ParamsMiniprogramUserPhoneFormatInvalid(None));
+            return Err(Error::ParamsUserPhoneFormatInvalid(None));
         }
 
         if let Some(phone) = &self.phone {
             if phone.chars().count() < 11 && phone.chars().count() > 128 {
-                return Err(Error::ParamsMiniprogramUserPhoneFormatInvalid(None));
+                return Err(Error::ParamsUserPhoneFormatInvalid(None));
             }
         }
 

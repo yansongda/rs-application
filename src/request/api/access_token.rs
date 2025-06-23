@@ -15,7 +15,7 @@ impl Validator for LoginRequest {
 
     fn validate(&self) -> crate::model::result::Result<Self::Data> {
         if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
-            return Err(Error::ParamsMiniprogramLoginPlatformUnsupported(None));
+            return Err(Error::ParamsLoginPlatformUnsupported(None));
         }
 
         if let Some(code) = &self.code {
@@ -24,7 +24,7 @@ impl Validator for LoginRequest {
             }
         }
 
-        Err(Error::ParamsMiniprogramLoginCodeFormatInvalid(None))
+        Err(Error::ParamsLoginCodeFormatInvalid(None))
     }
 }
 

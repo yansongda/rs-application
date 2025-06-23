@@ -31,7 +31,7 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
         return Ok(data);
     }
 
-    Err(Error::ParamsMiniprogramAccessTokenNotFound(None))
+    Err(Error::ParamsAccessTokenNotFound(None))
 }
 
 pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
@@ -56,7 +56,7 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
         return Ok(data);
     }
 
-    Err(Error::ParamsMiniprogramAccessTokenNotFound(None))
+    Err(Error::ParamsAccessTokenNotFound(None))
 }
 
 pub async fn insert(

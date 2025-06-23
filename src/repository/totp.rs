@@ -49,7 +49,7 @@ pub async fn fetch(id: i64) -> Result<Totp> {
         return Ok(user);
     }
 
-    Err(Error::ParamsMiniprogramTotpNotFound(None))
+    Err(Error::ParamsTotpNotFound(None))
 }
 
 pub async fn insert(totp: CreatedTotp) -> Result<Totp> {

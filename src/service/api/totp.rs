@@ -26,7 +26,7 @@ pub async fn create(access_token: AccessToken, uri: String) -> Result<()> {
     let totp = TOTP::from_url_unchecked(uri.as_str()).map_err(|e| {
         error!("TOTP 链接解析失败: {}", e);
 
-        Error::ParamsMiniprogramTotpParseFailed(None)
+        Error::ParamsTotpParseFailed(None)
     })?;
 
     repository::totp::insert(CreatedTotp {

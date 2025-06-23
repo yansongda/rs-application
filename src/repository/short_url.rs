@@ -27,7 +27,7 @@ pub async fn fetch(short: &str) -> Result<ShortUrl> {
         return Ok(short_url);
     }
 
-    Err(Error::ParamsMiniprogramShortlinkNotFound(None))
+    Err(Error::ParamsShortlinkNotFound(None))
 }
 
 pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {

@@ -27,7 +27,7 @@ pub async fn fetch(platform: &Platform, third_id: &str) -> Result<ThirdUser> {
         return Ok(third_user);
     }
 
-    Err(Error::ParamsMiniprogramThirdUserNotFound(None))
+    Err(Error::ParamsThirdUserNotFound(None))
 }
 
 pub async fn insert(platform: Platform, third_id: &str, user_id: i64) -> Result<ThirdUser> {

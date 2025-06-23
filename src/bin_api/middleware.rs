@@ -10,19 +10,19 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
     let authorization = request.headers().get("Authorization");
 
     if authorization.is_none() {
-        return Error::AuthorizationMiniprogramHeaderMissing(None).into_response();
+        return Error::AuthorizationHeaderMissing(None).into_response();
     }
 
     let auth = authorization.unwrap().to_str();
 
     if auth.is_err() {
-        return Error::AuthorizationMiniprogramInvalidFormat(None).into_response();
+        return Error::AuthorizationInvalidFormat(None).into_response();
     }
 
     let access_token: Result<model::entity::access_token::AccessToken> =
         repository::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
             .await
-            .map_err(|_| Error::AuthorizationMiniprogramDataNotFound(None));
+            .map_err(|_| Error::AuthorizationDataNotFound(None));
 
     if let Err(e) = access_token {
         return e.into_response();
