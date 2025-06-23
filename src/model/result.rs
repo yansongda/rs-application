@@ -43,6 +43,7 @@ pub enum Error {
     InternalDatabaseInsert(Option<&'static str>),
     InternalDatabaseUpdate(Option<&'static str>),
     InternalDatabaseDelete(Option<&'static str>),
+    InternalDataToAccessTokenError(Option<&'static str>),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -189,6 +190,10 @@ impl Error {
             Error::InternalDatabaseDelete(message) => (
                 9904,
                 message.unwrap_or_else(|| "内部错误: 删除数据出现了一些问题，请联系管理员"),
+            ),
+            Error::InternalDataToAccessTokenError(message) => (
+                9905,
+                message.unwrap_or_else(|| "内部错误: 生成 access_token 令牌有误，请联系管理员"),
             ),
         }
     }

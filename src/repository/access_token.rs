@@ -65,14 +65,7 @@ pub async fn insert(
     data: &AccessTokenData,
 ) -> Result<AccessToken> {
     let sql = "insert into account.access_token (user_id, access_token, data, platform) values ($1, $2, $3, $4) returning *";
-    let wechat_access_token_data = data.to_owned().wechat.unwrap();
-    let access_token = base62::encode(murmur3::hash128(
-        format!(
-            "{}:{}",
-            wechat_access_token_data.open_id, wechat_access_token_data.session_key
-        )
-        .as_bytes(),
-    ));
+    let access_token = data.to_access_token(&platform)?;
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)

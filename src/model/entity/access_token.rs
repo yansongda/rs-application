@@ -1,6 +1,8 @@
 use crate::model::entity::third_user::Platform;
 use crate::model::wechat::LoginResponse;
+use crate::model::result::{Error, Result};
 use chrono::{DateTime, Local};
+use fasthash::murmur3;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
@@ -19,6 +21,24 @@ pub struct AccessToken {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccessTokenData {
     pub wechat: Option<WechatAccessTokenData>,
+}
+
+impl AccessTokenData {
+    pub fn to_access_token(&self,  platform: &Platform) -> Result<String> {
+        match platform { 
+            Platform::Wechat => {
+                if let Some(data) = &self.wechat {
+                    Ok(base62::encode(murmur3::hash128(format!(
+                        "{}:{}",
+                        data.open_id, data.session_key
+                    ).as_bytes())))
+                } else {
+                    Err(Error::InternalDataToAccessTokenError(None))
+                }
+            },
+            _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
