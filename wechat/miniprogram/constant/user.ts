@@ -7,11 +7,11 @@ const DEFAULT = {
 };
 
 const PATH = {
-  DETAIL: "/api/v1/entity/users/detail",
-  EDIT_AVATAR: "/api/v1/entity/users/edit/avatar",
-  EDIT_NICKNAME: "/api/v1/entity/users/edit/nickname",
-  EDIT_SLOGAN: "/api/v1/entity/users/edit/slogan",
-  EDIT: "/api/v1/entity/users/edit",
+  DETAIL: "/api/v1/users/detail",
+  EDIT_AVATAR: "/api/v1/users/edit/avatar",
+  EDIT_NICKNAME: "/api/v1/users/edit/nickname",
+  EDIT_SLOGAN: "/api/v1/users/edit/slogan",
+  EDIT: "/api/v1/users/edit",
 };
 
 export { DEFAULT, PATH };

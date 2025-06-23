@@ -1,3 +1,10 @@
+## v1.10.0
+
+### changed
+
+- changed(frontend): Api 路径更改
+- changed(backend): 后端数据库规划调整
+
 ## v1.9.0
 
 ### perf

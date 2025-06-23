@@ -6,17 +6,14 @@ use crate::bin_api::middleware::authorization;
 use crate::bin_api::v1;
 
 pub fn api_v1() -> Router {
-    let unauthorized = Router::new()
-        .nest(
-            "/access-token",
-            Router::new().route("/login", post(v1::access_token::login)),
-        )
-        .nest(
-            "/short-url",
-            Router::new()
-                .route("/detail", post(v1::short_url::detail))
-                .route("/redirect/{short}", get(v1::short_url::redirect)),
-        );
+    Router::new().merge(api_v1_account()).merge(api_v1_tool())
+}
+
+fn api_v1_account() -> Router {
+    let unauthorized = Router::new().nest(
+        "/access-token",
+        Router::new().route("/login", post(v1::access_token::login)),
+    );
 
     let authorized = Router::new()
         .nest(
@@ -32,6 +29,20 @@ pub fn api_v1() -> Router {
                 .route("/edit/slogan", post(v1::users::edit_slogan))
                 .route("/edit/phone", post(v1::users::edit_phone)),
         )
+        .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)));
+
+    Router::new().merge(unauthorized).merge(authorized)
+}
+
+fn api_v1_tool() -> Router {
+    let unauthorized = Router::new().nest(
+        "/short-url",
+        Router::new()
+            .route("/detail", post(v1::short_url::detail))
+            .route("/redirect/{short}", get(v1::short_url::redirect)),
+    );
+
+    let authorized = Router::new()
         .nest(
             "/totp",
             Router::new()
@@ -48,5 +59,5 @@ pub fn api_v1() -> Router {
         )
         .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)));
 
-    authorized.merge(unauthorized)
+    Router::new().merge(unauthorized).merge(authorized)
 }
