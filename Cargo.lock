@@ -40,7 +40,7 @@ dependencies = [
 
 [[package]]
 name = "application"
-version = "1.2.3"
+version = "1.10.0"
 dependencies = [
  "application-macros",
  "axum",
@@ -65,7 +65,7 @@ dependencies = [
 
 [[package]]
 name = "application-macros"
-version = "1.2.3"
+version = "1.10.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1021,9 +1021,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.9.0"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cea70ddb795996207ad57735b50c5982d8844f38ba9ee5f1aedcfb708a2aa11e"
+checksum = "fe4cd85333e22411419a0bcae1297d25e58c9443848b11dc6a86fefe8c78a661"
 dependencies = [
  "equivalent",
  "hashbrown",

@@ -2,7 +2,7 @@
 
 ### changed
 
-- changed(frontend): Api 路径更改
+- changed(frontend): Api 路径去掉 miniprogram 前缀
 - changed(backend): 后端数据库规划调整
 
 ## v1.9.0
