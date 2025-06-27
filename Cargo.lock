@@ -40,7 +40,7 @@ dependencies = [
 
 [[package]]
 name = "application"
-version = "1.10.0"
+version = "1.2.3"
 dependencies = [
  "application-macros",
  "axum",
@@ -65,8 +65,9 @@ dependencies = [
 
 [[package]]
 name = "application-macros"
-version = "0.1.0"
+version = "1.2.3"
 dependencies = [
+ "proc-macro2",
  "quote",
  "syn",
 ]

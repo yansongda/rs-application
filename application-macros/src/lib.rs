@@ -1,26 +1,36 @@
+pub(crate) mod logger;
+
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemFn};
+use syn::{ItemFn, parse_macro_input};
+use crate::logger::generate_param_logs;
 
 #[proc_macro_attribute]
-pub fn logger_sql(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn logger(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let sig = &input.sig;
     let block = &input.block;
     let vis = &input.vis;
     let attrs = &input.attrs;
 
-    let name = &sig.ident;
-
+    let param_logs = generate_param_logs(&sig);
+    
     let result = quote! {
         #(#attrs)*
         #vis #sig {
-            let sql = sql;
             let started_at = std::time::Instant::now();
-            let result = (|| async #block)().await;
+            
+            // 记录参数
+            let params = {
+                let mut params = Vec::new();
+                #(#param_logs)*
+                params.join(", ")
+            };
+            
+            let result = async #block.await;
             let elapsed = started_at.elapsed().as_secs_f32();
 
-            tracing::info!(elapsed, sql, function = stringify!(#name));
+            tracing::info!(elapsed, ?params, ?result);
 
             result
         }
