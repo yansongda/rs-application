@@ -9,23 +9,22 @@ pub(crate) fn generate_param_logs(sig: &Signature) -> Vec<proc_macro2::TokenStre
             match arg {
                 syn::FnArg::Receiver(_) => {
                     quote! {
-                        params.push(format!("self: <self>"));
+                        params.push("self: <self>".to_string());
                     }
                 }
                 syn::FnArg::Typed(pat_type) => {
-                    let ident = match &*pat_type.pat {
-                        syn::Pat::Ident(pat_ident) => &pat_ident.ident,
-                        _ => {
-                            let default_name = format!("arg_{}", i);
-                            return quote! {
-                                params.push(format!("{}: {:?}", #default_name, arg_{}));
-                            };
-                        }
-                    };
+                    if let syn::Pat::Ident(pat_ident) = &*pat_type.pat {
+                        let ident = &pat_ident.ident;
+                        let ident_str = ident.to_string();
 
-                    let ident_str = ident.to_string();
-                    quote! {
-                        params.push(format!("{}: {:?}", #ident_str, #ident));
+                        quote! {
+                            params.push(format!("{}: {:?}", #ident_str, #ident));
+                        }
+                    } else {
+                        // 跳过匿名和复杂模式参数
+                        quote! {
+                            params.push(format!("arg_{}: <complex pattern>", #i));
+                        }
                     }
                 }
             }

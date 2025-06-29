@@ -5,11 +5,11 @@ use crate::model::entity::access_token::{AccessToken, AccessTokenData};
 use crate::model::entity::third_user::Platform;
 use crate::model::result::{Error, Result};
 use crate::repository::Pool;
-use application_macros::logger;
+use application_macros::logger_function;
 use sqlx::types::Json;
 use tracing::{error, info};
 
-#[logger]
+#[logger_function]
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     let sql = "select * from account.access_token where access_token = $1 limit 1";
 

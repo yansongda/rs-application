@@ -6,7 +6,7 @@ use syn::{ItemFn, parse_macro_input};
 use crate::logger::generate_param_logs;
 
 #[proc_macro_attribute]
-pub fn logger(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn logger_function(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemFn);
     let sig = &input.sig;
     let block = &input.block;
@@ -20,7 +20,6 @@ pub fn logger(_attr: TokenStream, item: TokenStream) -> TokenStream {
         #vis #sig {
             let started_at = std::time::Instant::now();
             
-            // 记录参数
             let params = {
                 let mut params = Vec::new();
                 #(#param_logs)*
