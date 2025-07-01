@@ -1,5 +1,5 @@
-use crate::model::entity::user::{Config, User};
-use crate::model::result::Error;
+use application_database::::user::{Config, User};
+use application_kernel::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};
 
@@ -11,7 +11,7 @@ pub struct EditAvatarRequest {
 impl Validator for EditAvatarRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.avatar.is_none() {
             return Err(Error::ParamsUserAvatarLengthInvalid(None));
         }
@@ -34,7 +34,7 @@ pub struct EditNicknameRequest {
 impl Validator for EditNicknameRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.nickname.is_none() {
             return Err(Error::ParamsUserNicknameLengthInvalid(None));
         }
@@ -57,7 +57,7 @@ pub struct EditSloganRequest {
 impl Validator for EditSloganRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.slogan.is_none() {
             return Err(Error::ParamsUserSloganLengthInvalid(None));
         }
@@ -81,7 +81,7 @@ pub struct EditPhoneRequest {
 impl Validator for EditPhoneRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.phone.is_none() {
             return Err(Error::ParamsUserPhoneFormatInvalid(None));
         }

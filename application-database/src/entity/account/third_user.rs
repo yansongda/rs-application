@@ -1,4 +1,4 @@
-use crate::model::entity::user::Config;
+use crate::entity::account::user::Config;
 use chrono::{DateTime, Local};
 use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize};

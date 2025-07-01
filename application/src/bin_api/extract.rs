@@ -1,4 +1,4 @@
-use crate::model::result::Error;
+use application_kernel::result::Error;
 use axum::extract::FromRequest;
 
 #[derive(FromRequest)]

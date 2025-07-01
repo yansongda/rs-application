@@ -5,8 +5,16 @@ use std::time::Duration;
 use reqwest::{Client, Request};
 use tracing::{info, warn};
 
-use crate::model::http::HttpResponse;
-use crate::model::result::{Error, Result};
+use application_kernel::result::{Error, Result};
+
+#[allow(dead_code)]
+#[derive(Debug)]
+pub struct HttpResponse {
+    pub status: u16,
+    pub headers: HashMap<String, String>,
+    pub body: String,
+    pub duration: f32,
+}
 
 static G_CLIENT: LazyLock<Client> = LazyLock::new(|| {
     Client::builder()

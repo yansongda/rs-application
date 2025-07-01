@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::config::G_CONFIG;
-use crate::model::entity::short_url::ShortUrl;
-use crate::model::result::Error;
+use application_kernel::config::G_CONFIG;
+use application_database::::short_url::ShortUrl;
+use application_kernel::result::Error;
 use crate::request::Validator;
 
 #[derive(Debug, Clone, Deserialize)]
@@ -14,7 +14,7 @@ pub struct CreateRequest {
 impl Validator for CreateRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.url.is_none() {
             return Err(Error::ParamsShortlinkEmpty(None));
         }
@@ -49,7 +49,7 @@ pub struct DetailRequest {
 impl Validator for DetailRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.short.is_none() {
             return Err(Error::ParamsShortlinkEmpty(None));
         }

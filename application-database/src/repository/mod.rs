@@ -3,17 +3,14 @@ use std::str::FromStr;
 use std::sync::LazyLock;
 use std::time::Duration;
 
-use crate::config::{Database, G_CONFIG};
-use crate::model::result::{Error, Result};
+use application_kernel::config::{Database, G_CONFIG};
+use application_kernel::result::{Error, Result};
 use sqlx::PgPool;
 use sqlx::postgres::{PgConnectOptions, PgPoolOptions};
 use tracing::error;
 
-pub mod access_token;
-pub mod short_url;
-pub mod third_user;
-pub mod totp;
-pub mod user;
+pub mod account;
+pub mod tool;
 
 // TODO: 上面所有的 SQL 查询，应该都可以封装为一个属性宏来实现，公共处理 sql，查询时间 等信息，这样可以减少代码量，提高可读性
 

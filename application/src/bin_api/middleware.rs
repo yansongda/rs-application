@@ -4,7 +4,7 @@ use axum::extract::Request;
 use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 
-use crate::model::result::{Error, Result};
+use application_kernel::result::{Error, Result};
 
 pub async fn authorization(mut request: Request, next: Next) -> Response {
     let authorization = request.headers().get("Authorization");
@@ -19,7 +19,7 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         return Error::AuthorizationInvalidFormat(None).into_response();
     }
 
-    let access_token: Result<model::entity::access_token::AccessToken> =
+    let access_token: Result<application_database::::access_token::AccessToken> =
         repository::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
             .await
             .map_err(|_| Error::AuthorizationDataNotFound(None));

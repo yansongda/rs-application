@@ -3,7 +3,7 @@ use serde::Deserialize;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-pub(crate) static G_CONFIG: LazyLock<Config> = LazyLock::new(|| {
+pub static G_CONFIG: LazyLock<Config> = LazyLock::new(|| {
     let config = C::builder()
         .add_source(File::with_name("./config.toml").required(false))
         .add_source(

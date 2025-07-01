@@ -1,0 +1,19 @@
+[package]
+name = "application-database"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+application-kernel = { path = "../application-kernel" }
+application-util = { path = "../application-util" }
+
+chrono = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+
+sqlx = { version = "~0.8.0", features = [ "runtime-tokio", "tls-rustls", "postgres", "chrono" ] }
+
+fasthash = { version = "~0.4.0" }
+base62 = { version = "~2.2.0" }
+totp-rs = { version = "~5.7.0", features = ["otpauth"] }

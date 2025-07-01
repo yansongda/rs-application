@@ -1,8 +1,8 @@
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::entity::short_url::{CreateShortUrl, ShortUrl};
-use crate::model::result::{Error, Result};
+use crate::entity::tool::short_url::{CreateShortUrl, ShortUrl};
+use application_kernel::result::{Error, Result};
 use crate::repository::Pool;
 
 pub async fn fetch(short: &str) -> Result<ShortUrl> {

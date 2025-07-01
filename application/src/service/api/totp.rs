@@ -1,6 +1,6 @@
-use crate::model::entity::access_token::AccessToken;
-use crate::model::entity::totp::{CreatedTotp, TotpConfig};
-use crate::model::result::{Error, Result};
+use application_database::::access_token::AccessToken;
+use application_database::::totp::{CreatedTotp, TotpConfig};
+use application_kernel::result::{Error, Result};
 use crate::repository;
 use crate::request::api::totp::{
     DetailResponse, EditIssuerRequestParams, EditUsernameRequestParams,

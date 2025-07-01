@@ -1,6 +1,6 @@
-use crate::model::entity::third_user::Platform;
-use crate::model::result::{Error, Result};
-use crate::model::wechat::LoginResponse;
+use crate::entity::account::third_user::Platform;
+use application_kernel::result::{Error, Result};
+use application_util::wechat::LoginResponse;
 use chrono::{DateTime, Local};
 use fasthash::murmur3;
 use serde::{Deserialize, Serialize};

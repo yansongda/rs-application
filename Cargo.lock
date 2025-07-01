@@ -42,34 +42,61 @@ dependencies = [
 name = "application"
 version = "1.10.0"
 dependencies = [
- "application-macros",
+ "application-kernel",
  "axum",
- "base62",
- "chrono",
- "config",
- "fasthash",
- "reqwest",
  "rs-snowflake",
- "serde",
- "serde_json",
- "sqlx",
  "tokio",
- "totp-rs",
  "tower",
  "tower-http",
  "tracing",
- "tracing-appender",
- "tracing-subscriber",
  "url",
 ]
 
 [[package]]
-name = "application-macros"
+name = "application-database"
+version = "1.10.0"
+dependencies = [
+ "application-kernel",
+ "application-util",
+ "base62",
+ "chrono",
+ "fasthash",
+ "serde",
+ "sqlx",
+ "totp-rs",
+ "tracing",
+]
+
+[[package]]
+name = "application-kernel"
+version = "1.10.0"
+dependencies = [
+ "chrono",
+ "config",
+ "serde",
+ "tracing",
+ "tracing-appender",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "application-macro"
 version = "1.10.0"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "application-util"
+version = "1.10.0"
+dependencies = [
+ "application-kernel",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tracing",
 ]
 
 [[package]]

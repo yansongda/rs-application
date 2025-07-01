@@ -14,8 +14,8 @@ use tower_http::request_id::{
 use tower_http::trace::{MakeSpan, OnFailure, OnRequest, OnResponse, TraceLayer};
 use tracing::{Span, error, info, info_span};
 
-use crate::config::G_CONFIG;
-use crate::model::result::Response;
+use application_kernel::config::G_CONFIG;
+use application_kernel::result::Response;
 
 mod extract;
 mod middleware;

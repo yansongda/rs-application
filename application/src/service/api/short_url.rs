@@ -1,5 +1,5 @@
-use crate::model::entity::short_url::{CreateShortUrl, ShortUrl};
-use crate::model::result::Result;
+use application_database::::short_url::{CreateShortUrl, ShortUrl};
+use application_kernel::result::Result;
 use crate::repository;
 use fasthash::murmur3;
 

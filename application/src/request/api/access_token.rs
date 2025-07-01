@@ -1,6 +1,6 @@
-use crate::model::entity::access_token::AccessToken;
-use crate::model::entity::third_user::Platform;
-use crate::model::result::Error;
+use application_database::::access_token::AccessToken;
+use application_database::::third_user::Platform;
+use application_kernel::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +13,7 @@ pub struct LoginRequest {
 impl Validator for LoginRequest {
     type Data = LoginRequest;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
             return Err(Error::ParamsLoginPlatformUnsupported(None));
         }

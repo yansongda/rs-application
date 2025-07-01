@@ -1,4 +1,4 @@
-use crate::model::result::{Error, Result};
+use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;

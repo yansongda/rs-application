@@ -7,3 +7,12 @@ resolver = "3"
 version = "1.10.0"
 edition = "2024"
 publish = false
+
+[workspace.dependencies]
+chrono = { version = "~0.4.22", features = ["serde"] }
+serde = { version = "~1.0.130", features = ["derive"] }
+serde_json = { version = "~1.0.71" }
+
+tracing = { version = "~0.1.37" }
+tracing-subscriber = { version = "~0.3.16", default-features = false, features = ["registry"] }
+tracing-appender = { version = "~0.2.3" }

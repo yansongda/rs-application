@@ -1,5 +1,5 @@
-use crate::model::entity::totp::{Totp, TotpConfig};
-use crate::model::result::Error;
+use application_database::::totp::{Totp, TotpConfig};
+use application_kernel::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
@@ -12,7 +12,7 @@ pub struct DetailRequest {
 impl Validator for DetailRequest {
     type Data = i64;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
@@ -65,7 +65,7 @@ pub struct CreateRequest {
 impl Validator for CreateRequest {
     type Data = String;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.uri.is_none() {
             return Err(Error::ParamsTotpUriFormatInvalid(None));
         }
@@ -93,7 +93,7 @@ pub struct EditIssuerRequestParams {
 impl Validator for EditIssuerRequest {
     type Data = EditIssuerRequestParams;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
@@ -126,7 +126,7 @@ pub struct EditUsernameRequestParams {
 impl Validator for EditUsernameRequest {
     type Data = EditUsernameRequestParams;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
@@ -156,7 +156,7 @@ pub struct DeleteRequest {
 impl Validator for DeleteRequest {
     type Data = i64;
 
-    fn validate(&self) -> crate::model::result::Result<Self::Data> {
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsTotpIdEmpty(None));
         }

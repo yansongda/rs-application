@@ -1,10 +1,20 @@
 use reqwest::{Method, Request, Url};
 use tracing::error;
 
-use crate::config::G_CONFIG;
-use crate::model::result::{Error, Result};
-use crate::model::wechat::LoginResponse;
-use crate::util::http;
+use application_kernel::config::G_CONFIG;
+use application_kernel::result::{Error, Result};
+use serde::Deserialize;
+use crate::http;
+
+#[allow(dead_code)]
+#[derive(Debug, Clone, Deserialize)]
+pub struct LoginResponse {
+    pub session_key: Option<String>,
+    pub unionid: Option<String>,
+    pub errmsg: Option<String>,
+    pub openid: Option<String>,
+    pub errcode: Option<i32>,
+}
 
 pub async fn login(code: &str) -> Result<LoginResponse> {
     let url = format!("{}/sns/jscode2session", G_CONFIG.wechat.url.as_str());

@@ -4,7 +4,7 @@ use axum::response::IntoResponse;
 use serde::Serialize;
 use tracing::info;
 
-use crate::model::result::{Error, Response, Result};
+use application_kernel::result::{Error, Response, Result};
 
 pub type Resp<D> = Result<Response<D>>;
 

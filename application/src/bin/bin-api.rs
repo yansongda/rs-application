@@ -1,5 +1,5 @@
-use application::bin_api::App;
-use application::logger::Logger;
+use crate::bin_api::App;
+use application_kernel::logger::Logger;
 use tracing::info;
 
 #[tokio::main]

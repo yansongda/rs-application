@@ -2,8 +2,8 @@ use sqlx::types::Json;
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::entity::totp::{CreatedTotp, Totp};
-use crate::model::result::{Error, Result};
+use crate::entity::tool::totp::{CreatedTotp, Totp};
+use application_kernel::result::{Error, Result};
 use crate::repository::Pool;
 
 pub async fn all(user_id: i64) -> Result<Vec<Totp>> {

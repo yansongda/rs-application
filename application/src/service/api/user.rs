@@ -1,6 +1,6 @@
-use crate::model::entity::access_token::AccessToken;
-use crate::model::entity::user::User;
-use crate::model::result::{Error, Result};
+use application_database::::access_token::AccessToken;
+use application_database::::user::User;
+use application_kernel::result::{Error, Result};
 use crate::repository;
 
 pub async fn detail(id: i64) -> Result<User> {

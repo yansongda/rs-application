@@ -1,10 +1,10 @@
-use crate::model::entity::access_token::{AccessToken, AccessTokenData};
-use crate::model::entity::third_user::Platform;
-use crate::model::entity::user::Config;
-use crate::model::result::{Error, Result};
+use application_database::::access_token::{AccessToken, AccessTokenData};
+use application_database::::third_user::Platform;
+use application_database::::user::Config;
+use application_kernel::result::{Error, Result};
 use crate::repository;
 use crate::request::api::access_token::LoginRequest;
-use crate::service::wechat;
+use application_utils::wechat;
 
 pub async fn login(request: LoginRequest) -> Result<AccessToken> {
     let platform = request.platform.unwrap();

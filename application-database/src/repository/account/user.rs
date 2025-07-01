@@ -2,8 +2,8 @@ use sqlx::types::Json;
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::model::entity::user::{Config, User};
-use crate::model::result::{Error, Result};
+use crate::entity::account::user::{Config, User};
+use application_kernel::result::{Error, Result};
 use crate::repository::Pool;
 
 pub async fn fetch(user_id: i64) -> Result<User> {

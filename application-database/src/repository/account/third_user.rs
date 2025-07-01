@@ -1,5 +1,5 @@
-use crate::model::entity::third_user::{Platform, ThirdUser};
-use crate::model::result::{Error, Result};
+use crate::entity::account::third_user::{Platform, ThirdUser};
+use application_kernel::result::{Error, Result};
 use crate::repository::Pool;
 use std::time::Instant;
 use tracing::{error, info};

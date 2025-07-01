@@ -1,7 +1,7 @@
 use crate::bin_api::extract::Json;
 use crate::bin_api::response::Resp;
-use crate::model::entity::access_token::AccessToken;
-use crate::model::result::Response;
+use application_database::::access_token::AccessToken;
+use application_kernel::result::Response;
 use crate::request::Validator;
 use crate::request::api::access_token::{LoginRequest, LoginResponse};
 use crate::service;

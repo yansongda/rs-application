@@ -1,5 +1,5 @@
 [package]
-name = "application-macros"
+name = "application-macro"
 version.workspace = true
 edition.workspace = true
 publish.workspace = true
