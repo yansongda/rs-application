@@ -1,4 +1,3 @@
-use fasthash::murmur3;
 use std::time::Instant;
 
 use crate::entity::account::access_token::{AccessToken, AccessTokenData};
@@ -82,22 +81,14 @@ pub async fn insert(
     result
 }
 
-pub async fn update(id: i64, data: &AccessTokenData) -> Result<AccessToken> {
+pub async fn update(access_token: AccessToken, data: &AccessTokenData) -> Result<AccessToken> {
     let sql = "update account.access_token set access_token = $1, data = $2, updated_at = now() where id = $3 returning *";
-    let wechat_access_token_data = data.to_owned().wechat.unwrap();
-    let access_token = base62::encode(murmur3::hash128(
-        format!(
-            "{}:{}",
-            wechat_access_token_data.open_id, wechat_access_token_data.session_key
-        )
-        .as_bytes(),
-    ));
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
-        .bind(access_token)
+        .bind(data.to_access_token(&access_token.platform)?)
         .bind(Json(data))
-        .bind(id)
+        .bind(access_token.id)
         .fetch_one(Pool::postgres("account")?)
         .await
         .map_err(|e| {
@@ -108,7 +99,7 @@ pub async fn update(id: i64, data: &AccessTokenData) -> Result<AccessToken> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, id, ?data);
+    info!(elapsed, sql, access_token.id, ?data);
 
     result
 }

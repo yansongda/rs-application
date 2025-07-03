@@ -16,7 +16,7 @@ pub async fn login(request: LoginRequest) -> Result<AccessToken> {
     let exist = repository::account::access_token::fetch_by_user_id(user_id).await;
 
     if exist.is_ok() {
-        return repository::account::access_token::update(exist?.id, &access_token_data).await;
+        return repository::account::access_token::update(exist?, &access_token_data).await;
     }
 
     match exist.unwrap_err() {
