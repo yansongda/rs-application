@@ -1,5 +1,5 @@
-use application_database::::access_token::AccessToken;
-use application_database::::third_user::Platform;
+use application_database::entity::account::access_token::AccessToken;
+use application_database::entity::account::third_user::Platform;
 use application_kernel::result::Error;
 use crate::request::Validator;
 use serde::{Deserialize, Serialize};

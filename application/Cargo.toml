@@ -7,18 +7,24 @@ publish.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [[bin]]
-name = "bin-api"
-path = "src/bin/bin-api.rs"
+name = "application-api"
+path = "src/bin/api.rs"
 
 [dependencies]
 application-kernel = { path = "../application-kernel" }
+application-database = { path = "../application-database" }
+application-util = { path = "../application-util"}
 
 tracing = { workspace = true }
+serde = { workspace = true }
 
-tokio = { version = "~1.45.0", features = ["full"] }
+tokio = { version = "~1.46.0", features = ["full"] }
 axum = { version = "~0.8.1", features = ["macros"] }
 tower = { version = "~0.5.0" }
 tower-http = { version = "~0.6.0", features = ["cors", "request-id", "trace"] }
 
+fasthash = { version = "~0.4.0" }
+base62 = { version = "~2.2.0" }
 url = { version = "~2.5.0" }
+totp-rs = { version = "~5.7.0", features = ["otpauth"] }
 rs-snowflake = { version = "~0.6.0", default-features = false }

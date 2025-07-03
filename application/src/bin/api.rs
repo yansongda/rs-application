@@ -1,10 +1,10 @@
-use crate::bin_api::App;
+use application::api::App;
 use application_kernel::logger::Logger;
 use tracing::info;
 
 #[tokio::main]
 async fn main() {
-    let _logger = Logger::non_blocking("bin-api");
+    let _logger = Logger::non_blocking("application-api");
 
     let app = App::init();
 

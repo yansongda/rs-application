@@ -2,8 +2,8 @@ use axum::routing::{get, post};
 use axum::{Router, middleware};
 use tower::ServiceBuilder;
 
-use crate::bin_api::middleware::authorization;
-use crate::bin_api::v1;
+use crate::api::middleware::authorization;
+use crate::api::v1;
 
 pub fn api_v1() -> Router {
     Router::new().merge(api_v1_account()).merge(api_v1_tool())

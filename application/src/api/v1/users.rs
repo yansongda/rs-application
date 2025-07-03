@@ -1,7 +1,7 @@
 use axum::Extension;
 
-use crate::bin_api::extract::Json;
-use crate::bin_api::response::Resp;
+use crate::api::extract::Json;
+use crate::api::response::Resp;
 use application_database::::access_token::AccessToken;
 use application_kernel::result::Response;
 use crate::request::Validator;

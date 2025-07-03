@@ -1,10 +1,10 @@
-use application_database::::access_token::{AccessToken, AccessTokenData};
-use application_database::::third_user::Platform;
-use application_database::::user::Config;
+use application_database::entity::account::access_token::{AccessToken, AccessTokenData};
+use application_database::entity::account::third_user::Platform;
+use application_database::entity::account::user::Config;
 use application_kernel::result::{Error, Result};
-use crate::repository;
+use application_database::repository;
 use crate::request::api::access_token::LoginRequest;
-use application_utils::wechat;
+use application_util::wechat;
 
 pub async fn login(request: LoginRequest) -> Result<AccessToken> {
     let platform = request.platform.unwrap();
@@ -13,15 +13,15 @@ pub async fn login(request: LoginRequest) -> Result<AccessToken> {
         _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
-    let exist = repository::access_token::fetch_by_user_id(user_id).await;
+    let exist = repository::account::access_token::fetch_by_user_id(user_id).await;
 
     if exist.is_ok() {
-        return repository::access_token::update(exist?.id, &access_token_data).await;
+        return repository::account::access_token::update(exist?.id, &access_token_data).await;
     }
 
     match exist.unwrap_err() {
         Error::ParamsAccessTokenNotFound(_) => {
-            repository::access_token::insert(platform, user_id, &access_token_data).await
+            repository::account::access_token::insert(platform, user_id, &access_token_data).await
         }
         e => Err(e),
     }
@@ -38,7 +38,7 @@ async fn login_wechat(code: &str) -> Result<(i64, AccessTokenData)> {
 }
 
 async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
-    let result = repository::third_user::fetch(&platform, third_id).await;
+    let result = repository::account::third_user::fetch(&platform, third_id).await;
 
     if let Ok(user) = result {
         return Ok(user.user_id);
@@ -46,7 +46,7 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
 
     match result.unwrap_err() {
         Error::ParamsThirdUserNotFound(_) => {
-            let user = repository::user::insert(
+            let user = repository::account::user::insert(
                 None,
                 Config {
                     avatar: None,
@@ -56,7 +56,7 @@ async fn get_third_user_id(platform: Platform, third_id: &str) -> Result<i64> {
             )
             .await?;
 
-            repository::third_user::insert(platform, third_id, user.id).await?;
+            repository::account::third_user::insert(platform, third_id, user.id).await?;
 
             Ok(user.id)
         }
