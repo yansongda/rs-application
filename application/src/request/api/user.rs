@@ -1,6 +1,6 @@
-use application_database::entity::account::user::{Config, User};
-use application_kernel::result::Error;
 use crate::request::Validator;
+use application_database::account::user::{Config, User};
+use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]

@@ -2,13 +2,13 @@ use axum::Extension;
 
 use crate::api::extract::Json;
 use crate::api::response::Resp;
-use application_database::::access_token::AccessToken;
-use application_kernel::result::Response;
 use crate::request::Validator;
 use crate::request::api::user::{
     DetailResponse, EditAvatarRequest, EditNicknameRequest, EditPhoneRequest, EditSloganRequest,
 };
 use crate::service;
+use application_database::account::access_token::AccessToken;
+use application_kernel::result::Response;
 
 pub async fn detail(Extension(access_token): Extension<AccessToken>) -> Resp<DetailResponse> {
     let user = service::api::user::detail(access_token.user_id).await?;

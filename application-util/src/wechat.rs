@@ -1,10 +1,10 @@
 use reqwest::{Method, Request, Url};
 use tracing::error;
 
+use crate::http;
 use application_kernel::config::G_CONFIG;
 use application_kernel::result::{Error, Result};
 use serde::Deserialize;
-use crate::http;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]

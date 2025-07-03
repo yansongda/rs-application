@@ -3,12 +3,12 @@ use axum::response::Redirect;
 
 use crate::api::extract::Json;
 use crate::api::response::Resp;
-use application_kernel::result::{Response, Result};
 use crate::request::Validator;
 use crate::request::api::short_url::{
     CreateRequest, CreateResponse, DetailRequest, DetailResponse,
 };
 use crate::service;
+use application_kernel::result::{Response, Result};
 
 pub async fn create(Json(request): Json<CreateRequest>) -> Resp<CreateResponse> {
     let url = request.validate()?;

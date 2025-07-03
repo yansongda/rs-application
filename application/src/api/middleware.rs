@@ -1,5 +1,4 @@
-use application_database::entity::account::access_token::AccessToken;
-use application_database::repository;
+use application_database::account::access_token;
 
 use axum::extract::Request;
 use axum::middleware::Next;
@@ -20,8 +19,8 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         return Error::AuthorizationInvalidFormat(None).into_response();
     }
 
-    let access_token: Result<AccessToken> =
-        repository::account::access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
+    let access_token: Result<access_token::AccessToken> =
+        access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
             .await
             .map_err(|_| Error::AuthorizationDataNotFound(None));
 

@@ -1,7 +1,7 @@
-use application_database::entity::account::access_token::AccessToken;
-use application_database::entity::account::third_user::Platform;
-use application_kernel::result::Error;
 use crate::request::Validator;
+use application_database::account::access_token::AccessToken;
+use application_database::account::third_user::Platform;
+use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]

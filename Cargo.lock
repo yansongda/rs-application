@@ -50,6 +50,7 @@ dependencies = [
  "fasthash",
  "rs-snowflake",
  "serde",
+ "serde_json",
  "tokio",
  "totp-rs",
  "tower",

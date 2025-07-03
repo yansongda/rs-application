@@ -1,6 +1,6 @@
-use application_database::entity::tool::totp::{Totp, TotpConfig};
-use application_kernel::result::Error;
 use crate::request::Validator;
+use application_database::tool::totp::{Totp, TotpConfig};
+use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 

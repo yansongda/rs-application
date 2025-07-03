@@ -2,14 +2,14 @@ use axum::Extension;
 
 use crate::api::extract::Json;
 use crate::api::response::Resp;
-use application_database::::access_token::AccessToken;
-use application_kernel::result::Response;
 use crate::request::Validator;
 use crate::request::api::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
     EditUsernameRequest,
 };
 use crate::service;
+use application_database::account::access_token::AccessToken;
+use application_kernel::result::Response;
 
 pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {
     Ok(Response::success(

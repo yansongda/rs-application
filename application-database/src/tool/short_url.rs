@@ -1,11 +1,28 @@
+use crate::Pool;
+use application_kernel::result::Error;
+use chrono::{DateTime, Local};
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::entity::tool::short_url::{CreateShortUrl, ShortUrl};
-use application_kernel::result::{Error, Result};
-use crate::repository::Pool;
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct ShortUrl {
+    pub id: i64,
+    pub short: String,
+    pub url: String,
+    pub visit: i64,
+    pub created_at: DateTime<Local>,
+    pub updated_at: DateTime<Local>,
+}
 
-pub async fn fetch(short: &str) -> Result<ShortUrl> {
+#[derive(Debug)]
+pub struct CreateShortUrl {
+    pub url: String,
+    pub short: String,
+}
+
+pub async fn fetch(short: &str) -> application_kernel::result::Result<ShortUrl> {
     let sql = "select * from tool.short_url where short = $1 limit 1";
     let started_at = Instant::now();
 
@@ -30,7 +47,7 @@ pub async fn fetch(short: &str) -> Result<ShortUrl> {
     Err(Error::ParamsShortlinkNotFound(None))
 }
 
-pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
+pub async fn insert(url: CreateShortUrl) -> application_kernel::result::Result<ShortUrl> {
     let sql = "insert into tool.short_url (short, url) values ($1, $2) returning *";
     let started_at = Instant::now();
 
@@ -52,7 +69,7 @@ pub async fn insert(url: CreateShortUrl) -> Result<ShortUrl> {
     result
 }
 
-pub async fn update_count(id: i64) -> Result<bool> {
+pub async fn update_count(id: i64) -> application_kernel::result::Result<bool> {
     let sql = "update tool.short_url set visit = visit + 1, updated_at = now() where id = $1";
     let started_at = Instant::now();
 

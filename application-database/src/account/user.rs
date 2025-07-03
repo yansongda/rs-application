@@ -1,12 +1,29 @@
+use crate::Pool;
+use application_kernel::result::Error;
+use chrono::{DateTime, Local};
+use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use sqlx::types::Json;
 use std::time::Instant;
 use tracing::{error, info};
 
-use crate::entity::account::user::{Config, User};
-use application_kernel::result::{Error, Result};
-use crate::repository::Pool;
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct User {
+    pub id: i64,
+    pub phone: Option<String>,
+    pub config: Option<Json<Config>>,
+    pub created_at: DateTime<Local>,
+    pub updated_at: DateTime<Local>,
+}
 
-pub async fn fetch(user_id: i64) -> Result<User> {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Config {
+    pub avatar: Option<String>,
+    pub nickname: Option<String>,
+    pub slogan: Option<String>,
+}
+
+pub async fn fetch(user_id: i64) -> application_kernel::result::Result<User> {
     let sql = "select * from account.user where id = $1 limit 1";
     let started_at = Instant::now();
 
@@ -31,7 +48,10 @@ pub async fn fetch(user_id: i64) -> Result<User> {
     Err(Error::ParamsUserNotFound(None))
 }
 
-pub async fn insert(phone: Option<&str>, config: Config) -> Result<User> {
+pub async fn insert(
+    phone: Option<&str>,
+    config: Config,
+) -> application_kernel::result::Result<User> {
     let sql = "insert into account.user (phone, config) values ($1, $2) returning *";
     let started_at = Instant::now();
 
@@ -53,7 +73,7 @@ pub async fn insert(phone: Option<&str>, config: Config) -> Result<User> {
     result
 }
 
-pub async fn update_avatar(id: i64, avatar: &str) -> Result<User> {
+pub async fn update_avatar(id: i64, avatar: &str) -> application_kernel::result::Result<User> {
     let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{avatar}', $1) where id = $2 returning *";
     let started_at = Instant::now();
 
@@ -75,7 +95,7 @@ pub async fn update_avatar(id: i64, avatar: &str) -> Result<User> {
     result
 }
 
-pub async fn update_nickname(id: i64, nickname: &str) -> Result<User> {
+pub async fn update_nickname(id: i64, nickname: &str) -> application_kernel::result::Result<User> {
     let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{nickname}', $1) where id = $2 returning *";
     let started_at = Instant::now();
 
@@ -97,7 +117,7 @@ pub async fn update_nickname(id: i64, nickname: &str) -> Result<User> {
     result
 }
 
-pub async fn update_slogan(id: i64, slogan: &str) -> Result<User> {
+pub async fn update_slogan(id: i64, slogan: &str) -> application_kernel::result::Result<User> {
     let sql = "update entity.user set updated_at = now(), config = jsonb_set(config, '{slogan}', $1) where id = $2 returning *";
     let started_at = Instant::now();
 
@@ -119,7 +139,7 @@ pub async fn update_slogan(id: i64, slogan: &str) -> Result<User> {
     result
 }
 
-pub async fn update_phone(id: i64, phone: &str) -> Result<User> {
+pub async fn update_phone(id: i64, phone: &str) -> application_kernel::result::Result<User> {
     let sql = "update entity.user set updated_at = now(), phone = $1 where id = $2 returning *";
     let started_at = Instant::now();
 
