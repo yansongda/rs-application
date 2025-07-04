@@ -4,7 +4,7 @@ use tracing::info;
 
 #[tokio::main]
 async fn main() {
-    let _logger = Logger::non_blocking("application-api");
+    let _logger = Logger::non_blocking("api");
 
     let app = App::init();
 

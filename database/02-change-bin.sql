@@ -1,7 +1,7 @@
 -- =============================================
 -- 创建用户和模式
 -- =============================================
-CREATE USER rs_application WITH PASSWORD 'qoCDIv1RVTJycTNQKIaivVWVmRtsTRCr';
+CREATE USER rs-application WITH PASSWORD 'qoCDIv1RVTJycTNQKIaivVWVmRtsTRCr';
 
 CREATE SCHEMA account;
 CREATE SCHEMA tool;
@@ -61,9 +61,12 @@ SELECT setval('tool.short_url_id_seq',
 
 COMMIT;
 
--- todo: tool, account owner
-alter table "account"."access_token" owner to rs_application;
-alter table "account"."third_user" owner to rs_application;
-alter table "account"."user" owner to rs_application;
-alter table "tool"."totp" owner to rs_application;
-alter table "tool"."short_url" owner to rs_application;
+grant rs-application to yansongda_owner;
+grant connect on database yansongda to rs_application;
+alter schema account owner to rs-application;
+alter schema tool owner to rs-application;
+alter table "account"."access_token" owner to rs-application;
+alter table "account"."third_user" owner to rs-application;
+alter table "account"."user" owner to rs-application;
+alter table "tool"."totp" owner to rs-application;
+alter table "tool"."short_url" owner to rs-application;

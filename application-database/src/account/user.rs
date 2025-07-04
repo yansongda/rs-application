@@ -118,13 +118,13 @@ pub async fn update_nickname(id: i64, nickname: &str) -> application_kernel::res
 }
 
 pub async fn update_slogan(id: i64, slogan: &str) -> application_kernel::result::Result<User> {
-    let sql = "update entity.user set updated_at = now(), config = jsonb_set(config, '{slogan}', $1) where id = $2 returning *";
+    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{slogan}', $1) where id = $2 returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(Json(slogan))
         .bind(id)
-        .fetch_one(Pool::postgres("entity")?)
+        .fetch_one(Pool::postgres("account")?)
         .await
         .map_err(|e| {
             error!("更新 Slogan 失败: {:?}", e);
@@ -140,13 +140,13 @@ pub async fn update_slogan(id: i64, slogan: &str) -> application_kernel::result:
 }
 
 pub async fn update_phone(id: i64, phone: &str) -> application_kernel::result::Result<User> {
-    let sql = "update entity.user set updated_at = now(), phone = $1 where id = $2 returning *";
+    let sql = "update account.user set updated_at = now(), phone = $1 where id = $2 returning *";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(phone)
         .bind(id)
-        .fetch_one(Pool::postgres("entity")?)
+        .fetch_one(Pool::postgres("account")?)
         .await
         .map_err(|e| {
             error!("更新手机号失败: {:?}", e);
