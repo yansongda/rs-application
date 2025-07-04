@@ -1,7 +1,5 @@
 use std::fmt::{Debug, Display, Formatter};
 
-use serde::{Deserialize, Serialize};
-
 pub type Result<D> = std::result::Result<D, Error>;
 
 #[derive(PartialEq, Eq, Hash, Debug, Copy, Clone)]
@@ -44,13 +42,6 @@ pub enum Error {
     InternalDatabaseUpdate(Option<&'static str>),
     InternalDatabaseDelete(Option<&'static str>),
     InternalDataToAccessTokenError(Option<&'static str>),
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Response<D: Serialize> {
-    pub code: u16,
-    pub message: String,
-    pub data: Option<D>,
 }
 
 impl Error {
@@ -196,26 +187,6 @@ impl Error {
                 message.unwrap_or_else(|| "内部错误: 生成 access_token 令牌有误，请联系管理员"),
             ),
         }
-    }
-}
-
-impl<D: Serialize> Response<D> {
-    pub fn new(code: Option<u16>, message: Option<String>, data: Option<D>) -> Self {
-        Response {
-            code: code.unwrap_or(0),
-            message: message.unwrap_or_else(|| "success".to_string()),
-            data,
-        }
-    }
-
-    pub fn success(data: D) -> Self {
-        Response::new(None, None, Some(data))
-    }
-
-    pub fn error(error: Error) -> Self {
-        let (code, message) = error.get_code_message();
-
-        Response::new(Some(code), Some(message.to_string()), None)
     }
 }
 
