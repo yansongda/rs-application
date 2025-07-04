@@ -16,7 +16,7 @@ WORKDIR /www
 
 ENV TZ=Asia/Shanghai
 
-COPY --from=builder /www/target/release/miniprogram-api ./app
+COPY --from=builder /www/target/release/application-api ./app
 
 RUN apt-get update \
     && apt-get install -y ca-certificates \
