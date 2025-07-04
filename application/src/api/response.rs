@@ -4,7 +4,7 @@ use axum::response::IntoResponse;
 use serde::{Deserialize, Serialize};
 use tracing::info;
 
-use application_kernel::result::{Error, Result};
+use application_kernel::result::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Response<D: Serialize> {
@@ -26,7 +26,7 @@ impl<D: Serialize> Response<D> {
         Response::new(None, None, Some(data))
     }
 
-    pub fn error(err: Err) -> Self {
+    pub fn error(err: ApiErr) -> Self {
         let (code, message) = err.0.get_code_message();
 
         Response::new(Some(code), Some(message.to_string()), None)
@@ -49,11 +49,12 @@ impl<D: Serialize> IntoResponse for Response<D> {
     }
 }
 
+pub type Result<D> = std::result::Result<D, ApiErr>;
 pub type Resp<D> = Result<Response<D>>;
 
-pub struct Err(Error);
+pub struct ApiErr(pub Error);
 
-impl IntoResponse for Err {
+impl IntoResponse for ApiErr {
     fn into_response(self) -> axum::response::Response {
         Response::<String>::error(self)
             .to_http_response()
@@ -61,16 +62,16 @@ impl IntoResponse for Err {
     }
 }
 
-impl From<Error> for Err {
+impl From<Error> for ApiErr {
     fn from(r: Error) -> Self {
-        Err(r)
+        ApiErr(r)
     }
 }
 
-impl From<JsonRejection> for Err {
+impl From<JsonRejection> for ApiErr {
     fn from(r: JsonRejection) -> Self {
         info!("解析 Json 请求失败: {:?}", r);
 
-        Err::from(Error::ParamsJsonInvalid(None))
+        ApiErr::from(Error::ParamsJsonInvalid(None))
     }
 }

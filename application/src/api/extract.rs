@@ -1,6 +1,6 @@
-use application_kernel::result::Error;
+use crate::api::response::ApiErr;
 use axum::extract::FromRequest;
 
 #[derive(FromRequest)]
-#[from_request(via(axum::Json), rejection(Error))]
+#[from_request(via(axum::Json), rejection(ApiErr))]
 pub struct Json<T>(pub T);
