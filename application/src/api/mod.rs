@@ -85,7 +85,7 @@ impl<B> MakeSpan<B> for RequestIdMakeSpan {
             .map(|request_id| request_id.header_value().to_str().unwrap())
             .unwrap_or_else(|| "unknown");
 
-        info_span!("root", request_id)
+        info_span!("request_id", request_id)
     }
 }
 
@@ -108,10 +108,11 @@ impl<B: Debug> OnRequest<B> for OnRequestBehaviour {
 struct OnResponseBehaviour;
 
 impl<B: Debug> OnResponse<B> for OnResponseBehaviour {
-    fn on_response(self, _: &http::Response<B>, latency: Duration, _: &Span) {
+    fn on_response(self, response: &http::Response<B>, latency: Duration, _: &Span) {
         let elapsed = latency.as_secs_f32();
+        let body = response.body();
 
-        info!(elapsed, "<-- 请求处理完成");
+        info!(elapsed, ?body, "<-- 请求处理完成");
     }
 }
 

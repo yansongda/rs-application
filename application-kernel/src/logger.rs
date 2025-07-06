@@ -74,20 +74,15 @@ where
                 if !fields.is_empty() {
                     let c = &fields.fields;
 
-                    write!(
-                        writer,
-                        "{}|",
-                        if c.starts_with("request_id") {
-                            &c[12..c.len() - 1]
-                        } else {
-                            c
-                        }
-                    )?;
+                    if c.starts_with("request_id") {
+                        write!(writer, "{}|", &c[12..c.len() - 1])?;
+                        break;
+                    }
                 }
             }
         }
 
-        ctx.field_format().format_fields(writer.by_ref(), event)?;
+        ctx.format_fields(writer.by_ref(), event)?;
 
         writeln!(writer)
     }
