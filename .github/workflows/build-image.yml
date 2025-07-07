@@ -3,7 +3,6 @@ name: Building Image
 on:
   push:
     tags:
-      - *
 
 env:
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
