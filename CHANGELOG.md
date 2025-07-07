@@ -4,6 +4,7 @@
 
 - changed(frontend): Api 路径去掉 miniprogram 前缀
 - changed(backend): 后端数据库规划调整
+- optimize(backend): 后端架构优化调整
 
 ## v1.9.0
 
