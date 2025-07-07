@@ -13,7 +13,7 @@ pub fn logger_function(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let vis = &input.vis;
     let attrs = &input.attrs;
 
-    let param_logs = generate_param_logs(&sig);
+    let param_logs = generate_param_logs(sig);
 
     let result = quote! {
         #(#attrs)*
