@@ -1,7 +1,7 @@
 -- =============================================
 -- 创建用户和模式
 -- =============================================
-CREATE USER rs-application WITH PASSWORD 'qoCDIv1RVTJycTNQKIaivVWVmRtsTRCr';
+CREATE USER "rs-application" WITH PASSWORD 'qoCDIv1RVTJycTNQKIaivVWVmRtsTRCr';
 
 CREATE SCHEMA account;
 CREATE SCHEMA tool;
@@ -61,12 +61,18 @@ SELECT setval('tool.short_url_id_seq',
 
 COMMIT;
 
-grant rs-application to yansongda_owner;
-grant connect on database yansongda to rs_application;
-alter schema account owner to rs-application;
-alter schema tool owner to rs-application;
-alter table "account"."access_token" owner to rs-application;
-alter table "account"."third_user" owner to rs-application;
-alter table "account"."user" owner to rs-application;
-alter table "tool"."totp" owner to rs-application;
-alter table "tool"."short_url" owner to rs-application;
+grant "rs-application" to yansongda_owner;
+grant connect on database yansongda to "rs-application";
+alter schema account owner to "rs-application";
+alter schema tool owner to "rs-application";
+alter table "account"."access_token" owner to "rs-application";
+alter table "account"."third_user" owner to "rs-application";
+alter table "account"."user" owner to "rs-application";
+alter table "tool"."totp" owner to "rs-application";
+alter table "tool"."short_url" owner to "rs-application";
+
+alter sequence account.access_token_id_seq owner to "rs-application";
+alter sequence "account"."third_user_id_seq" owner to "rs-application";
+alter sequence "account"."user_id_seq" owner to "rs-application";
+alter sequence "tool"."totp_id_seq" owner to "rs-application";
+alter sequence "tool"."short_url_id_seq" owner to rs-application;
