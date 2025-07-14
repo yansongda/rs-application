@@ -23,6 +23,7 @@ tokio = { version = "~1.46.0", features = ["full"] }
 axum = { version = "~0.8.1", features = ["macros"] }
 tower = { version = "~0.5.0" }
 tower-http = { version = "~0.6.0", features = ["cors", "request-id", "trace"] }
+http-body-util = { version = "~0.1.0" }
 
 fasthash = { version = "~0.4.0" }
 base62 = { version = "~2.2.0" }

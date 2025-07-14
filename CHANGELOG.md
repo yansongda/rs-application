@@ -1,3 +1,9 @@
+## v1.10.1
+
+### optimized
+
+- optimized(backend): 优化后端日志记录 (#86)
+
 ## v1.10.0
 
 ### changed

@@ -3,9 +3,9 @@ use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
 use std::time::Duration;
 
+use axum::Router;
 use axum::http::Request;
 use axum::routing::get;
-use axum::Router;
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 use tower_http::request_id::{
@@ -60,12 +60,14 @@ impl App {
             })
             .layer(
                 ServiceBuilder::new()
+                    .layer(axum::middleware::from_fn(middleware::log_response))
                     .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
                     .layer(
                         TraceLayer::new_for_http()
                             .make_span_with(RequestIdMakeSpan)
                             .on_failure(OnFailureBehaviour),
                     )
+                    .layer(axum::middleware::from_fn(middleware::log_request))
                     .layer(PropagateRequestIdLayer::x_request_id())
                     .layer(CorsLayer::permissive()),
             )

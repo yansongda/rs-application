@@ -1,12 +1,14 @@
-use axum::body::{Body, Bytes};
 use application_database::account::access_token;
-
-use axum::extract::Request;
-use axum::middleware::Next;
-use axum::response::{IntoResponse, Response};
+use axum::body::{Body, Bytes};
+use http_body_util::BodyExt;
+use std::time::Instant;
 
 use crate::api::response::ApiErr;
 use application_kernel::result::{Error, Result};
+use axum::extract::Request;
+use axum::middleware::Next;
+use axum::response::{IntoResponse, Response};
+use tracing::info;
 
 pub async fn authorization(mut request: Request, next: Next) -> Response {
     let authorization = request.headers().get("Authorization");
@@ -35,41 +37,63 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
     next.run(request).await
 }
 
-async fn print_request_response(
-    req: Request,
-    next: Next,
-) -> Result<impl IntoResponse, (StatusCode, String)> {
+pub async fn log_request(req: Request, next: Next) -> Response {
     let (parts, body) = req.into_parts();
-    let bytes = buffer_and_print("request", body).await?;
+    let bytes = get_body_bytes(body).await;
+
+    if let Err(e) = bytes {
+        return ApiErr(e).into_response();
+    }
+
+    let bytes = bytes.unwrap();
+
+    if let Ok(body) = std::str::from_utf8(&bytes) {
+        info!(
+            method = %parts.method,
+            uri = %parts.uri,
+            headers = ?parts.headers,
+            ?body,
+            "--> 接收到请求"
+        );
+    }
+
     let req = Request::from_parts(parts, Body::from(bytes));
 
-    let res = next.run(req).await;
-
-    let (parts, body) = res.into_parts();
-    let bytes = buffer_and_print("response", body).await?;
-    let res = Response::from_parts(parts, Body::from(bytes));
-
-    Ok(res)
+    next.run(req).await
 }
 
-async fn buffer_and_print<B>(direction: &str, body: B) -> Result<Bytes, (StatusCode, String)>
+pub async fn log_response(req: Request, next: Next) -> Response {
+    let started_at = Instant::now();
+
+    let response = next.run(req).await;
+
+    let (parts, body) = response.into_parts();
+    let bytes = get_body_bytes(body).await;
+
+    if let Err(e) = bytes {
+        return ApiErr(e).into_response();
+    }
+
+    let bytes = bytes.unwrap();
+
+    if let Ok(body) = std::str::from_utf8(&bytes) {
+        info!(
+            elapsed = started_at.elapsed().as_secs_f32(),
+            ?body,
+            "<-- 请求处理完成"
+        );
+    }
+
+    Response::from_parts(parts, Body::from(bytes))
+}
+
+async fn get_body_bytes<B>(body: B) -> Result<Bytes>
 where
     B: axum::body::HttpBody<Data = Bytes>,
     B::Error: std::fmt::Display,
 {
-    let bytes = match body.collect().await {
-        Ok(collected) => collected.to_bytes(),
-        Err(err) => {
-            return Err((
-                StatusCode::BAD_REQUEST,
-                format!("failed to read {direction} body: {err}"),
-            ));
-        }
-    };
-
-    if let Ok(body) = std::str::from_utf8(&bytes) {
-        tracing::debug!("{direction} body = {body:?}");
+    match body.collect().await {
+        Ok(collected) => Ok(collected.to_bytes()),
+        Err(_) => Err(Error::InternalReadBodyFailed(None)),
     }
-
-    Ok(bytes)
 }
