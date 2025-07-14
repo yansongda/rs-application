@@ -6,6 +6,7 @@ use std::time::Instant;
 use crate::api::response::ApiErr;
 use application_kernel::result::{Error, Result};
 use axum::extract::Request;
+use axum::http::header::CONTENT_TYPE;
 use axum::middleware::Next;
 use axum::response::{IntoResponse, Response};
 use tracing::info;
@@ -39,6 +40,26 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
 
 pub async fn log_request(req: Request, next: Next) -> Response {
     let (parts, body) = req.into_parts();
+
+    let content_type_header = parts.headers.get(CONTENT_TYPE);
+    let content_type = content_type_header.and_then(|value| value.to_str().ok());
+
+    match content_type {
+        Some(ct)
+            if !ct.starts_with("application/json")
+                && !ct.starts_with("application/x-www-form-urlencoded") =>
+        {
+            info!(method = %parts.method,uri = %parts.uri,headers = ?parts.headers, "--> 接收到非 JSON 或表单请求");
+
+            return next.run(Request::from_parts(parts, body)).await;
+        }
+        None => {
+            info!(method = %parts.method, uri = %parts.uri, headers = ?parts.headers, "--> 接收到未知数据源请求");
+            return next.run(Request::from_parts(parts, body)).await;
+        }
+        _ => {}
+    }
+
     let bytes = get_body_bytes(body).await;
 
     if let Err(e) = bytes {
@@ -57,9 +78,8 @@ pub async fn log_request(req: Request, next: Next) -> Response {
         );
     }
 
-    let req = Request::from_parts(parts, Body::from(bytes));
-
-    next.run(req).await
+    next.run(Request::from_parts(parts, Body::from(bytes)))
+        .await
 }
 
 pub async fn log_response(req: Request, next: Next) -> Response {
@@ -68,6 +88,22 @@ pub async fn log_response(req: Request, next: Next) -> Response {
     let response = next.run(req).await;
 
     let (parts, body) = response.into_parts();
+
+    let content_type_header = parts.headers.get(CONTENT_TYPE);
+    let content_type = content_type_header.and_then(|value| value.to_str().ok());
+
+    if let Some(content_type) = content_type
+        && !content_type.starts_with("application/json")
+        && !content_type.starts_with("application/x-www-form-urlencoded")
+    {
+        info!(
+            elapsed = started_at.elapsed().as_secs_f32(),
+            "<-- 请求处理完成"
+        );
+
+        return Response::from_parts(parts, body);
+    }
+
     let bytes = get_body_bytes(body).await;
 
     if let Err(e) = bytes {
