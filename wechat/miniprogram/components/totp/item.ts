@@ -41,12 +41,11 @@ Component({
       const period = this.data.period ?? 30;
       const now = new Date();
       const remainSeconds = period - (now.getSeconds() % period);
-      const msUntilNextPeriod = remainSeconds * 1000 - now.getMilliseconds();
 
       this.data.refreshCodeTimeoutIdentity = setTimeout(() => {
         this.refreshCode(this.data.itemId);
         this.countdownRefresh();
-      }, msUntilNextPeriod);
+      }, remainSeconds * 1000);
 
       let countdown = remainSeconds;
       this.setData({ remainSeconds: countdown });
