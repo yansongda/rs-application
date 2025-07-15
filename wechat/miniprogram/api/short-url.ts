@@ -1,10 +1,10 @@
 import { CODE } from "@constant/error";
-import { PATH } from "@constant/shortUrl";
+import { PATH } from "@constant/short-url";
 import { HttpError } from "@models/error";
 import error from "@utils/error";
 import http from "@utils/http";
 import logger from "@utils/logger";
-import type { CreateRequest, CreateResponse } from "types/shortUrl";
+import type { CreateRequest, CreateResponse } from "types/short-url";
 
 const create = async (url: string) => {
   try {

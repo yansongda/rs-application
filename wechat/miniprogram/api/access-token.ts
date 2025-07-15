@@ -1,10 +1,10 @@
-import { PATH } from "@constant/accessToken";
+import { PATH } from "@constant/access-token";
 import { CODE } from "@constant/error";
 import { HttpError } from "@models/error";
 import error from "@utils/error";
 import http from "@utils/http";
 import logger from "@utils/logger";
-import type { LoginRequest, LoginResponse } from "types/accessToken";
+import type { LoginRequest, LoginResponse } from "types/access-token";
 
 const login = async (code: string) => {
   try {
