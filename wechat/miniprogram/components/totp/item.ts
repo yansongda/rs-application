@@ -72,15 +72,11 @@ Component({
       this.triggerEvent("delete", this.data.itemId);
     },
     clear() {
-      if (this.data.refreshCodeTimeoutIdentity > 0) {
-        clearTimeout(this.data.refreshCodeTimeoutIdentity);
-        this.data.refreshCodeTimeoutIdentity = -1;
-      }
+      clearTimeout(this.data.refreshCodeTimeoutIdentity);
+      this.data.refreshCodeTimeoutIdentity = -1;
 
-      if (this.data.countdownIntervalIdentity > 0) {
-        clearInterval(this.data.countdownIntervalIdentity);
-        this.data.refreshCodeTimeoutIdentity = -1;
-      }
+      clearInterval(this.data.countdownIntervalIdentity);
+      this.data.refreshCodeTimeoutIdentity = -1;
     },
   },
 });
