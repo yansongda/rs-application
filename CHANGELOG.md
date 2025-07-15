@@ -1,5 +1,9 @@
 ## v1.10.1
 
+### fixed
+
+- fixed(frontend): 修复 TOTP 页面在首次进入页面没有自动刷新的问题 (#86)
+
 ### optimized
 
 - optimized(backend): 优化后端日志记录 (#86)
