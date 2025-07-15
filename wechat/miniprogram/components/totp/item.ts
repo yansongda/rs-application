@@ -65,7 +65,7 @@ Component({
           this.triggerEvent("message", `更新验证码失败：${e.message}`),
         );
     },
-    async detail() {
+    detail() {
       this.triggerEvent("detail", this.data.itemId);
     },
     delete() {
