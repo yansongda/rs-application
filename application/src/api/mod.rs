@@ -60,13 +60,13 @@ impl App {
             })
             .layer(
                 ServiceBuilder::new()
-                    .layer(axum::middleware::from_fn(middleware::log_response))
                     .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
                     .layer(
                         TraceLayer::new_for_http()
                             .make_span_with(RequestIdMakeSpan)
                             .on_failure(OnFailureBehaviour),
                     )
+                    .layer(axum::middleware::from_fn(middleware::log_response))
                     .layer(axum::middleware::from_fn(middleware::log_request))
                     .layer(PropagateRequestIdLayer::x_request_id())
                     .layer(CorsLayer::permissive()),
@@ -85,7 +85,7 @@ impl<B> MakeSpan<B> for RequestIdMakeSpan {
             .map(|request_id| request_id.header_value().to_str().unwrap())
             .unwrap_or_else(|| "unknown");
 
-        info_span!("request_id", request_id)
+        info_span!("root", request_id)
     }
 }
 

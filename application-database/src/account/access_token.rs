@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
 use std::time::Instant;
-use tracing::{error, info};
+use tracing::{error, info, instrument};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct AccessToken {
@@ -68,6 +68,7 @@ impl From<LoginResponse> for AccessTokenData {
     }
 }
 
+#[instrument]
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     let sql = "select * from account.access_token where access_token = $1 limit 1";
 
