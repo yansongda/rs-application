@@ -1,8 +1,8 @@
-import api from "@api/shortUrl";
+import api from "@api/short-url";
 import type { HttpError } from "@models/error";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
-import type { CreateResponse } from "types/shortUrl";
+import type { CreateResponse } from "types/short-url";
 import type { FormSubmit } from "types/wechat";
 
 interface FormData {
