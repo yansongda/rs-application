@@ -2,7 +2,7 @@
 
 ### fixed
 
-- fix(frontend): 修复 TOTP 页面在首次进入页面没有自动刷新的问题 (#87)
+- fix(frontend): 修复 TOTP 页面在首次进入页面没有自动刷新的问题 (#87, #88)
 
 ### optimized
 
