@@ -16,8 +16,8 @@ importers:
         specifier: 1.7.2
         version: 1.7.2
       miniprogram-api-typings:
-        specifier: ^4.0.7
-        version: 4.0.7
+        specifier: ^4.1.0
+        version: 4.1.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -77,8 +77,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  miniprogram-api-typings@4.0.7:
-    resolution: {integrity: sha512-sUxqpA1+JxnDWYjO6ihiLWNJl94WzjlhnDpozfBeC+w8Mpejjsc8JuxyC3Xisimj/gp5OYaJ7nd4fM6wepzhEQ==}
+  miniprogram-api-typings@4.1.0:
+    resolution: {integrity: sha512-4RBsz27nBKyRkVGoNkRaPx24/KeJBw3zaaIlXDR8s/WBh2PbcUAc+q7wLLbp7Qsmb3bLzzUu7tqAti+B06kmjg==}
 
   tdesign-miniprogram@1.9.7:
     resolution: {integrity: sha512-GB92E09U+AltURrpYRM67SPWVcYZ9rgdYChGcgMLJ8VHUIesSwAhevCuSZgxHt+V1F0iPn0EVZ56d+fgeU6dAw==}
@@ -125,7 +125,7 @@ snapshots:
   '@biomejs/cli-win32-x64@1.7.2':
     optional: true
 
-  miniprogram-api-typings@4.0.7: {}
+  miniprogram-api-typings@4.1.0: {}
 
   tdesign-miniprogram@1.9.7: {}
 

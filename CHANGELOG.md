@@ -2,18 +2,18 @@
 
 ### fixed
 
-- fixed(frontend): 修复 TOTP 页面在首次进入页面没有自动刷新的问题 (#86)
+- fix(frontend): 修复 TOTP 页面在首次进入页面没有自动刷新的问题 (#87)
 
 ### optimized
 
-- optimized(backend): 优化后端日志记录 (#86)
+- optimize(backend): 优化后端日志记录 (#86)
 
 ## v1.10.0
 
 ### changed
 
-- changed(frontend): Api 路径去掉 miniprogram 前缀
-- changed(backend): 后端数据库规划调整
+- change(frontend): Api 路径去掉 miniprogram 前缀
+- change(backend): 后端数据库规划调整
 - optimize(backend): 后端架构优化调整
 
 ## v1.9.0
@@ -24,19 +24,19 @@
 
 ### changed
 
-- changed(frontend): 修改请求域名 (#84)
+- change(frontend): 修改请求域名 (#84)
 
 ## v1.8.2
 
 ### optimized
 
-- optimized(frontend): 优化输入框与显示框的最大现实字符数 (#83)
+- optimize(frontend): 优化输入框与显示框的最大现实字符数 (#83)
 
 ## v1.8.1
 
 ### optimized
 
-- optimized: 优化接口及界面参数长度限定 (#82)
+- optimize: 优化接口及界面参数长度限定 (#82)
 
 ## v1.8.0
 
