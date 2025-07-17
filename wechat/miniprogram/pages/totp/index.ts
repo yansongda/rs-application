@@ -21,9 +21,6 @@ Page({
   onShow() {
     this.all();
   },
-  onUnload() {
-    // this.clearRefreshInterval();
-  },
   all() {
     Toast({
       message: "加载中...",
@@ -122,5 +119,3 @@ Page({
     this.setData({ dialogVisible: false, currentItemId: 0 });
   },
 });
-
-export default {};

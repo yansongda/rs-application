@@ -1,8 +1,8 @@
 import api from "@api/totp";
 import { substr } from "@utils/string";
-import type { Item } from "miniprogram/types/totp";
-import type { Tap } from "miniprogram/types/wechat";
 import Toast from "tdesign-miniprogram/toast/index";
+import type { Item } from "types/totp";
+import type { Tap } from "types/wechat";
 
 interface Query {
   id?: string;
