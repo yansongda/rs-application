@@ -3,16 +3,16 @@ use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
 use std::time::Duration;
 
+use axum::Router;
 use axum::http::Request;
 use axum::routing::get;
-use axum::{Router, http};
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 use tower_http::request_id::{
     MakeRequestUuid, PropagateRequestIdLayer, RequestId, SetRequestIdLayer,
 };
-use tower_http::trace::{MakeSpan, OnFailure, OnRequest, OnResponse, TraceLayer};
-use tracing::{Span, error, info, info_span};
+use tower_http::trace::{MakeSpan, OnFailure, TraceLayer};
+use tracing::{Span, error, info_span};
 
 use crate::api::response::Response;
 use application_kernel::config::G_CONFIG;
@@ -64,10 +64,10 @@ impl App {
                     .layer(
                         TraceLayer::new_for_http()
                             .make_span_with(RequestIdMakeSpan)
-                            .on_request(OnRequestBehaviour)
-                            .on_response(OnResponseBehaviour)
                             .on_failure(OnFailureBehaviour),
                     )
+                    .layer(axum::middleware::from_fn(middleware::log_response))
+                    .layer(axum::middleware::from_fn(middleware::log_request))
                     .layer(PropagateRequestIdLayer::x_request_id())
                     .layer(CorsLayer::permissive()),
             )
@@ -85,34 +85,7 @@ impl<B> MakeSpan<B> for RequestIdMakeSpan {
             .map(|request_id| request_id.header_value().to_str().unwrap())
             .unwrap_or_else(|| "unknown");
 
-        info_span!("request_id", request_id)
-    }
-}
-
-#[derive(Debug, Clone)]
-struct OnRequestBehaviour;
-
-impl<B: Debug> OnRequest<B> for OnRequestBehaviour {
-    fn on_request(&mut self, request: &Request<B>, _: &Span) {
-        info!(
-            method = %request.method(),
-            uri = %request.uri(),
-            headers = ?request.headers(),
-            inputs = ?request.body(),
-            "--> 接收到请求",
-        );
-    }
-}
-
-#[derive(Debug, Clone)]
-struct OnResponseBehaviour;
-
-impl<B: Debug> OnResponse<B> for OnResponseBehaviour {
-    fn on_response(self, response: &http::Response<B>, latency: Duration, _: &Span) {
-        let elapsed = latency.as_secs_f32();
-        let body = response.body();
-
-        info!(elapsed, ?body, "<-- 请求处理完成");
+        info_span!("root", request_id)
     }
 }
 

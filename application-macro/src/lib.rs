@@ -12,6 +12,7 @@ pub fn logger_function(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let block = &input.block;
     let vis = &input.vis;
     let attrs = &input.attrs;
+    let name = &sig.ident;
 
     let param_logs = generate_param_logs(sig);
 
@@ -29,7 +30,7 @@ pub fn logger_function(_attr: TokenStream, item: TokenStream) -> TokenStream {
             let result = async #block.await;
             let elapsed = started_at.elapsed().as_secs_f32();
 
-            tracing::info!(elapsed, ?params, ?result);
+            tracing::info!(elapsed, ?params, ?result, "函数 {} 已执行", stringify!(#name));
 
             result
         }

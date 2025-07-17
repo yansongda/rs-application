@@ -70,6 +70,7 @@ impl From<LoginResponse> for AccessTokenData {
 
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     let sql = "select * from account.access_token where access_token = $1 limit 1";
+    let started_at = Instant::now();
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(access_token)
@@ -80,6 +81,10 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
 
             Error::InternalDatabaseQuery(None)
         })?;
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, access_token);
 
     if let Some(data) = result {
         return Ok(data);
