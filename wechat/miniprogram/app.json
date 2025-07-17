@@ -10,7 +10,7 @@
     "pages/totp/detail/index",
     "pages/totp/edit/issuer",
     "pages/totp/edit/username",
-    "pages/shortUrl/index"
+    "pages/short-url/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

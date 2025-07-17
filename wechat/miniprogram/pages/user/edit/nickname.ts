@@ -3,10 +3,10 @@ import { STORAGE } from "@constant/app";
 import { DEFAULT } from "@constant/user";
 import error from "@utils/error";
 import user from "@utils/user";
-import type { User } from "miniprogram/types/user";
-import type { FormSubmit, WxGetStorageSuccess } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
+import type { User } from "types/user";
+import type { FormSubmit, WxGetStorageSuccess } from "types/wechat";
 
 interface FormData {
   nickname: string;

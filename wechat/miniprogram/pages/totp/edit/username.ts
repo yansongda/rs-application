@@ -1,9 +1,9 @@
 import api from "@api/totp";
 import error from "@utils/error";
-import type { EditUsernameRequest } from "miniprogram/types/totp";
-import type { FormSubmit } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
+import type { EditUsernameRequest } from "types/totp";
+import type { FormSubmit } from "types/wechat";
 
 interface Query {
   id?: string;

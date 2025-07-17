@@ -1,10 +1,10 @@
-import accessToken from "@api/accessToken";
+import accessToken from "@api/access-token";
 import { STORAGE } from "@constant/app";
-import type { LoginResponse } from "miniprogram/types/accessToken";
+import type { LoginResponse } from "types/access-token";
 import type {
   WxGetUpdateManagerOnCheckForUpdateResult,
   WxLoginSuccessCallbackResult,
-} from "miniprogram/types/wechat";
+} from "types/wechat";
 import logger from "./logger";
 
 const valid = async (): Promise<boolean> => {
