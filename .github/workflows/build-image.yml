@@ -3,21 +3,21 @@ name: Building Image
 on:
   push:
     tags:
-      - v*
 
 env:
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
 
 jobs:
-  build:
-    name: Building Docker Image
+  build-application-api:
+    name: Building [application-api] Image
+    if: ${{ startsWith(github.ref, 'refs/tags/application-api') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build the docker image
         run: |
-          docker build -t app .
+          docker build -t app -f Dockerfile-application-api .
       - name: Tag the image
         run: |
           docker tag app registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application:$GITHUB_REF_NAME

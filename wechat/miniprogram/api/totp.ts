@@ -11,7 +11,6 @@ import type {
   EditIssuerRequest,
   EditUsernameRequest,
   Item,
-  UpdateRequest,
 } from "types/totp";
 
 const all = async () => {

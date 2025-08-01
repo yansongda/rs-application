@@ -41,12 +41,11 @@ Component({
       const period = this.data.period ?? 30;
       const now = new Date();
       const remainSeconds = period - (now.getSeconds() % period);
-      const msUntilNextPeriod = remainSeconds * 1000 - now.getMilliseconds();
 
       this.data.refreshCodeTimeoutIdentity = setTimeout(() => {
         this.refreshCode(this.data.itemId);
         this.countdownRefresh();
-      }, msUntilNextPeriod);
+      }, remainSeconds * 1000);
 
       let countdown = remainSeconds;
       this.setData({ remainSeconds: countdown });
@@ -66,19 +65,18 @@ Component({
           this.triggerEvent("message", `更新验证码失败：${e.message}`),
         );
     },
-    async detail() {
+    detail() {
       this.triggerEvent("detail", this.data.itemId);
     },
     delete() {
       this.triggerEvent("delete", this.data.itemId);
     },
     clear() {
-      if (this.data.refreshCodeTimeoutIdentity) {
-        clearTimeout(this.data.refreshCodeTimeoutIdentity);
-      }
-      if (this.data.countdownIntervalIdentity) {
-        clearInterval(this.data.countdownIntervalIdentity);
-      }
+      clearTimeout(this.data.refreshCodeTimeoutIdentity);
+      this.data.refreshCodeTimeoutIdentity = -1;
+
+      clearInterval(this.data.countdownIntervalIdentity);
+      this.data.refreshCodeTimeoutIdentity = -1;
     },
   },
 });

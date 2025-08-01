@@ -3,14 +3,14 @@ import { STORAGE } from "@constant/app";
 import { DEFAULT } from "@constant/user";
 import error from "@utils/error";
 import user from "@utils/user";
-import type { User } from "miniprogram/types/user";
+import Message from "tdesign-miniprogram/message/index";
+import Toast from "tdesign-miniprogram/toast/index";
+import type { User } from "types/user";
 import type {
   ChooseAvatarButtonTap,
   WxGetFileSystemManagerReadFileSuccess,
   WxGetStorageSuccess,
-} from "miniprogram/types/wechat";
-import Message from "tdesign-miniprogram/message/index";
-import Toast from "tdesign-miniprogram/toast/index";
+} from "types/wechat";
 
 Page({
   data: {

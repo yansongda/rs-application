@@ -1,5 +1,5 @@
 ### 用户 - 登录
-POST {{domain}}/api/v1/miniprogram/access-token/login
+POST {{domain}}/api/v1/access-token/login
 Content-Type: application/json
 
 {
@@ -8,28 +8,43 @@ Content-Type: application/json
 }
 
 ### 用户 - 详情
-POST {{domain}}/api/v1/miniprogram/users/detail
+POST {{domain}}/api/v1/users/detail
+Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
-### 用户 - 更新
-POST {{domain}}/api/v1/miniprogram/users/edit
+### 用户 - 更新头像
+POST {{domain}}/api/v1/users/edit/avatar
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "config": {
-    "avatar": "111",
-    "nickname": "yansongdaa",
+    "avatar": "data:image/jpeg;base64,11111111111111111111111111"
+}
+
+### 用户 - 更新昵称
+POST {{domain}}/api/v1/users/edit/nickname
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+    "nickname": "yansongdaa"
+}
+
+### 用户 - 更新slogan
+POST {{domain}}/api/v1/users/edit/slogan
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
     "slogan": "Coding My Life...😄"
-  }
 }
 
 ### TOTP - 所有
-POST {{domain}}/api/v1/miniprogram/totp/all
+POST {{domain}}/api/v1/totp/all
 Authorization: Bearer {{access_token}}
 
 ### TOTP - 详情
-POST {{domain}}/api/v1/miniprogram/totp/detail
+POST {{domain}}/api/v1/totp/detail
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -38,7 +53,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### TOTP - 创建
-POST {{domain}}/api/v1/miniprogram/totp/create
+POST {{domain}}/api/v1/totp/create
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -46,19 +61,28 @@ Authorization: Bearer {{access_token}}
   "uri": "otpauth://totp/GitHub:yansongda?secret=LBKODWEWIEEEMQKY&issuer=GitHub"
 }
 
-### TOTP - 更新
-POST {{domain}}/api/v1/miniprogram/totp/update
+### TOTP - 更新issuer
+POST {{domain}}/api/v1/totp/edit/issuer
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
 {
-  "id": 1,
-  "issuer": "Google Search",
-  "username": "yansongda-search"
+    "id": 1,
+    "issuer": "Google Search"
+}
+
+### TOTP - 更新username
+POST {{domain}}/api/v1/totp/edit/username
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+    "id": 1,
+    "username": "yansongda-search"
 }
 
 ### TOTP - 删除
-POST {{domain}}/api/v1/miniprogram/totp/delete
+POST {{domain}}/api/v1/totp/delete
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -67,7 +91,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 短链 - 创建
-POST {{domain}}/api/v1/miniprogram/short-url/create
+POST {{domain}}/api/v1/short-url/create
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -76,7 +100,7 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 短链 - 详情
-POST {{domain}}/api/v1/miniprogram/short-url/detail
+POST {{domain}}/api/v1/short-url/detail
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -85,5 +109,5 @@ Authorization: Bearer {{access_token}}
 }
 
 ### 短链 - 访问
-GET {{domain}}/api/v1/miniprogram/short-url/redirect/{{short}}
+GET {{domain}}/api/v1/short-url/redirect/{{short}}
 
