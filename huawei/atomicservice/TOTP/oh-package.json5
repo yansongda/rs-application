@@ -1,6 +1,6 @@
 {
   "modelVersion": "5.1.0",
-  "description": "Please describe the basic information.",
+  "description": "TOTP 验证器.",
   "dependencies": {
   },
   "devDependencies": {
