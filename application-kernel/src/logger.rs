@@ -5,7 +5,7 @@ use tracing::level_filters::LevelFilter;
 use tracing::{Event, Subscriber};
 use tracing_appender::non_blocking::{NonBlockingBuilder, WorkerGuard};
 use tracing_subscriber::filter;
-use tracing_subscriber::fmt::{FmtContext, FormatEvent, FormatFields, FormattedFields, format};
+use tracing_subscriber::fmt::{FmtContext, FormatEvent, FormatFields, format};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::registry::{LookupSpan, Scope};
 use tracing_subscriber::util::SubscriberInitExt;
@@ -48,6 +48,8 @@ impl Logger {
     }
 }
 
+pub struct TracingId(pub String);
+
 #[derive(Debug, Clone)]
 struct TracingFormatter;
 
@@ -70,15 +72,9 @@ where
         )?;
 
         for span in ctx.event_scope().into_iter().flat_map(Scope::from_root) {
-            if let Some(fields) = span.extensions().get::<FormattedFields<N>>() {
-                if !fields.is_empty() {
-                    let c = &fields.fields;
-
-                    if c.starts_with("request_id") {
-                        write!(writer, "{}|", &c[12..c.len() - 1])?;
-                        break;
-                    }
-                }
+            if let Some(request_id) = span.extensions().get::<TracingId>() {
+                write!(writer, "{}|", request_id.0)?;
+                break;
             }
         }
 

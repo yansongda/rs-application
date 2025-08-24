@@ -1,3 +1,6 @@
+create schema account collate utf8mb4_unicode_ci;
+create schema tool collate utf8mb4_unicode_ci;
+
 create table account.access_token
 (
     id           bigint unsigned                       not null AUTO_RANDOM

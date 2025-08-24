@@ -6,11 +6,11 @@ use std::ops::Deref;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DetailRequest {
-    pub id: Option<i64>,
+    pub id: Option<u64>,
 }
 
 impl Validator for DetailRequest {
-    type Data = i64;
+    type Data = u64;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
@@ -23,7 +23,7 @@ impl Validator for DetailRequest {
 
 #[derive(Debug, Serialize)]
 pub struct DetailResponse {
-    pub id: i64,
+    pub id: u64,
     pub issuer: String,
     pub username: String,
     pub config: DetailResponseConfig,
@@ -80,13 +80,13 @@ impl Validator for CreateRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditIssuerRequest {
-    pub id: Option<i64>,
+    pub id: Option<u64>,
     pub issuer: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditIssuerRequestParams {
-    pub id: i64,
+    pub id: u64,
     pub issuer: String,
 }
 
@@ -113,13 +113,13 @@ impl Validator for EditIssuerRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditUsernameRequest {
-    pub id: Option<i64>,
+    pub id: Option<u64>,
     pub username: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditUsernameRequestParams {
-    pub id: i64,
+    pub id: u64,
     pub username: String,
 }
 
@@ -150,11 +150,11 @@ impl Validator for EditUsernameRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DeleteRequest {
-    pub id: Option<i64>,
+    pub id: Option<u64>,
 }
 
 impl Validator for DeleteRequest {
-    type Data = i64;
+    type Data = u64;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {

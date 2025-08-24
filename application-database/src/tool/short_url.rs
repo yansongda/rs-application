@@ -8,10 +8,10 @@ use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct ShortUrl {
-    pub id: i64,
+    pub id: u64,
     pub short: String,
     pub url: String,
-    pub visit: i64,
+    pub visit: u64,
     pub created_at: DateTime<Local>,
     pub updated_at: DateTime<Local>,
 }
@@ -28,7 +28,7 @@ pub async fn fetch(short: &str) -> application_kernel::result::Result<ShortUrl> 
 
     let result: Option<ShortUrl> = sqlx::query_as(sql)
         .bind(short)
-        .fetch_optional(Pool::postgres("tool")?)
+        .fetch_optional(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("查询短连接失败: {:?}", e);
@@ -54,7 +54,7 @@ pub async fn insert(url: CreateShortUrl) -> application_kernel::result::Result<S
     let result = sqlx::query_as(sql)
         .bind(&url.short)
         .bind(&url.url)
-        .fetch_one(Pool::postgres("tool")?)
+        .fetch_one(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("插入短连接失败: {:?}", e);
@@ -69,13 +69,13 @@ pub async fn insert(url: CreateShortUrl) -> application_kernel::result::Result<S
     result
 }
 
-pub async fn update_count(id: i64) -> application_kernel::result::Result<bool> {
+pub async fn update_count(id: u64) -> application_kernel::result::Result<bool> {
     let sql = "update tool.short_url set visit = visit + 1, updated_at = now() where id = $1";
     let started_at = Instant::now();
 
     sqlx::query(sql)
         .bind(id)
-        .execute(Pool::postgres("tool")?)
+        .execute(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("更新短连接访问次数失败: {:?}", e);
