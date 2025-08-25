@@ -121,7 +121,7 @@ pub async fn fetch_by_user_id(user_id: u64) -> Result<AccessToken> {
 pub async fn insert(
     platform: &Platform,
     user_id: u64,
-    data: &AccessTokenData,
+    data: AccessTokenData,
 ) -> Result<AccessToken> {
     let sql = "insert into account.access_token (user_id, access_token, data, platform) values (?, ?, ?, ?)";
     let access_token = data.to_access_token(platform)?;
@@ -130,7 +130,7 @@ pub async fn insert(
     let result = sqlx::query(sql)
         .bind(user_id)
         .bind(&access_token)
-        .bind(Json(data))
+        .bind(Json(&data))
         .bind(platform)
         .execute(Pool::mysql("account")?)
         .await
@@ -149,20 +149,20 @@ pub async fn insert(
         user_id,
         platform: platform.to_owned(),
         access_token: access_token.clone(),
-        data: Json(data.clone()),
+        data: Json(data),
         created_at: Local::now(),
         updated_at: Local::now(),
     })
 }
 
-pub async fn update(mut access_token: AccessToken, data: &AccessTokenData) -> Result<AccessToken> {
+pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
     let sql = "update account.access_token set access_token = ?, data = ?, updated_at = now() where id = ?";
     let started_at = Instant::now();
     let access_token_string = data.to_access_token(&access_token.platform)?;
 
     let _ = sqlx::query(sql)
         .bind(access_token_string.clone())
-        .bind(Json(data))
+        .bind(Json(&data))
         .bind(access_token.id)
         .execute(Pool::mysql("account")?)
         .await
@@ -177,7 +177,7 @@ pub async fn update(mut access_token: AccessToken, data: &AccessTokenData) -> Re
     info!(elapsed, sql, access_token.id, ?data);
 
     access_token.access_token = access_token_string;
-    access_token.data = Json(data.clone());
+    access_token.data = Json(data);
     access_token.updated_at = Local::now();
 
     Ok(access_token)

@@ -52,13 +52,13 @@ pub async fn insert(
     phone: Option<&str>,
     config: Config,
 ) -> application_kernel::result::Result<User> {
-    let sql = "insert into account.user (phone, config) values ($1, $2) returning *";
+    let sql = "insert into account.user (phone, config) values (?, ?)";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(phone)
         .bind(Json(&config))
-        .fetch_one(Pool::mysql("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("插入用户失败: {:?}", e);
@@ -70,17 +70,23 @@ pub async fn insert(
 
     info!(elapsed, sql, phone, ?config);
 
-    result
+    Ok(User {
+        id: result?.last_insert_id(),
+        phone: phone.map(|s| s.to_string()),
+        config: Some(Json(config)),
+        created_at: Local::now(),
+        updated_at: Local::now(),
+    })
 }
 
 pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{avatar}', $1) where id = $2 returning *";
+    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{avatar}', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(Json(avatar))
         .bind(id)
-        .fetch_one(Pool::mysql("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新用户失败: {:?}", e);

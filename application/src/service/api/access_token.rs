@@ -15,12 +15,12 @@ pub async fn login(request: LoginRequest) -> Result<access_token::AccessToken> {
     let exist = access_token::fetch_by_user_id(user_id).await;
 
     if exist.is_ok() {
-        return access_token::update(exist?, &access_token_data).await;
+        return access_token::update(exist?, access_token_data).await;
     }
 
     match exist.unwrap_err() {
         Error::ParamsAccessTokenNotFound(_) => {
-            access_token::insert(&platform, user_id, &access_token_data).await
+            access_token::insert(&platform, user_id, access_token_data).await
         }
         e => Err(e),
     }
@@ -31,13 +31,13 @@ async fn login_wechat(code: &str) -> Result<(u64, access_token::AccessTokenData)
     let open_id = wechat_response.openid.clone().unwrap();
 
     Ok((
-        get_third_user_id(third_user::Platform::Wechat, open_id.as_str()).await?,
+        get_third_user_id(&third_user::Platform::Wechat, open_id.as_str()).await?,
         access_token::AccessTokenData::from(wechat_response),
     ))
 }
 
-async fn get_third_user_id(platform: third_user::Platform, third_id: &str) -> Result<u64> {
-    let result = third_user::fetch(&platform, third_id).await;
+async fn get_third_user_id(platform: &third_user::Platform, third_id: &str) -> Result<u64> {
+    let result = third_user::fetch(platform, third_id).await;
 
     if let Ok(user) = result {
         return Ok(user.user_id);

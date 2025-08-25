@@ -130,7 +130,7 @@ pub async fn fetch(
     platform: &Platform,
     third_id: &str,
 ) -> application_kernel::result::Result<ThirdUser> {
-    let sql = "select * from account.third_user where platform = $1 and third_id = $2 limit 1";
+    let sql = "select * from account.third_user where platform = ? and third_id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<ThirdUser> = sqlx::query_as(sql)
@@ -156,18 +156,18 @@ pub async fn fetch(
 }
 
 pub async fn insert(
-    platform: Platform,
+    platform: &Platform,
     third_id: &str,
     user_id: u64,
 ) -> application_kernel::result::Result<ThirdUser> {
-    let sql = "insert into account.third_user (platform, third_id, user_id) values ($1, $2, $3) returning *";
+    let sql = "insert into account.third_user (platform, third_id, user_id) values (?, ?, ?)";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(platform)
         .bind(third_id)
         .bind(user_id)
-        .fetch_one(Pool::mysql("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("查询第三方平台用户失败: {:?}", e);
@@ -179,5 +179,13 @@ pub async fn insert(
 
     info!(elapsed, sql, third_id);
 
-    result
+    Ok(ThirdUser {
+        id: result?.last_insert_id(),
+        user_id,
+        platform: platform.to_owned(),
+        third_id: third_id.to_string(),
+        config: None,
+        created_at: Local::now(),
+        updated_at: Local::now(),
+    })
 }
