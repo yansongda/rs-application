@@ -1,6 +1,11 @@
 create schema account collate utf8mb4_unicode_ci;
 create schema tool collate utf8mb4_unicode_ci;
 
+create user 'Udrv4LrHvY2zmLn.rs-application'
+    identified by 'xxxx';
+grant create, delete, insert, select, update on account.* to 'Udrv4LrHvY2zmLn.rs-application';
+grant create, delete, insert, select, update on tool.* to 'Udrv4LrHvY2zmLn.rs-application';
+
 create table account.access_token
 (
     id           bigint unsigned                       not null AUTO_RANDOM
@@ -8,7 +13,7 @@ create table account.access_token
     user_id      bigint unsigned                       not null,
     platform     varchar(32) default 'wechat'          not null,
     access_token varchar(128)                          not null,
-    data         json                                  null,
+    data         json                                  not null,
     created_at   timestamp   default CURRENT_TIMESTAMP not null,
     updated_at   timestamp   default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint uk_account_access_token
@@ -72,3 +77,4 @@ create table tool.totp
 create index idx_tool_user_id
     on tool.totp (user_id);
 
+-- TODO: 导入数据

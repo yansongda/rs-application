@@ -24,7 +24,7 @@ pub struct Config {
 }
 
 pub async fn fetch(user_id: u64) -> application_kernel::result::Result<User> {
-    let sql = "select * from account.user where id = $1 limit 1";
+    let sql = "select * from account.user where id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<User> = sqlx::query_as(sql)
@@ -51,7 +51,7 @@ pub async fn fetch(user_id: u64) -> application_kernel::result::Result<User> {
 pub async fn insert(
     phone: Option<&str>,
     config: Config,
-) -> application_kernel::result::Result<User> {
+) -> application_kernel::result::Result<u64> {
     let sql = "insert into account.user (phone, config) values (?, ?)";
     let started_at = Instant::now();
 
@@ -70,21 +70,15 @@ pub async fn insert(
 
     info!(elapsed, sql, phone, ?config);
 
-    Ok(User {
-        id: result?.last_insert_id(),
-        phone: phone.map(|s| s.to_string()),
-        config: Some(Json(config)),
-        created_at: Local::now(),
-        updated_at: Local::now(),
-    })
+    Ok(result?.last_insert_id())
 }
 
-pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{avatar}', ?) where id = ?";
+pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set config = json_set(config, '$.avatar', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query(sql)
-        .bind(Json(avatar))
+    let _ = sqlx::query(sql)
+        .bind(avatar)
         .bind(id)
         .execute(Pool::mysql("account")?)
         .await
@@ -98,17 +92,17 @@ pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result:
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_nickname(id: u64, nickname: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{nickname}', $1) where id = $2 returning *";
+pub async fn update_nickname(id: u64, nickname: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set config = json_set(config, '$.nickname', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
-        .bind(Json(nickname))
+    let _ = sqlx::query(sql)
+        .bind(nickname)
         .bind(id)
-        .fetch_one(Pool::mysql("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新昵称失败: {:?}", e);
@@ -120,15 +114,15 @@ pub async fn update_nickname(id: u64, nickname: &str) -> application_kernel::res
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_slogan(id: u64, slogan: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{slogan}', $1) where id = $2 returning *";
+pub async fn update_slogan(id: u64, slogan: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set config = json_set(config, '$.slogan', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
-        .bind(Json(slogan))
+    let _ = sqlx::query(sql)
+        .bind(slogan)
         .bind(id)
         .fetch_one(Pool::mysql("account")?)
         .await
@@ -142,17 +136,17 @@ pub async fn update_slogan(id: u64, slogan: &str) -> application_kernel::result:
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_phone(id: u64, phone: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), phone = $1 where id = $2 returning *";
+pub async fn update_phone(id: u64, phone: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set phone = ? where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let _ = sqlx::query(sql)
         .bind(phone)
         .bind(id)
-        .fetch_one(Pool::mysql("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新手机号失败: {:?}", e);
@@ -164,5 +158,5 @@ pub async fn update_phone(id: u64, phone: &str) -> application_kernel::result::R
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }

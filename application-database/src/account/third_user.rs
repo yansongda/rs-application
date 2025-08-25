@@ -6,11 +6,11 @@ use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize};
 use sqlx::encode::IsNull;
 use sqlx::error::BoxDynError;
+use sqlx::mysql::{MySqlTypeInfo, MySqlValueRef};
 use sqlx::types::Json;
 use sqlx::{Decode, Encode, FromRow, MySql, Type};
 use std::fmt::{Display, Formatter};
 use std::time::Instant;
-use sqlx::mysql::{MySqlTypeInfo, MySqlValueRef};
 use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -159,7 +159,7 @@ pub async fn insert(
     platform: &Platform,
     third_id: &str,
     user_id: u64,
-) -> application_kernel::result::Result<ThirdUser> {
+) -> application_kernel::result::Result<u64> {
     let sql = "insert into account.third_user (platform, third_id, user_id) values (?, ?, ?)";
     let started_at = Instant::now();
 
@@ -179,13 +179,5 @@ pub async fn insert(
 
     info!(elapsed, sql, third_id);
 
-    Ok(ThirdUser {
-        id: result?.last_insert_id(),
-        user_id,
-        platform: platform.to_owned(),
-        third_id: third_id.to_string(),
-        config: None,
-        created_at: Local::now(),
-        updated_at: Local::now(),
-    })
+    Ok(result?.last_insert_id())
 }

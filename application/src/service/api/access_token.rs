@@ -45,7 +45,7 @@ async fn get_third_user_id(platform: &third_user::Platform, third_id: &str) -> R
 
     match result.unwrap_err() {
         Error::ParamsThirdUserNotFound(_) => {
-            let user = user::insert(
+            let user_id = user::insert(
                 None,
                 user::Config {
                     avatar: None,
@@ -55,9 +55,9 @@ async fn get_third_user_id(platform: &third_user::Platform, third_id: &str) -> R
             )
             .await?;
 
-            third_user::insert(platform, third_id, user.id).await?;
+            third_user::insert(platform, third_id, user_id).await?;
 
-            Ok(user.id)
+            Ok(user_id)
         }
         e => Err(e),
     }

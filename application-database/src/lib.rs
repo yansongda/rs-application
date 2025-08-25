@@ -1,11 +1,11 @@
+use application_kernel::config::{Database, G_CONFIG};
+use application_kernel::result::{Error, Result};
+use sqlx::MySqlPool;
+use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
 use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::LazyLock;
 use std::time::Duration;
-use sqlx::mysql::{MySqlConnectOptions, MySqlPoolOptions};
-use sqlx::MySqlPool;
-use application_kernel::config::{Database, G_CONFIG};
-use application_kernel::result::{Error, Result};
 use tracing::error;
 
 pub mod account;
@@ -37,8 +37,7 @@ impl Pool {
     }
 
     fn connect_mysql(config: &Database) -> MySqlPool {
-        let connection_options = MySqlConnectOptions::from_str(config.url.as_str())
-            .unwrap();
+        let connection_options = MySqlConnectOptions::from_str(config.url.as_str()).unwrap();
 
         MySqlPoolOptions::new()
             .acquire_timeout(Duration::from_secs(config.acquire_timeout))

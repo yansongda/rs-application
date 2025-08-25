@@ -23,7 +23,7 @@ pub struct CreateShortUrl {
 }
 
 pub async fn fetch(short: &str) -> application_kernel::result::Result<ShortUrl> {
-    let sql = "select * from tool.short_url where short = $1 limit 1";
+    let sql = "select * from tool.short_url where short = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<ShortUrl> = sqlx::query_as(sql)
@@ -48,13 +48,13 @@ pub async fn fetch(short: &str) -> application_kernel::result::Result<ShortUrl> 
 }
 
 pub async fn insert(url: CreateShortUrl) -> application_kernel::result::Result<ShortUrl> {
-    let sql = "insert into tool.short_url (short, url) values ($1, $2) returning *";
+    let sql = "insert into tool.short_url (short, url) values (?, ?)";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(&url.short)
         .bind(&url.url)
-        .fetch_one(Pool::mysql("tool")?)
+        .execute(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("插入短连接失败: {:?}", e);
@@ -66,11 +66,18 @@ pub async fn insert(url: CreateShortUrl) -> application_kernel::result::Result<S
 
     info!(elapsed, sql, ?url);
 
-    result
+    Ok(ShortUrl {
+        id: result?.last_insert_id(),
+        short: url.short,
+        url: url.url,
+        visit: 0,
+        created_at: Local::now(),
+        updated_at: Local::now(),
+    })
 }
 
-pub async fn update_count(id: u64) -> application_kernel::result::Result<bool> {
-    let sql = "update tool.short_url set visit = visit + 1, updated_at = now() where id = $1";
+pub async fn update_count(id: u64) -> application_kernel::result::Result<()> {
+    let sql = "update tool.short_url set visit = visit + 1 where id = ?";
     let started_at = Instant::now();
 
     sqlx::query(sql)
@@ -87,5 +94,5 @@ pub async fn update_count(id: u64) -> application_kernel::result::Result<bool> {
 
     info!(elapsed, sql, id);
 
-    Ok(true)
+    Ok(())
 }

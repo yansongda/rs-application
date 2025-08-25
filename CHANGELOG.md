@@ -1,3 +1,9 @@
+## v1.11.0
+
+### chore
+
+- chore: 迁移到 tidb cloud (#90)
+
 ## v1.10.1
 
 ### fixed

@@ -156,7 +156,7 @@ pub async fn insert(
 }
 
 pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
-    let sql = "update account.access_token set access_token = ?, data = ?, updated_at = now() where id = ?";
+    let sql = "update account.access_token set access_token = ?, data = ? where id = ?";
     let started_at = Instant::now();
     let access_token_string = data.to_access_token(&access_token.platform)?;
 
