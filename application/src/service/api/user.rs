@@ -3,7 +3,7 @@ use application_database::account::user;
 use application_kernel::result::{Error, Result};
 
 pub async fn detail(id: u64) -> Result<user::User> {
-    if id <= 0 {
+    if id == 0 {
         return Err(Error::ParamsUserNotFound(None));
     }
 

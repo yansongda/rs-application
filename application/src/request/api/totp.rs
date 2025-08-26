@@ -98,10 +98,10 @@ impl Validator for EditIssuerRequest {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
 
-        if let Some(issuer) = &self.issuer {
-            if issuer.chars().count() > 128 {
-                return Err(Error::ParamsTotpIssuerMaxLengthReached(None));
-            }
+        if let Some(issuer) = &self.issuer
+            && issuer.chars().count() > 128
+        {
+            return Err(Error::ParamsTotpIssuerMaxLengthReached(None));
         }
 
         Ok(Self::Data {

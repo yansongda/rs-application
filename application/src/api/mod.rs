@@ -88,14 +88,14 @@ impl<B> MakeSpan<B> for RequestIdMakeSpan {
         let span = info_span!("root", request_id);
 
         span.with_subscriber(|(id, dispatch)| {
-            if let Some(sub) = dispatch.downcast_ref::<tracing_subscriber::Registry>() {
-                if let Some(span_ref) = sub.span(id) {
-                    span_ref
-                        .extensions_mut()
-                        .insert(application_kernel::logger::TracingId(
-                            request_id.to_string(),
-                        ));
-                }
+            if let Some(sub) = dispatch.downcast_ref::<tracing_subscriber::Registry>()
+                && let Some(span_ref) = sub.span(id)
+            {
+                span_ref
+                    .extensions_mut()
+                    .insert(application_kernel::logger::TracingId(
+                        request_id.to_string(),
+                    ));
             }
         });
 
