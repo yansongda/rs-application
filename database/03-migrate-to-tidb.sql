@@ -1,10 +1,10 @@
 create schema account collate utf8mb4_unicode_ci;
 create schema tool collate utf8mb4_unicode_ci;
 
-create user 'Udrv4LrHvY2zmLn.rs-application'
+create user 'xxx.rs-application'
     identified by 'xxxx';
-grant create, delete, insert, select, update on account.* to 'Udrv4LrHvY2zmLn.rs-application';
-grant create, delete, insert, select, update on tool.* to 'Udrv4LrHvY2zmLn.rs-application';
+grant create, delete, insert, select, update on account.* to 'xx.rs-application';
+grant create, delete, insert, select, update on tool.* to 'xx.rs-application';
 
 create table account.access_token
 (

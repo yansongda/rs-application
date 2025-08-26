@@ -15,14 +15,14 @@ interface Dataset {
 Page({
   data: {
     dialogVisible: false,
-    id: 0,
+    id: "0",
     issuer: "",
     username: "",
     config: { period: 30 },
   },
   response: {} as Item,
   onLoad(query: Query) {
-    this.data.id = Number(query.id || 0);
+    this.data.id = query.id || "0";
   },
   onShow() {
     Toast({
