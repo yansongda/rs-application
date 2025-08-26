@@ -53,11 +53,13 @@ create index idx_account_phone
 
 create table tool.short_url
 (
-    id    bigint unsigned           not null AUTO_RANDOM
+    id    bigint unsigned                          not null AUTO_RANDOM
         primary key,
-    short varchar(64)               not null,
-    url   longtext                  null,
-    visit bigint unsigned default 0 not null,
+    short varchar(64)                              not null,
+    url   longtext                                 null,
+    visit bigint unsigned default 0                not null,
+    created_at timestamp default CURRENT_TIMESTAMP not null,
+    updated_at timestamp default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP
     constraint uk_tool_short
         unique (short)
 );
