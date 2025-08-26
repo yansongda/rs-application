@@ -10,8 +10,8 @@ use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Totp {
-    pub id: i64,
-    pub user_id: i64,
+    pub id: u64,
+    pub user_id: u64,
     pub username: String,
     pub issuer: Option<String>,
     pub config: Json<TotpConfig>,
@@ -20,7 +20,7 @@ pub struct Totp {
 }
 
 impl Totp {
-    pub fn ensure_permission(&self, user_id: i64) -> Result<()> {
+    pub fn ensure_permission(&self, user_id: u64) -> Result<()> {
         if self.user_id == user_id {
             return Ok(());
         }
@@ -53,19 +53,19 @@ pub struct TotpConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreatedTotp {
-    pub user_id: i64,
+    pub user_id: u64,
     pub username: String,
     pub issuer: Option<String>,
     pub config: TotpConfig,
 }
 
-pub async fn all(user_id: i64) -> Result<Vec<Totp>> {
-    let sql = "select * from tool.totp where user_id = $1 order by id asc";
+pub async fn all(user_id: u64) -> Result<Vec<Totp>> {
+    let sql = "select * from tool.totp where user_id = ? order by id asc";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
         .bind(user_id)
-        .fetch_all(Pool::postgres("tool")?)
+        .fetch_all(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("查询用户所有的 Totp 失败: {:?}", e);
@@ -80,13 +80,13 @@ pub async fn all(user_id: i64) -> Result<Vec<Totp>> {
     result
 }
 
-pub async fn fetch(id: i64) -> Result<Totp> {
-    let sql = "select * from tool.totp where id = $1 limit 1";
+pub async fn fetch(id: u64) -> Result<Totp> {
+    let sql = "select * from tool.totp where id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<Totp> = sqlx::query_as(sql)
         .bind(id)
-        .fetch_optional(Pool::postgres("tool")?)
+        .fetch_optional(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("查询 Totp 详情失败: {:?}", e);
@@ -105,16 +105,16 @@ pub async fn fetch(id: i64) -> Result<Totp> {
     Err(Error::ParamsTotpNotFound(None))
 }
 
-pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
-    let sql = "insert into tool.totp (user_id, username, issuer, config) values ($1, $2, $3, $4) returning *";
+pub async fn insert(totp: CreatedTotp) -> Result<u64> {
+    let sql = "insert into tool.totp (user_id, username, issuer, config) values (?, ?, ?, ?)";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(totp.user_id)
         .bind(&totp.username)
         .bind(&totp.issuer)
         .bind(Json(&(totp.config)))
-        .fetch_one(Pool::postgres("tool")?)
+        .execute(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("插入 Totp 失败: {:?}", e);
@@ -126,17 +126,17 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
 
     info!(elapsed, sql, ?totp);
 
-    result
+    Ok(result?.last_insert_id())
 }
 
-pub async fn update_issuer(id: i64, issuer: &str) -> Result<Totp> {
-    let sql = "update tool.totp set updated_at = now(), issuer = $1 where id = $2 returning *";
+pub async fn update_issuer(id: u64, issuer: &str) -> Result<()> {
+    let sql = "update tool.totp set issuer = ? where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let _ = sqlx::query(sql)
         .bind(issuer)
         .bind(id)
-        .fetch_one(Pool::postgres("tool")?)
+        .execute(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("更新 TOTP 的 issuer 失败: {:?}", e);
@@ -148,17 +148,17 @@ pub async fn update_issuer(id: i64, issuer: &str) -> Result<Totp> {
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_username(id: i64, username: &str) -> Result<Totp> {
-    let sql = "update tool.totp set updated_at = now(), username = $1 where id = $2 returning *";
+pub async fn update_username(id: u64, username: &str) -> Result<()> {
+    let sql = "update tool.totp set username = ? where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let _ = sqlx::query(sql)
         .bind(username)
         .bind(id)
-        .fetch_one(Pool::postgres("tool")?)
+        .execute(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("更新 TOTP 的 username 失败: {:?}", e);
@@ -170,16 +170,16 @@ pub async fn update_username(id: i64, username: &str) -> Result<Totp> {
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn delete(id: i64) -> Result<()> {
+pub async fn delete(id: u64) -> Result<()> {
     let sql = "delete from tool.totp where id = $1";
     let started_at = Instant::now();
 
     sqlx::query(sql)
         .bind(id)
-        .execute(Pool::postgres("tool")?)
+        .execute(Pool::mysql("tool")?)
         .await
         .map_err(|e| {
             error!("删除 Totp 失败: {:?}", e);

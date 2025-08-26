@@ -15,7 +15,7 @@ import type {
 Page({
   data: {
     dialogVisible: false,
-    currentItemId: 0,
+    currentItemId: "0",
     items: [] as Item[],
   },
   onShow() {
@@ -82,12 +82,12 @@ Page({
       .finally(() => this.all());
   },
   async itemDetail(e: ItemDetailEvent) {
-    const id = Number(e.detail);
+    const id = e.detail;
 
     await wx.navigateTo({ url: `/pages/totp/detail/index?id=${id}` });
   },
   itemDelete(e: ItemDeleteEvent) {
-    const currentItemId = Number(e.detail);
+    const currentItemId = e.detail;
 
     this.setData({ dialogVisible: true, currentItemId });
   },
@@ -116,6 +116,6 @@ Page({
       });
   },
   dialogCancel() {
-    this.setData({ dialogVisible: false, currentItemId: 0 });
+    this.setData({ dialogVisible: false, currentItemId: "0" });
   },
 });

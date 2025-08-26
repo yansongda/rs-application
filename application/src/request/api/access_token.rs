@@ -18,10 +18,10 @@ impl Validator for LoginRequest {
             return Err(Error::ParamsLoginPlatformUnsupported(None));
         }
 
-        if let Some(code) = &self.code {
-            if code.chars().count() > 8 {
-                return Ok(self.to_owned());
-            }
+        if let Some(code) = &self.code
+            && code.chars().count() > 8
+        {
+            return Ok(self.to_owned());
         }
 
         Err(Error::ParamsLoginCodeFormatInvalid(None))

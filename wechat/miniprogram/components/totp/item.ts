@@ -3,7 +3,8 @@ import type { HttpError } from "@models/error";
 
 Component({
   properties: {
-    itemId: Number,
+    // 这里和组件的 id 冲突，所以改为 itemId
+    itemId: String,
     username: String,
     issuer: String,
     code: String,
@@ -57,7 +58,7 @@ Component({
         this.setData({ remainSeconds: countdown });
       }, 1000);
     },
-    refreshCode(id: number) {
+    refreshCode(id: string) {
       api
         .detail(id)
         .then((response) => this.setData({ code: response.code }))

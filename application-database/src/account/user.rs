@@ -9,7 +9,7 @@ use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    pub id: i64,
+    pub id: u64,
     pub phone: Option<String>,
     pub config: Option<Json<Config>>,
     pub created_at: DateTime<Local>,
@@ -23,13 +23,13 @@ pub struct Config {
     pub slogan: Option<String>,
 }
 
-pub async fn fetch(user_id: i64) -> application_kernel::result::Result<User> {
-    let sql = "select * from account.user where id = $1 limit 1";
+pub async fn fetch(user_id: u64) -> application_kernel::result::Result<User> {
+    let sql = "select * from account.user where id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<User> = sqlx::query_as(sql)
         .bind(user_id)
-        .fetch_optional(Pool::postgres("account")?)
+        .fetch_optional(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("查询用户失败: {:?}", e);
@@ -51,14 +51,14 @@ pub async fn fetch(user_id: i64) -> application_kernel::result::Result<User> {
 pub async fn insert(
     phone: Option<&str>,
     config: Config,
-) -> application_kernel::result::Result<User> {
-    let sql = "insert into account.user (phone, config) values ($1, $2) returning *";
+) -> application_kernel::result::Result<u64> {
+    let sql = "insert into account.user (phone, config) values (?, ?)";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(phone)
         .bind(Json(&config))
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("插入用户失败: {:?}", e);
@@ -70,17 +70,17 @@ pub async fn insert(
 
     info!(elapsed, sql, phone, ?config);
 
-    result
+    Ok(result?.last_insert_id())
 }
 
-pub async fn update_avatar(id: i64, avatar: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{avatar}', $1) where id = $2 returning *";
+pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set config = json_set(config, '$.avatar', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
-        .bind(Json(avatar))
+    let _ = sqlx::query(sql)
+        .bind(avatar)
         .bind(id)
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新用户失败: {:?}", e);
@@ -92,17 +92,17 @@ pub async fn update_avatar(id: i64, avatar: &str) -> application_kernel::result:
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_nickname(id: i64, nickname: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{nickname}', $1) where id = $2 returning *";
+pub async fn update_nickname(id: u64, nickname: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set config = json_set(config, '$.nickname', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
-        .bind(Json(nickname))
+    let _ = sqlx::query(sql)
+        .bind(nickname)
         .bind(id)
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新昵称失败: {:?}", e);
@@ -114,17 +114,17 @@ pub async fn update_nickname(id: i64, nickname: &str) -> application_kernel::res
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_slogan(id: i64, slogan: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), config = jsonb_set(config, '{slogan}', $1) where id = $2 returning *";
+pub async fn update_slogan(id: u64, slogan: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set config = json_set(config, '$.slogan', ?) where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
-        .bind(Json(slogan))
+    let _ = sqlx::query(sql)
+        .bind(slogan)
         .bind(id)
-        .fetch_one(Pool::postgres("account")?)
+        .fetch_one(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新 Slogan 失败: {:?}", e);
@@ -136,17 +136,17 @@ pub async fn update_slogan(id: i64, slogan: &str) -> application_kernel::result:
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }
 
-pub async fn update_phone(id: i64, phone: &str) -> application_kernel::result::Result<User> {
-    let sql = "update account.user set updated_at = now(), phone = $1 where id = $2 returning *";
+pub async fn update_phone(id: u64, phone: &str) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set phone = ? where id = ?";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let _ = sqlx::query(sql)
         .bind(phone)
         .bind(id)
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新手机号失败: {:?}", e);
@@ -158,5 +158,5 @@ pub async fn update_phone(id: i64, phone: &str) -> application_kernel::result::R
 
     info!(elapsed, sql, id);
 
-    result
+    Ok(())
 }

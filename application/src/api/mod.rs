@@ -3,6 +3,8 @@ use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
 use std::time::Duration;
 
+use crate::api::response::Response;
+use application_kernel::config::G_CONFIG;
 use axum::Router;
 use axum::http::Request;
 use axum::routing::get;
@@ -13,9 +15,7 @@ use tower_http::request_id::{
 };
 use tower_http::trace::{MakeSpan, OnFailure, TraceLayer};
 use tracing::{Span, error, info_span};
-
-use crate::api::response::Response;
-use application_kernel::config::G_CONFIG;
+use tracing_subscriber::registry::LookupSpan;
 
 mod extract;
 mod middleware;
@@ -85,7 +85,21 @@ impl<B> MakeSpan<B> for RequestIdMakeSpan {
             .map(|request_id| request_id.header_value().to_str().unwrap())
             .unwrap_or_else(|| "unknown");
 
-        info_span!("root", request_id)
+        let span = info_span!("root", request_id);
+
+        span.with_subscriber(|(id, dispatch)| {
+            if let Some(sub) = dispatch.downcast_ref::<tracing_subscriber::Registry>()
+                && let Some(span_ref) = sub.span(id)
+            {
+                span_ref
+                    .extensions_mut()
+                    .insert(application_kernel::logger::TracingId(
+                        request_id.to_string(),
+                    ));
+            }
+        });
+
+        span
     }
 }
 

@@ -13,7 +13,7 @@ pub async fn all(access_token: access_token::AccessToken) -> Result<Vec<DetailRe
     Ok(totp.into_iter().map(|t| t.into()).collect())
 }
 
-pub async fn detail(access_token: access_token::AccessToken, id: i64) -> Result<DetailResponse> {
+pub async fn detail(access_token: access_token::AccessToken, id: u64) -> Result<DetailResponse> {
     let totp = totp::fetch(id).await?;
 
     totp.ensure_permission(access_token.user_id)?;
@@ -68,7 +68,7 @@ pub async fn edit_username(
     Ok(())
 }
 
-pub async fn delete(access_token: access_token::AccessToken, id: i64) -> Result<()> {
+pub async fn delete(access_token: access_token::AccessToken, id: u64) -> Result<()> {
     let totp = totp::fetch(id).await?;
 
     totp.ensure_permission(access_token.user_id)?;

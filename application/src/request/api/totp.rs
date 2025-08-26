@@ -6,24 +6,24 @@ use std::ops::Deref;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DetailRequest {
-    pub id: Option<i64>,
+    pub id: Option<String>,
 }
 
 impl Validator for DetailRequest {
-    type Data = i64;
+    type Data = u64;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
 
-        Ok(self.id.unwrap())
+        Ok(self.to_owned().id.unwrap().parse::<u64>().unwrap())
     }
 }
 
 #[derive(Debug, Serialize)]
 pub struct DetailResponse {
-    pub id: i64,
+    pub id: String,
     pub issuer: String,
     pub username: String,
     pub config: DetailResponseConfig,
@@ -40,7 +40,7 @@ impl From<Totp> for DetailResponse {
         let config = totp.config.deref().to_owned();
 
         Self {
-            id: totp.id,
+            id: totp.id.to_string(),
             issuer: totp.issuer.clone().unwrap_or("未知发行方".to_string()),
             username: totp.username.clone(),
             config: config.into(),
@@ -80,13 +80,13 @@ impl Validator for CreateRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditIssuerRequest {
-    pub id: Option<i64>,
+    pub id: Option<String>,
     pub issuer: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditIssuerRequestParams {
-    pub id: i64,
+    pub id: u64,
     pub issuer: String,
 }
 
@@ -98,14 +98,14 @@ impl Validator for EditIssuerRequest {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
 
-        if let Some(issuer) = &self.issuer {
-            if issuer.chars().count() > 128 {
-                return Err(Error::ParamsTotpIssuerMaxLengthReached(None));
-            }
+        if let Some(issuer) = &self.issuer
+            && issuer.chars().count() > 128
+        {
+            return Err(Error::ParamsTotpIssuerMaxLengthReached(None));
         }
 
         Ok(Self::Data {
-            id: self.id.unwrap(),
+            id: self.to_owned().id.unwrap().parse::<u64>().unwrap(),
             issuer: self.issuer.clone().unwrap_or_default(),
         })
     }
@@ -113,13 +113,13 @@ impl Validator for EditIssuerRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditUsernameRequest {
-    pub id: Option<i64>,
+    pub id: Option<String>,
     pub username: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct EditUsernameRequestParams {
-    pub id: i64,
+    pub id: u64,
     pub username: String,
 }
 
@@ -142,7 +142,7 @@ impl Validator for EditUsernameRequest {
         }
 
         Ok(Self::Data {
-            id: self.id.unwrap(),
+            id: self.to_owned().id.unwrap().parse::<u64>().unwrap(),
             username,
         })
     }
@@ -150,17 +150,17 @@ impl Validator for EditUsernameRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct DeleteRequest {
-    pub id: Option<i64>,
+    pub id: Option<String>,
 }
 
 impl Validator for DeleteRequest {
-    type Data = i64;
+    type Data = u64;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.id.is_none() {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
 
-        Ok(self.id.unwrap())
+        Ok(self.to_owned().id.unwrap().parse::<u64>().unwrap())
     }
 }

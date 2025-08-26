@@ -16,10 +16,10 @@ impl Validator for EditAvatarRequest {
             return Err(Error::ParamsUserAvatarLengthInvalid(None));
         }
 
-        if let Some(avatar) = &self.avatar {
-            if !avatar.starts_with("data:image/jpeg;base64,") {
-                return Err(Error::ParamsUserAvatarLengthInvalid(None));
-            }
+        if let Some(avatar) = &self.avatar
+            && !avatar.starts_with("data:image/jpeg;base64,")
+        {
+            return Err(Error::ParamsUserAvatarLengthInvalid(None));
         }
 
         Ok(self.avatar.clone().unwrap())
@@ -39,10 +39,10 @@ impl Validator for EditNicknameRequest {
             return Err(Error::ParamsUserNicknameLengthInvalid(None));
         }
 
-        if let Some(nickname) = &self.nickname {
-            if nickname.chars().count() > 16 {
-                return Err(Error::ParamsUserNicknameLengthInvalid(None));
-            }
+        if let Some(nickname) = &self.nickname
+            && nickname.chars().count() > 16
+        {
+            return Err(Error::ParamsUserNicknameLengthInvalid(None));
         }
 
         Ok(self.nickname.clone().unwrap())
@@ -62,10 +62,10 @@ impl Validator for EditSloganRequest {
             return Err(Error::ParamsUserSloganLengthInvalid(None));
         }
 
-        if let Some(slogan) = &self.slogan {
-            if slogan.chars().count() <= 3 || slogan.chars().count() > 128 {
-                return Err(Error::ParamsUserSloganLengthInvalid(None));
-            }
+        if let Some(slogan) = &self.slogan
+            && (slogan.chars().count() <= 3 || slogan.chars().count() > 128)
+        {
+            return Err(Error::ParamsUserSloganLengthInvalid(None));
         }
 
         Ok(self.slogan.clone().unwrap())
@@ -86,10 +86,11 @@ impl Validator for EditPhoneRequest {
             return Err(Error::ParamsUserPhoneFormatInvalid(None));
         }
 
-        if let Some(phone) = &self.phone {
-            if phone.chars().count() < 11 && phone.chars().count() > 128 {
-                return Err(Error::ParamsUserPhoneFormatInvalid(None));
-            }
+        if let Some(phone) = &self.phone
+            && phone.chars().count() < 11
+            && phone.chars().count() > 128
+        {
+            return Err(Error::ParamsUserPhoneFormatInvalid(None));
         }
 
         Ok(self.phone.clone().unwrap())

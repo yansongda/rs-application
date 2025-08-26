@@ -12,8 +12,8 @@ use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct AccessToken {
-    pub id: i64,
-    pub user_id: i64,
+    pub id: u64,
+    pub user_id: u64,
     pub platform: Platform,
     pub access_token: String,
     pub data: Json<AccessTokenData>,
@@ -69,12 +69,12 @@ impl From<LoginResponse> for AccessTokenData {
 }
 
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
-    let sql = "select * from account.access_token where access_token = $1 limit 1";
+    let sql = "select * from account.access_token where access_token = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(access_token)
-        .fetch_optional(Pool::postgres("account")?)
+        .fetch_optional(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("查询 access_token 失败: {:?}", e);
@@ -93,13 +93,13 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     Err(Error::ParamsAccessTokenNotFound(None))
 }
 
-pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
-    let sql = "select * from account.access_token where user_id = $1 limit 1";
+pub async fn fetch_by_user_id(user_id: u64) -> Result<AccessToken> {
+    let sql = "select * from account.access_token where user_id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(user_id)
-        .fetch_optional(Pool::postgres("account")?)
+        .fetch_optional(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("通过 user_id 查询 access_token 失败: {:?}", e);
@@ -119,20 +119,20 @@ pub async fn fetch_by_user_id(user_id: i64) -> Result<AccessToken> {
 }
 
 pub async fn insert(
-    platform: Platform,
-    user_id: i64,
-    data: &AccessTokenData,
+    platform: &Platform,
+    user_id: u64,
+    data: AccessTokenData,
 ) -> Result<AccessToken> {
-    let sql = "insert into account.access_token (user_id, access_token, data, platform) values ($1, $2, $3, $4) returning *";
-    let access_token = data.to_access_token(&platform)?;
+    let sql = "insert into account.access_token (user_id, access_token, data, platform) values (?, ?, ?, ?)";
+    let access_token = data.to_access_token(platform)?;
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(user_id)
         .bind(&access_token)
-        .bind(Json(data))
+        .bind(Json(&data))
         .bind(platform)
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("插入 access_token 失败: {:?}", e);
@@ -144,18 +144,27 @@ pub async fn insert(
 
     info!(elapsed, sql, user_id, access_token, ?data);
 
-    result
+    Ok(AccessToken {
+        id: result?.last_insert_id(),
+        user_id,
+        platform: platform.to_owned(),
+        access_token: access_token.clone(),
+        data: Json(data),
+        created_at: Local::now(),
+        updated_at: Local::now(),
+    })
 }
 
-pub async fn update(access_token: AccessToken, data: &AccessTokenData) -> Result<AccessToken> {
-    let sql = "update account.access_token set access_token = $1, data = $2, updated_at = now() where id = $3 returning *";
+pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
+    let sql = "update account.access_token set access_token = ?, data = ? where id = ?";
     let started_at = Instant::now();
+    let access_token_string = data.to_access_token(&access_token.platform)?;
 
-    let result = sqlx::query_as(sql)
-        .bind(data.to_access_token(&access_token.platform)?)
-        .bind(Json(data))
+    let _ = sqlx::query(sql)
+        .bind(access_token_string.clone())
+        .bind(Json(&data))
         .bind(access_token.id)
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("更新 access_token 失败: {:?}", e);
@@ -167,5 +176,9 @@ pub async fn update(access_token: AccessToken, data: &AccessTokenData) -> Result
 
     info!(elapsed, sql, access_token.id, ?data);
 
-    result
+    access_token.access_token = access_token_string;
+    access_token.data = Json(data);
+    access_token.updated_at = Local::now();
+
+    Ok(access_token)
 }

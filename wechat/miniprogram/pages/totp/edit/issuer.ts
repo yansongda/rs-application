@@ -16,12 +16,12 @@ interface FormData {
 
 Page({
   data: {
-    id: 0,
+    id: "0",
     issuer: "",
   },
   onLoad(query: Query) {
     this.setData({
-      id: Number(query.id || 0),
+      id: query.id || "0",
       issuer: query.issuer || "",
     });
   },

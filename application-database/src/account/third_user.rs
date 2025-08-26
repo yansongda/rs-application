@@ -6,17 +6,17 @@ use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize};
 use sqlx::encode::IsNull;
 use sqlx::error::BoxDynError;
-use sqlx::postgres::{PgArgumentBuffer, PgTypeInfo, PgValueRef};
+use sqlx::mysql::{MySqlTypeInfo, MySqlValueRef};
 use sqlx::types::Json;
-use sqlx::{Encode, FromRow, Postgres, Type};
+use sqlx::{Decode, Encode, FromRow, MySql, Type};
 use std::fmt::{Display, Formatter};
 use std::time::Instant;
 use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct ThirdUser {
-    pub id: i64,
-    pub user_id: i64,
+    pub id: u64,
+    pub user_id: u64,
     pub platform: Platform,
     pub third_id: String,
     pub config: Option<Json<Config>>,
@@ -29,28 +29,6 @@ pub enum Platform {
     Wechat,
     Huawei,
     Unsupported,
-}
-
-impl Type<Postgres> for Platform {
-    fn type_info() -> <Postgres as sqlx::Database>::TypeInfo {
-        <&str as Type<Postgres>>::type_info()
-    }
-
-    fn compatible(_: &PgTypeInfo) -> bool {
-        true
-    }
-}
-
-impl sqlx::Encode<'_, Postgres> for Platform {
-    fn encode_by_ref(&self, buf: &mut PgArgumentBuffer) -> Result<IsNull, BoxDynError> {
-        <&str as Encode<Postgres>>::encode(self.into(), buf)
-    }
-}
-
-impl sqlx::Decode<'_, Postgres> for Platform {
-    fn decode(value: PgValueRef<'_>) -> Result<Self, BoxDynError> {
-        Ok(value.as_str()?.into())
-    }
 }
 
 impl Display for Platform {
@@ -91,6 +69,30 @@ impl From<Platform> for String {
     }
 }
 
+impl Type<MySql> for Platform {
+    fn type_info() -> <MySql as sqlx::Database>::TypeInfo {
+        <&str as Type<MySql>>::type_info()
+    }
+
+    fn compatible(_: &MySqlTypeInfo) -> bool {
+        true
+    }
+}
+
+impl sqlx::Encode<'_, MySql> for Platform {
+    fn encode_by_ref(&self, buf: &mut Vec<u8>) -> Result<IsNull, BoxDynError> {
+        <&str as Encode<MySql>>::encode(self.into(), buf)
+    }
+}
+
+impl sqlx::Decode<'_, MySql> for Platform {
+    fn decode(value: MySqlValueRef<'_>) -> Result<Self, BoxDynError> {
+        let s = <&str as Decode<MySql>>::decode(value)?;
+
+        Ok(s.into())
+    }
+}
+
 struct PlatformVisitor;
 
 impl Visitor<'_> for PlatformVisitor {
@@ -128,13 +130,13 @@ pub async fn fetch(
     platform: &Platform,
     third_id: &str,
 ) -> application_kernel::result::Result<ThirdUser> {
-    let sql = "select * from account.third_user where platform = $1 and third_id = $2 limit 1";
+    let sql = "select * from account.third_user where platform = ? and third_id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<ThirdUser> = sqlx::query_as(sql)
         .bind(platform)
         .bind(third_id)
-        .fetch_optional(Pool::postgres("account")?)
+        .fetch_optional(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("查询第三方平台用户失败: {:?}", e);
@@ -154,18 +156,18 @@ pub async fn fetch(
 }
 
 pub async fn insert(
-    platform: Platform,
+    platform: &Platform,
     third_id: &str,
-    user_id: i64,
-) -> application_kernel::result::Result<ThirdUser> {
-    let sql = "insert into account.third_user (platform, third_id, user_id) values ($1, $2, $3) returning *";
+    user_id: u64,
+) -> application_kernel::result::Result<u64> {
+    let sql = "insert into account.third_user (platform, third_id, user_id) values (?, ?, ?)";
     let started_at = Instant::now();
 
-    let result = sqlx::query_as(sql)
+    let result = sqlx::query(sql)
         .bind(platform)
         .bind(third_id)
         .bind(user_id)
-        .fetch_one(Pool::postgres("account")?)
+        .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
             error!("查询第三方平台用户失败: {:?}", e);
@@ -177,5 +179,5 @@ pub async fn insert(
 
     info!(elapsed, sql, third_id);
 
-    result
+    Ok(result?.last_insert_id())
 }
