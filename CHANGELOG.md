@@ -1,8 +1,48 @@
+## v1.11.0
+
+### chore
+
+- chore: 迁移到 tidb cloud (#90)
+
+## v1.10.1
+
+### fixed
+
+- fix(frontend): 修复 TOTP 页面在首次进入页面没有自动刷新的问题 (#87, #88)
+
+### optimized
+
+- optimize(backend): 优化后端日志记录 (#86)
+
+## v1.10.0
+
+### changed
+
+- change(frontend): Api 路径去掉 miniprogram 前缀
+- change(backend): 后端数据库规划调整
+- optimize(backend): 后端架构优化调整
+
+## v1.9.0
+
+### perf
+
+- perf(frontend): 抽离 totp 的 item 组件提升性能 (#84)
+
+### changed
+
+- change(frontend): 修改请求域名 (#84)
+
+## v1.8.2
+
+### optimized
+
+- optimize(frontend): 优化输入框与显示框的最大现实字符数 (#83)
+
 ## v1.8.1
 
 ### optimized
 
-- optimized: 优化接口及界面参数长度限定 (#82)
+- optimize: 优化接口及界面参数长度限定 (#82)
 
 ## v1.8.0
 

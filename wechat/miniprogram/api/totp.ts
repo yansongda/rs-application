@@ -11,7 +11,6 @@ import type {
   EditIssuerRequest,
   EditUsernameRequest,
   Item,
-  UpdateRequest,
 } from "types/totp";
 
 const all = async () => {
@@ -24,7 +23,7 @@ const all = async () => {
   }
 };
 
-const detail = async (id: number) => {
+const detail = async (id: string) => {
   try {
     return await http.post<Item>(PATH.DETAIL, { id } as DetailRequest);
   } catch (e: unknown) {
@@ -70,7 +69,7 @@ const editUsername = async (data: EditUsernameRequest) => {
   }
 };
 
-const deleteTotp = async (id: number) => {
+const deleteTotp = async (id: string) => {
   try {
     return await http.post<null>(PATH.DELETE, { id } as DeleteRequest);
   } catch (e: unknown) {

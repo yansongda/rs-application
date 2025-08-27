@@ -1,9 +1,9 @@
 import api from "@api/totp";
 import error from "@utils/error";
-import type { EditIssuerRequest } from "miniprogram/types/totp";
-import type { FormSubmit } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
+import type { EditIssuerRequest } from "types/totp";
+import type { FormSubmit } from "types/wechat";
 
 interface Query {
   id?: string;
@@ -16,12 +16,12 @@ interface FormData {
 
 Page({
   data: {
-    id: 0,
+    id: "0",
     issuer: "",
   },
   onLoad(query: Query) {
     this.setData({
-      id: Number(query.id || 0),
+      id: query.id || "0",
       issuer: query.issuer || "",
     });
   },

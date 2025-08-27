@@ -16,9 +16,9 @@ Page({
 
     this.setData({
       config: {
-        nickname: substr(user.config?.nickname ?? DEFAULT.CONFIG.NICKNAME, 12),
+        nickname: substr(user.config?.nickname ?? DEFAULT.CONFIG.NICKNAME),
         avatar: user.config?.avatar ?? DEFAULT.CONFIG.AVATAR,
-        slogan: substr(user.config?.slogan ?? DEFAULT.CONFIG.SLOGAN, 12),
+        slogan: substr(user.config?.slogan ?? DEFAULT.CONFIG.SLOGAN),
       },
     });
   },

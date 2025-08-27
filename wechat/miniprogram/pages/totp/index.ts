@@ -3,32 +3,23 @@ import { CODE } from "@constant/error";
 import type { HttpError } from "@models/error";
 import { WeixinError } from "@models/error";
 import { substr } from "@utils/string";
-import type { Tap } from "miniprogram/types/wechat";
 import Message from "tdesign-miniprogram/message/index";
 import Toast from "tdesign-miniprogram/toast/index";
-import type { Item } from "types/totp";
-
-interface Dataset {
-  id: string;
-}
+import type {
+  Item,
+  ItemDeleteEvent,
+  ItemDetailEvent,
+  ItemMessageEvent,
+} from "types/totp";
 
 Page({
   data: {
     dialogVisible: false,
-    dialogDataId: 0,
-    intervalIdentity: -1,
+    currentItemId: "0",
     items: [] as Item[],
   },
   onShow() {
-    this.setupRefreshInterval();
-
     this.all();
-  },
-  onHide() {
-    this.clearRefreshInterval();
-  },
-  onUnload() {
-    this.clearRefreshInterval();
   },
   all() {
     Toast({
@@ -52,8 +43,8 @@ Page({
         this.setData({
           items: response.map((item) => ({
             ...item,
-            issuer: substr(item.issuer, 8),
-            username: substr(item.username, 15),
+            issuer: substr(item.issuer, 7),
+            username: substr(item.username, 50),
           })),
         });
       })
@@ -90,38 +81,27 @@ Page({
       )
       .finally(() => this.all());
   },
-  async detail(e: Tap<Dataset, Dataset>) {
-    const id = Number(e.currentTarget.dataset.id);
-
-    this.clearRefreshInterval();
+  async itemDetail(e: ItemDetailEvent) {
+    const id = e.detail;
 
     await wx.navigateTo({ url: `/pages/totp/detail/index?id=${id}` });
   },
-  delete(e: Tap<Dataset, Dataset>) {
-    const dialogDataId = Number(e.currentTarget.dataset.id);
+  itemDelete(e: ItemDeleteEvent) {
+    const currentItemId = e.detail;
 
-    this.setData({ dialogVisible: true, dialogDataId });
+    this.setData({ dialogVisible: true, currentItemId });
   },
-  refreshCode(id: number, index: number) {
-    api
-      .detail(id)
-      .then((response) =>
-        this.setData({ [`items[${index}].code`]: response.code }),
-      )
-      .catch((e: HttpError) =>
-        Message.error({
-          content: `更新验证码失败：${e.message}`,
-          duration: 5000,
-          offset: [20, 32],
-          context: this,
-        }),
-      );
+  itemMessage(e: ItemMessageEvent) {
+    Message.error({
+      content: e.detail,
+      duration: 5000,
+      offset: [20, 32],
+      context: this,
+    });
   },
-  dialogConfirm(e: Tap<Dataset, Dataset>) {
-    const id = Number(e.currentTarget.dataset.id);
-
+  dialogConfirm() {
     api
-      .deleteTotp(id)
+      .deleteTotp(this.data.currentItemId)
       .catch((e: HttpError) =>
         Message.error({
           content: `删除失败：${e.message}`,
@@ -136,36 +116,6 @@ Page({
       });
   },
   dialogCancel() {
-    this.setData({ dialogVisible: false, dialogDataId: 0 });
-  },
-  setupRefreshInterval() {
-    const intervalIdentity = setInterval(async () => {
-      for (const item of this.data.items) {
-        const index = this.data.items.indexOf(item);
-        const period = item.config.period ?? 30;
-
-        let remainSeconds = period - new Date().getSeconds();
-        if (remainSeconds <= 0) {
-          remainSeconds += period;
-        }
-
-        this.setData({ [`items[${index}].remainSeconds`]: remainSeconds });
-
-        if (remainSeconds === period) {
-          this.refreshCode(item.id, index);
-        }
-      }
-    }, 1000);
-
-    this.setData({ intervalIdentity });
-  },
-  clearRefreshInterval() {
-    if (this.data.intervalIdentity > 0) {
-      clearInterval(this.data.intervalIdentity);
-    }
-
-    this.setData({ intervalIdentity: -1 });
+    this.setData({ dialogVisible: false, currentItemId: "0" });
   },
 });
-
-export default {};
