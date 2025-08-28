@@ -37,13 +37,11 @@ pub struct DetailResponseConfig {
 
 impl From<Totp> for DetailResponse {
     fn from(totp: Totp) -> Self {
-        let config = totp.config.deref().to_owned();
-
         Self {
             id: totp.id.to_string(),
-            issuer: totp.issuer.clone().unwrap_or("未知发行方".to_string()),
-            username: totp.username.clone(),
-            config: config.into(),
+            issuer: totp.issuer.to_owned().unwrap_or_else(|| "未知发行方".to_string()),
+            username: totp.username.to_owned(),
+            config: totp.config.deref().to_owned().into(),
             code: totp.generate_code(),
         }
     }

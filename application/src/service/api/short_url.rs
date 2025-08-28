@@ -20,8 +20,8 @@ pub async fn create(url: &str) -> Result<short_url::ShortUrl> {
 pub async fn detail(url: &str) -> Result<short_url::ShortUrl> {
     let result = short_url::fetch(url).await;
 
-    if result.is_ok() {
-        short_url::update_count(result.clone()?.id).await?;
+    if let Ok(short_url) = &result {
+        short_url::update_count(short_url.id).await?;
     }
 
     result

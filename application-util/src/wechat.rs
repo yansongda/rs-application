@@ -16,6 +16,16 @@ pub struct LoginResponse {
     pub errcode: Option<i32>,
 }
 
+impl LoginResponse {
+    pub fn get_open_id(&self) -> Option<&str> {
+        if let Some(open_id) = &self.openid {
+            return Some(open_id.as_str());
+        }
+
+        None
+    }
+}
+
 pub async fn login(code: &str) -> Result<LoginResponse> {
     let url = format!("{}/sns/jscode2session", G_CONFIG.wechat.url.as_str());
 
