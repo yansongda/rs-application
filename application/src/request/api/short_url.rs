@@ -17,8 +17,7 @@ impl Validator for CreateRequest {
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         let url = self.url.as_ref().ok_or(Error::ParamsShortlinkEmpty(None))?;
 
-        Url::parse(url)
-            .map_err(|_| Error::ParamsShortlinkFormatInvalid(None))?;
+        Url::parse(url).map_err(|_| Error::ParamsShortlinkFormatInvalid(None))?;
 
         Ok(url.to_owned())
     }
@@ -48,7 +47,10 @@ impl Validator for DetailRequest {
     type Data = String;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        let short = self.short.as_ref().ok_or(Error::ParamsShortlinkEmpty(None))?;
+        let short = self
+            .short
+            .as_ref()
+            .ok_or(Error::ParamsShortlinkEmpty(None))?;
 
         Ok(short.to_owned())
     }

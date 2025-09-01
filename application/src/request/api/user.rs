@@ -12,17 +12,16 @@ impl Validator for EditAvatarRequest {
     type Data = String;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.avatar.is_none() {
+        let avatar = self
+            .avatar
+            .as_deref()
+            .ok_or(Error::ParamsUserAvatarLengthInvalid(None))?;
+
+        if !avatar.starts_with("data:image/jpeg;base64,") {
             return Err(Error::ParamsUserAvatarLengthInvalid(None));
         }
 
-        if let Some(avatar) = &self.avatar
-            && !avatar.starts_with("data:image/jpeg;base64,")
-        {
-            return Err(Error::ParamsUserAvatarLengthInvalid(None));
-        }
-
-        Ok(self.avatar.clone().unwrap())
+        Ok(avatar.to_string())
     }
 }
 
@@ -35,17 +34,16 @@ impl Validator for EditNicknameRequest {
     type Data = String;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.nickname.is_none() {
+        let nickname = self
+            .nickname
+            .as_deref()
+            .ok_or(Error::ParamsUserNicknameLengthInvalid(None))?;
+
+        if nickname.chars().count() > 16 {
             return Err(Error::ParamsUserNicknameLengthInvalid(None));
         }
 
-        if let Some(nickname) = &self.nickname
-            && nickname.chars().count() > 16
-        {
-            return Err(Error::ParamsUserNicknameLengthInvalid(None));
-        }
-
-        Ok(self.nickname.clone().unwrap())
+        Ok(nickname.to_string())
     }
 }
 
@@ -58,17 +56,17 @@ impl Validator for EditSloganRequest {
     type Data = String;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.slogan.is_none() {
+        let slogan = self
+            .slogan
+            .as_deref()
+            .ok_or(Error::ParamsUserSloganLengthInvalid(None))?;
+
+        let char_count = slogan.chars().count();
+        if char_count <= 3 || char_count > 128 {
             return Err(Error::ParamsUserSloganLengthInvalid(None));
         }
 
-        if let Some(slogan) = &self.slogan
-            && (slogan.chars().count() <= 3 || slogan.chars().count() > 128)
-        {
-            return Err(Error::ParamsUserSloganLengthInvalid(None));
-        }
-
-        Ok(self.slogan.clone().unwrap())
+        Ok(slogan.to_string())
     }
 }
 
@@ -82,18 +80,16 @@ impl Validator for EditPhoneRequest {
     type Data = String;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.phone.is_none() {
+        let phone = self
+            .phone
+            .as_deref()
+            .ok_or(Error::ParamsUserPhoneFormatInvalid(None))?;
+
+        if !(11..=128).contains(&phone.chars().count()) {
             return Err(Error::ParamsUserPhoneFormatInvalid(None));
         }
 
-        if let Some(phone) = &self.phone
-            && phone.chars().count() < 11
-            && phone.chars().count() > 128
-        {
-            return Err(Error::ParamsUserPhoneFormatInvalid(None));
-        }
-
-        Ok(self.phone.clone().unwrap())
+        Ok(phone.to_string())
     }
 }
 

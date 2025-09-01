@@ -36,7 +36,9 @@ impl Totp {
             6,
             1,
             config.period,
-            Secret::Encoded(config.secret.to_owned()).to_bytes().unwrap(),
+            Secret::Encoded(config.secret.to_owned())
+                .to_bytes()
+                .unwrap(),
             self.issuer.to_owned(),
             self.username.to_owned(),
         );
