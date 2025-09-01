@@ -37,13 +37,14 @@ pub struct DetailResponseConfig {
 
 impl From<Totp> for DetailResponse {
     fn from(totp: Totp) -> Self {
-        let config = totp.config.deref().to_owned();
-
         Self {
             id: totp.id.to_string(),
-            issuer: totp.issuer.clone().unwrap_or("未知发行方".to_string()),
-            username: totp.username.clone(),
-            config: config.into(),
+            issuer: totp
+                .issuer
+                .to_owned()
+                .unwrap_or_else(|| "未知发行方".to_string()),
+            username: totp.username.to_owned(),
+            config: totp.config.deref().to_owned().into(),
             code: totp.generate_code(),
         }
     }
@@ -66,15 +67,16 @@ impl Validator for CreateRequest {
     type Data = String;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.uri.is_none() {
+        let uri = self
+            .uri
+            .as_deref()
+            .ok_or(Error::ParamsTotpUriFormatInvalid(None))?;
+
+        if !uri.starts_with("otpauth://totp/") {
             return Err(Error::ParamsTotpUriFormatInvalid(None));
         }
 
-        if !self.uri.clone().unwrap().starts_with("otpauth://totp/") {
-            return Err(Error::ParamsTotpUriFormatInvalid(None));
-        }
-
-        Ok(self.uri.clone().unwrap())
+        Ok(uri.to_string())
     }
 }
 
@@ -106,7 +108,7 @@ impl Validator for EditIssuerRequest {
 
         Ok(Self::Data {
             id: self.to_owned().id.unwrap().parse::<u64>().unwrap(),
-            issuer: self.issuer.clone().unwrap_or_default(),
+            issuer: self.issuer.to_owned().unwrap_or_default(),
         })
     }
 }
@@ -131,11 +133,10 @@ impl Validator for EditUsernameRequest {
             return Err(Error::ParamsTotpIdEmpty(None));
         }
 
-        if self.username.is_none() {
-            return Err(Error::ParamsTotpUsernameFormatInvalid(None));
-        }
-
-        let username = self.username.clone().unwrap();
+        let username = self
+            .username
+            .as_deref()
+            .ok_or(Error::ParamsTotpUsernameFormatInvalid(None))?;
 
         if username.is_empty() || username.chars().count() > 128 {
             return Err(Error::ParamsTotpUsernameFormatInvalid(None));
@@ -143,7 +144,7 @@ impl Validator for EditUsernameRequest {
 
         Ok(Self::Data {
             id: self.to_owned().id.unwrap().parse::<u64>().unwrap(),
-            username,
+            username: username.to_string(),
         })
     }
 }

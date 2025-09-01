@@ -148,7 +148,7 @@ pub async fn insert(
         id: result?.last_insert_id(),
         user_id,
         platform: platform.to_owned(),
-        access_token: access_token.clone(),
+        access_token,
         data: Json(data),
         created_at: Local::now(),
         updated_at: Local::now(),
@@ -161,7 +161,7 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
     let access_token_string = data.to_access_token(&access_token.platform)?;
 
     let _ = sqlx::query(sql)
-        .bind(access_token_string.clone())
+        .bind(&access_token_string)
         .bind(Json(&data))
         .bind(access_token.id)
         .execute(Pool::mysql("account")?)
