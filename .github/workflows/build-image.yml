@@ -6,7 +6,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITHUB_IMAGE_REPOSITORY: yansongda/rs-application
+  GITHUB_IMAGE_REPOSITORY: ${{ github.repository }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
   DOCKERHUB_IMAGE_REPOSITORY: yansongda/rs-application
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
@@ -17,6 +17,8 @@ jobs:
     name: Building [application-api] Image
     if: ${{ startsWith(github.ref, 'refs/tags/application-api') }}
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
