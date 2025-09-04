@@ -5,7 +5,12 @@ on:
     tags:
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_IMAGE_REPOSITORY: yansongda/rs-application
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
+  DOCKERHUB_IMAGE_REPOSITORY: yansongda/rs-application
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
+  ALIYUN_IMAGE_REPOSITORY: registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application
 
 jobs:
   build-application-api:
@@ -18,11 +23,21 @@ jobs:
       - name: Build the docker image
         run: |
           docker build -t app -f Dockerfile-application-api .
-      - name: Tag the image
+      - name: Push the image to Aliyun registry
         run: |
-          docker tag app registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application:$GITHUB_REF_NAME
-      - name: Push the image to aliyun registry
-        run: |
+          docker tag app $ALIYUN_IMAGE_REPOSITORY:$GITHUB_REF_NAME
           echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
-          docker push registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application:$GITHUB_REF_NAME
+          docker push $ALIYUN_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker logout
+      - name: Push the image to Docker registry
+        run: |
+          docker tag app $DOCKERHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          echo DOCKERHUB_TOKEN | docker login --username=yansongda --password-stdin
+          docker push $DOCKERHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker logout
+      - name: Push the image to Github registry
+        run: |
+          docker tag app $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          echo DOCKERHUB_TOKEN | docker login --username=${{ github.actor }} ghcr.io --password-stdin
+          docker push $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
           docker logout
