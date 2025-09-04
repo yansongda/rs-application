@@ -1,3 +1,13 @@
+## v1.11.2
+
+### optimized
+
+- optimize(backend): 优化配置文件
+
+### chore
+
+- chore: 优化 ci 文件与镜像存储
+
 ## v1.11.1
 
 ### perf
