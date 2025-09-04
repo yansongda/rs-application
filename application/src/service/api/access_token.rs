@@ -28,10 +28,10 @@ pub async fn login(request: LoginRequest) -> Result<access_token::AccessToken> {
 
 async fn login_wechat(code: &str) -> Result<(u64, access_token::AccessTokenData)> {
     let wechat_response = wechat::login(code).await?;
-    let open_id = wechat_response.openid.clone().unwrap();
+    let open_id = wechat_response.get_open_id().unwrap();
 
     Ok((
-        get_third_user_id(&third_user::Platform::Wechat, open_id.as_str()).await?,
+        get_third_user_id(&third_user::Platform::Wechat, open_id).await?,
         access_token::AccessTokenData::from(wechat_response),
     ))
 }

@@ -29,16 +29,18 @@ impl Totp {
     }
 
     pub fn generate_code(&self) -> String {
-        let config = self.config.clone();
+        let config = &self.config;
 
         let totp = TOTP::new_unchecked(
             Algorithm::SHA1,
             6,
             1,
             config.period,
-            Secret::Encoded(config.secret.clone()).to_bytes().unwrap(),
-            self.issuer.clone(),
-            self.username.clone(),
+            Secret::Encoded(config.secret.to_owned())
+                .to_bytes()
+                .unwrap(),
+            self.issuer.to_owned(),
+            self.username.to_owned(),
         );
 
         totp.generate_current().unwrap()
