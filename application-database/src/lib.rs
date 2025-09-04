@@ -16,15 +16,15 @@ pub struct Pool;
 static G_POOL_MYSQL: LazyLock<HashMap<&'static str, MySqlPool>> = LazyLock::new(|| {
     let databases = &G_CONFIG.databases;
 
-    let mut pg: HashMap<&'static str, MySqlPool> = HashMap::new();
+    let mut mysql: HashMap<&'static str, MySqlPool> = HashMap::new();
 
     for database in databases {
         if database.1.url.starts_with("mysql://") {
-            pg.insert(database.0, Pool::connect_mysql(database.1));
+            mysql.insert(database.0, Pool::connect_mysql(database.1));
         }
     }
 
-    pg
+    mysql
 });
 
 impl Pool {

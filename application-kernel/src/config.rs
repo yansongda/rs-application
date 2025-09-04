@@ -9,7 +9,7 @@ pub static G_CONFIG: LazyLock<Config> = LazyLock::new(|| {
         .add_source(
             Environment::with_prefix("APP")
                 .try_parsing(true)
-                .separator("_"),
+                .separator("__"),
         )
         .build()
         .expect("加载配置失败");
@@ -18,6 +18,7 @@ pub static G_CONFIG: LazyLock<Config> = LazyLock::new(|| {
 });
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct Config {
     pub name: String,
     pub bin: HashMap<String, Bin>,
@@ -26,14 +27,38 @@ pub struct Config {
     pub short_url: ShortUrl,
 }
 
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            name: "rs-application".to_string(),
+            bin: HashMap::new(),
+            databases: HashMap::new(),
+            wechat: Wechat::default(),
+            short_url: ShortUrl::default(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct Bin {
     pub listen: String,
     pub port: u16,
     pub debug: bool,
 }
 
+impl Default for Bin {
+    fn default() -> Self {
+        Self {
+            listen: "0.0.0.0".to_string(),
+            port: 8080,
+            debug: false,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct Database {
     pub url: String,
     pub max_connections: u32,
@@ -42,14 +67,46 @@ pub struct Database {
     pub idle_timeout: u64,
 }
 
+impl Default for Database {
+    fn default() -> Self {
+        Self {
+            url: "mysql://root:root@127.0.0.1:3306/test".to_string(),
+            max_connections: 20,
+            min_connections: 2,
+            acquire_timeout: 3,
+            idle_timeout: 300,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct Wechat {
     pub url: String,
     pub app_id: String,
     pub app_secret: String,
 }
 
+impl Default for Wechat {
+    fn default() -> Self {
+        Self {
+            url: "https://api.weixin.qq.com".to_string(),
+            app_id: "".to_string(),
+            app_secret: "".to_string(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
 pub struct ShortUrl {
     pub domain: String,
+}
+
+impl Default for ShortUrl {
+    fn default() -> Self {
+        Self {
+            domain: "https://u.ysdor.cn".to_string(),
+        }
+    }
 }
