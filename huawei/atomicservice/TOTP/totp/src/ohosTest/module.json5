@@ -1,6 +1,6 @@
 {
   "module": {
-    "name": "entry_test",
+    "name": "totp_test",
     "type": "feature",
     "deviceTypes": [
       "phone",

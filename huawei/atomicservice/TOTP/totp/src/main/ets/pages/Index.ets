@@ -1,36 +1,28 @@
 import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { IItem } from '../model/Item';
 
 const DOMAIN = 0x0000;
 
 @Entry
-@Component
+@ComponentV2
 struct Index {
-  @State message: string = 'Hello World';
-
-  build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('HelloWorld')
-        .fontSize($r('app.float.page_text_font_size'))
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
-        .onClick(() => {
-          this.message = 'Welcome';
-        })
-
-    }
-    .height('100%')
-    .width('100%')
-  }
+  @Local items: Array<IItem> = [];
 
   aboutToAppear() {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     this.loginWithHuaweiID();
+  }
+
+  build() {
+    Column() {
+      List() {
+
+      }
+    }
+    .height('100%')
+    .width('100%')
   }
 
   /**

@@ -1,5 +1,5 @@
 {
-  "name": "entry",
+  "name": "totp",
   "version": "1.0.0",
   "description": "Please describe the basic information.",
   "main": "",
@@ -7,4 +7,3 @@
   "license": "",
   "dependencies": {}
 }
-
