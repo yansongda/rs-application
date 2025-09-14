@@ -1,7 +1,7 @@
 import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { IItem } from '../model/Item';
+import { IItem, IItemConfig } from '../types/Item';
 
 const DOMAIN = 0x0000;
 
@@ -12,17 +12,54 @@ struct Index {
 
   aboutToAppear() {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
-    this.loginWithHuaweiID();
+    // this.loginWithHuaweiID();
+    for (let index = 0; index < 100; index++) {
+      this.items.push({
+        id: index.toString(),
+        issuer: 'github',
+        username: 'me@yansongda.cn',
+        code: '123456',
+        config: {
+          period: 30,
+        } as IItemConfig,
+      } as IItem)
+    }
   }
 
   build() {
     Column() {
       List() {
+        Repeat<IItem>(this.items)
+          .each((ri: RepeatItem<IItem>) => {
+            ListItem() {
+              Row() {
+                Column() {
+                  Column() {
+                    Text(ri.item.issuer)
+                  }
 
+                  Column() {
+                    Text(ri.item.username)
+                  }
+                }
+                .width('40%')
+
+                Column() {
+                  Text(ri.item.code)
+                }
+                .height('100%')
+                .width('60%')
+              }
+            }
+            .height('100px')
+            .backgroundColor('white')
+          })
+          .virtualScroll({ totalCount: this.items.length })
       }
+      .height('100%')
+      .width('100%')
     }
-    .height('100%')
-    .width('100%')
+    .backgroundColor('#f3f3f3')
   }
 
   /**
