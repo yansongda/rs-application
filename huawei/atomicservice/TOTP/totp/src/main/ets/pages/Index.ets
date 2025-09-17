@@ -17,7 +17,7 @@ struct Index {
       this.items.push({
         id: index.toString(),
         issuer: 'github',
-        username: 'me@yansongda.cn',
+        username: 'me@yansongda.cnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaacnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaacnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaacnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaa',
         code: '123456',
         config: {
           period: 30,
@@ -32,26 +32,47 @@ struct Index {
         Repeat<IItem>(this.items)
           .each((ri: RepeatItem<IItem>) => {
             ListItem() {
-              Row() {
-                Column() {
+              Column() {
+                Row() {
                   Column() {
-                    Text(ri.item.issuer)
+                    Column() {
+                      Text(ri.item.issuer)
+                        .fontSize('30')
+                        .fontColor('#636363')
+                        .textAlign(TextAlign.Center)
+                        .maxLines(1)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    }
+
+                    Column() {
+                      Text(ri.item.username)
+                        .fontSize('12')
+                        .fontColor('gray')
+                        .textAlign(TextAlign.Center)
+                        .maxLines(2)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    }
                   }
+                  .width('40%')
 
                   Column() {
-                    Text(ri.item.username)
+                    Text(ri.item.code)
+                      .fontSize('50')
                   }
+                  .width('60%')
                 }
-                .width('40%')
+                .height('98')
 
-                Column() {
-                  Text(ri.item.code)
-                }
-                .height('100%')
-                .width('60%')
+                Progress({
+                  value: 24,
+                  total: 100,
+                  type: ProgressType.Linear
+                })
+                  .height('2')
               }
+              // .padding('0 10')
             }
-            .height('100px')
+            .height('100')
             .backgroundColor('white')
           })
           .virtualScroll({ totalCount: this.items.length })
