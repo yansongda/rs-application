@@ -70,7 +70,7 @@ struct Index {
                 })
                   .height('2')
               }
-              // .padding('0 10')
+              .padding({top: 0, bottom: 0, left: 10, right: 10})
             }
             .height('100')
             .backgroundColor('white')
