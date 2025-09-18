@@ -16,8 +16,8 @@ struct Index {
     for (let index = 0; index < 100; index++) {
       this.items.push({
         id: index.toString(),
-        issuer: 'github',
-        username: 'me@yansongda.cnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaacnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaacnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaacnfffffffgithubaaaaaaaagithubaaaaaaaagithubaaaaaaaagithubaaaaaaaa',
+        issuer: '闫嵩达',
+        username: 'me@yansongda.cnyansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongda',
         code: '123456',
         config: {
           period: 30,
@@ -52,6 +52,7 @@ struct Index {
                         .maxLines(2)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
                     }
+                    .margin({top: 5})
                   }
                   .width('40%')
 
