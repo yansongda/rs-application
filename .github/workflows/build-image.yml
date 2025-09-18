@@ -3,6 +3,8 @@ name: Building Image
 on:
   push:
     tags:
+      - '*'
+  workflow_dispatch
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
