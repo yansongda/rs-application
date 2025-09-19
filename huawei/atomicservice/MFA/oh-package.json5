@@ -1,6 +1,6 @@
 {
   "modelVersion": "5.1.0",
-  "description": "TOTP 验证器.",
+  "description": "多因子认证（MFA）服务，目前支持 TOTP 算法。为您提供便捷、简单、纯粹的认证服务",
   "dependencies": {
   },
   "devDependencies": {

@@ -2,15 +2,15 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "module description"
+      "value": "多因子认证（MFA）服务: TOTP 算法"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "多因子认证（MFA）服务: TOTP 算法"
     },
     {
       "name": "EntryAbility_label",
-      "value": "label"
+      "value": "TOTP, MFA"
     }
   ]
 }
