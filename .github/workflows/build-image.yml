@@ -4,7 +4,19 @@ on:
   push:
     tags:
       - '*'
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      name:
+        description: '构建镜像类型'
+        required: true
+        type: choice
+        options:
+          - application-api
+        default: 'application-api'
+      ref:
+        description: '需要构建的版本'
+        required: false
+        default: 'main'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -17,31 +29,41 @@ env:
 jobs:
   build-application-api:
     name: Building [application-api] Image
-    if: ${{ startsWith(github.ref, 'refs/tags/application-api') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/application-api') || (github.event_name == 'workflow_dispatch' && github.event.inputs.name == 'application-api') }}
     runs-on: ubuntu-latest
     permissions:
       packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Recognize tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            tag="application-api-${{ github.event.inputs.ref }}"
+          else
+            tag=$GITHUB_REF_NAME
+          fi
+          
+          echo "Recognized tag: $tag"
+          echo "tag=$tag" >> $GITHUB_ENV
       - name: Build the docker image
         run: |
           docker build -t app -f Dockerfile-application-api .
       - name: Push the image to Aliyun registry
         run: |
-          docker tag app $ALIYUN_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker tag app $ALIYUN_IMAGE_REPOSITORY:$tag
           echo $ALIYUN_IMAGE_TOKEN | docker login --username=yansongda registry.cn-shenzhen.aliyuncs.com --password-stdin
-          docker push $ALIYUN_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker push $ALIYUN_IMAGE_REPOSITORY:$tag
           docker logout
       - name: Push the image to Docker registry
         run: |
-          docker tag app $DOCKERHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker tag app $DOCKERHUB_IMAGE_REPOSITORY:$tag
           echo $DOCKERHUB_TOKEN | docker login --username=yansongda --password-stdin
-          docker push $DOCKERHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker push $DOCKERHUB_IMAGE_REPOSITORY:$tag
           docker logout
       - name: Push the image to Github registry
         run: |
-          docker tag app $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker tag app $GITHUB_IMAGE_REPOSITORY:$tag
           echo $GITHUB_TOKEN | docker login --username=${{ github.actor }} ghcr.io --password-stdin
-          docker push $GITHUB_IMAGE_REPOSITORY:$GITHUB_REF_NAME
+          docker push $GITHUB_IMAGE_REPOSITORY:$tag
           docker logout
