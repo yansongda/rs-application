@@ -13,10 +13,6 @@ on:
         options:
           - application-api
         default: 'application-api'
-      ref:
-        description: '需要构建的版本'
-        required: false
-        default: 'main'
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -39,7 +35,7 @@ jobs:
       - name: Recognize tag
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            tag="application-api-${{ github.event.inputs.ref }}"
+            tag="application-api-$GITHUB_REF_NAME"
           else
             tag=$GITHUB_REF_NAME
           fi
