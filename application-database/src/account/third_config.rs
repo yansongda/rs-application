@@ -1,6 +1,5 @@
 use crate::Pool;
 use crate::account::Platform;
-use crate::account::user::Config;
 
 use application_kernel::result::Error;
 use chrono::{DateTime, Local};
@@ -18,6 +17,18 @@ pub struct ThirdConfig {
     pub config: Option<Json<Config>>,
     pub created_at: DateTime<Local>,
     pub updated_at: DateTime<Local>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Config {
+    pub wechat: Option<WechatConfig>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WechatConfig {
+    pub app_id: String,
+    pub app_secret: String,
+    pub login_url: String,
 }
 
 pub async fn fetch(
