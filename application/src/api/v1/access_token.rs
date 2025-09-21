@@ -10,7 +10,7 @@ use axum::Extension;
 pub async fn login(Json(request): Json<LoginRequest>) -> Resp<LoginResponse> {
     let req = request.validate()?;
 
-    let token = service::api::access_token::login(req).await?;
+    let token = service::api::access_token::login(&req).await?;
 
     Ok(Response::success(token.into()))
 }

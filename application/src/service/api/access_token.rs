@@ -6,10 +6,10 @@ use application_database::account::{Platform, third_config};
 use application_kernel::result::{Error, Result};
 use application_util::wechat;
 
-pub async fn login(request: LoginRequest) -> Result<access_token::AccessToken> {
+pub async fn login(request: &LoginRequest) -> Result<access_token::AccessToken> {
     let platform = request.platform.unwrap();
     let (user_id, access_token_data) = match platform {
-        Platform::Wechat => login_wechat(&request).await,
+        Platform::Wechat => login_wechat(request).await,
         _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
