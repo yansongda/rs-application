@@ -26,6 +26,27 @@ struct Index {
     }
   }
 
+  @Builder itemEnd() {
+    Row() {
+      Button() {
+        Text('详情').fontColor('white')
+      }
+      .height('100%')
+      .width('60')
+      .type(ButtonType.Normal)
+      .backgroundColor('#ed7b2f')
+
+      Button() {
+        Text('删除').fontColor('white')
+
+      }
+      .height('100%')
+      .width('60')
+      .type(ButtonType.Normal)
+      .backgroundColor('#e34d59')
+    }
+  }
+
   build() {
     Column() {
       List() {
@@ -75,6 +96,11 @@ struct Index {
             }
             .height('100')
             .backgroundColor('white')
+            .swipeAction( {
+              end: {
+                builder: () => { this.itemEnd() },
+              },
+            })
           })
           .virtualScroll({ totalCount: this.items.length })
       }
