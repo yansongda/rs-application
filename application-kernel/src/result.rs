@@ -28,6 +28,8 @@ pub enum Error {
     ParamsShortlinkFormatInvalid(Option<&'static str>),
     ParamsUserSloganLengthInvalid(Option<&'static str>),
     ParamsUserAvatarLengthInvalid(Option<&'static str>),
+    ParamsThirdConfigNotFound(Option<&'static str>),
+    ParamsLoginPlatformThirdIdFormatInvalid(Option<&'static str>),
 
     ThirdHttpRequest(Option<&'static str>),
     ThirdHttpResponse(Option<&'static str>),
@@ -43,6 +45,7 @@ pub enum Error {
     InternalDatabaseUpdate(Option<&'static str>),
     InternalDatabaseDelete(Option<&'static str>),
     InternalDataToAccessTokenError(Option<&'static str>),
+    InternalDatabaseDataInvalid(Option<&'static str>),
 }
 
 impl Error {
@@ -137,6 +140,14 @@ impl Error {
                 2018,
                 message.unwrap_or_else(|| "参数错误: 头像格式不正确，请正确填写"),
             ),
+            Error::ParamsThirdConfigNotFound(message) => (
+                2019,
+                message.unwrap_or_else(|| "参数错误: 您访问的平台暂不支持，请重试或联系管理员"),
+            ),
+            Error::ParamsLoginPlatformThirdIdFormatInvalid(message) => (
+                2019,
+                message.unwrap_or_else(|| "参数错误: 您访问的平台暂不支持，请重试或联系管理员"),
+            ),
 
             Error::ThirdHttpRequest(message) => (
                 9800,
@@ -190,6 +201,10 @@ impl Error {
             Error::InternalDataToAccessTokenError(message) => (
                 9906,
                 message.unwrap_or_else(|| "内部错误: 生成 access_token 令牌有误，请联系管理员"),
+            ),
+            Error::InternalDatabaseDataInvalid(message) => (
+                9907,
+                message.unwrap_or_else(|| "内部错误: 数据库数据有误，请联系管理员"),
             ),
         }
     }

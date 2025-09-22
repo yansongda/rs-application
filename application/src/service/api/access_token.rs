@@ -2,13 +2,14 @@ use crate::request::api::access_token::LoginRequest;
 use application_database::account::access_token;
 use application_database::account::third_user;
 use application_database::account::user;
+use application_database::account::{Platform, third_config};
 use application_kernel::result::{Error, Result};
 use application_util::wechat;
 
-pub async fn login(request: LoginRequest) -> Result<access_token::AccessToken> {
+pub async fn login(request: &LoginRequest) -> Result<access_token::AccessToken> {
     let platform = request.platform.unwrap();
     let (user_id, access_token_data) = match platform {
-        third_user::Platform::Wechat => login_wechat(request.code.unwrap().as_str()).await,
+        Platform::Wechat => login_wechat(request).await,
         _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
@@ -26,17 +27,44 @@ pub async fn login(request: LoginRequest) -> Result<access_token::AccessToken> {
     }
 }
 
-async fn login_wechat(code: &str) -> Result<(u64, access_token::AccessTokenData)> {
-    let wechat_response = wechat::login(code).await?;
-    let open_id = wechat_response.get_open_id().unwrap();
+async fn login_wechat(request: &LoginRequest) -> Result<(u64, access_token::AccessTokenData)> {
+    let third_id = request.third_id.as_deref().unwrap_or("wx36601dc74412c674");
+
+    // todo: 第一次上线为了兼容，暂时使用上述替代
+    // let third_id = request.
+    //     third_id
+    //     .as_ref()
+    //     .ok_or(Error::ParamsLoginPlatformThirdIdFormatInvalid(None))?;
+
+    let code = request
+        .code
+        .as_ref()
+        .ok_or(Error::ParamsLoginCodeFormatInvalid(None))?;
+
+    let config = third_config::fetch(&Platform::Wechat, third_id).await?;
+
+    let app_secret = config
+        .config
+        .as_ref()
+        .and_then(|c| c.wechat.as_ref())
+        .ok_or(Error::InternalDatabaseDataInvalid(None))?
+        .app_secret
+        .as_ref();
+
+    let wechat_response =
+        wechat::login(code.as_str(), config.third_id.as_str(), app_secret).await?;
+
+    let open_id = wechat_response
+        .get_open_id()
+        .ok_or(Error::ThirdHttpWechatResponseParse(None))?;
 
     Ok((
-        get_third_user_id(&third_user::Platform::Wechat, open_id).await?,
+        get_third_user_id(&Platform::Wechat, open_id).await?,
         access_token::AccessTokenData::from(wechat_response),
     ))
 }
 
-async fn get_third_user_id(platform: &third_user::Platform, third_id: &str) -> Result<u64> {
+async fn get_third_user_id(platform: &Platform, third_id: &str) -> Result<u64> {
     let result = third_user::fetch(platform, third_id).await;
 
     if let Ok(user) = result {

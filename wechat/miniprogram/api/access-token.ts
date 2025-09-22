@@ -6,10 +6,13 @@ import http from "@utils/http";
 import logger from "@utils/logger";
 import type { LoginRequest, LoginResponse } from "types/access-token";
 
+const { appId } = wx.getAccountInfoSync().miniProgram;
+
 const login = async (code: string) => {
   try {
     return await http.post<LoginResponse>(PATH.LOGIN, {
       platform: "wechat",
+      third_id: appId,
       code,
     } as LoginRequest);
   } catch (e: unknown) {

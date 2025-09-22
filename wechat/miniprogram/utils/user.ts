@@ -10,7 +10,7 @@ const detail = async (): Promise<User> => {
     });
 
     return storage.data;
-  } catch (e) {
+  } catch (_e) {
     /* empty */
   }
 

@@ -2,7 +2,6 @@ use reqwest::{Method, Request, Url};
 use tracing::error;
 
 use crate::http;
-use application_kernel::config::G_CONFIG;
 use application_kernel::result::{Error, Result};
 use serde::Deserialize;
 
@@ -26,19 +25,17 @@ impl LoginResponse {
     }
 }
 
-pub async fn login(code: &str) -> Result<LoginResponse> {
-    let url = format!("{}/sns/jscode2session", G_CONFIG.wechat.url.as_str());
-
+pub async fn login(code: &str, app_id: &str, app_secret: &str) -> Result<LoginResponse> {
     let query = [
-        ("appid", G_CONFIG.wechat.app_id.as_str()),
-        ("secret", G_CONFIG.wechat.app_secret.as_str()),
+        ("appid", app_id),
+        ("secret", app_secret),
         ("js_code", code),
         ("grant_type", "authorization_code"),
     ];
 
     let response = http::request(Request::new(
         Method::GET,
-        Url::parse_with_params(url.as_str(), query).unwrap(),
+        Url::parse_with_params("https://api.weixin.qq.com/sns/jscode2session", query).unwrap(),
     ))
     .await
     .map_err(|e| match e {
