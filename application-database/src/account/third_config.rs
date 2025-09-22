@@ -35,7 +35,7 @@ pub async fn fetch(
     platform: &Platform,
     third_id: &str,
 ) -> application_kernel::result::Result<ThirdConfig> {
-    let sql = "select * from account.third_id where platform = ? and third_id = ? limit 1";
+    let sql = "select * from account.third_config where platform = ? and third_id = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<ThirdConfig> = sqlx::query_as(sql)

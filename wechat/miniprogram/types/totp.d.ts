@@ -1,4 +1,3 @@
-import type { HttpError } from "@models/error";
 import type { RequestData } from "./http";
 
 export interface Item {

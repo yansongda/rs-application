@@ -11,3 +11,6 @@ create table third_config
         unique (platform, third_id)
 )
     comment '第三方配置';
+
+-- 示例数据
+insert into third_config (platform, third_id, config) values ('wechat', 'your_third_id', '{"app_id": "your_component_appid", "app_secret": "your_component_appsecret"}');
