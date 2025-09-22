@@ -23,7 +23,6 @@ pub struct Config {
     pub name: String,
     pub bin: HashMap<String, Bin>,
     pub databases: HashMap<String, Database>,
-    pub wechat: Wechat,
     pub short_url: ShortUrl,
 }
 
@@ -33,7 +32,6 @@ impl Default for Config {
             name: "rs-application".to_string(),
             bin: HashMap::new(),
             databases: HashMap::new(),
-            wechat: Wechat::default(),
             short_url: ShortUrl::default(),
         }
     }
@@ -75,24 +73,6 @@ impl Default for Database {
             min_connections: 2,
             acquire_timeout: 3,
             idle_timeout: 300,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(default)]
-pub struct Wechat {
-    pub url: String,
-    pub app_id: String,
-    pub app_secret: String,
-}
-
-impl Default for Wechat {
-    fn default() -> Self {
-        Self {
-            url: "https://api.weixin.qq.com".to_string(),
-            app_id: "".to_string(),
-            app_secret: "".to_string(),
         }
     }
 }

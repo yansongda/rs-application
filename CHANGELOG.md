@@ -1,3 +1,15 @@
+## v1.12.1
+
+### optimize
+
+- optimize(backend): 删除与优化兼容性代码 (#95)
+
+## v1.12.0
+
+### added
+
+- feat: 增加多平台多应用功能 (#94)
+
 ## v1.11.2
 
 ### optimized

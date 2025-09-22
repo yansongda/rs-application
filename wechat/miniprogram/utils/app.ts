@@ -13,7 +13,7 @@ const valid = async (): Promise<boolean> => {
     await accessToken.valid();
 
     return true;
-  } catch (e) {
+  } catch (_e) {
     /* empty */
   }
 

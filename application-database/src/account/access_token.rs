@@ -1,5 +1,5 @@
 use crate::Pool;
-use crate::account::third_user::Platform;
+use crate::account::Platform;
 use application_kernel::result::{Error, Result};
 use application_util::wechat::LoginResponse;
 use chrono::{DateTime, Local};

@@ -2,6 +2,7 @@ import type { RequestData } from "./http";
 
 export interface LoginRequest extends RequestData {
   platform: string;
+  third_id: string;
   code: string;
 }
 

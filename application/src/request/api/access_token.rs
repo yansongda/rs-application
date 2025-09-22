@@ -1,12 +1,13 @@
 use crate::request::Validator;
+use application_database::account::Platform;
 use application_database::account::access_token::AccessToken;
-use application_database::account::third_user::Platform;
 use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct LoginRequest {
     pub platform: Option<Platform>,
+    pub third_id: Option<String>,
     pub code: Option<String>,
 }
 
@@ -16,6 +17,10 @@ impl Validator for LoginRequest {
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
             return Err(Error::ParamsLoginPlatformUnsupported(None));
+        }
+
+        if self.third_id.is_none() {
+            return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
         }
 
         if let Some(code) = &self.code

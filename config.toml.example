@@ -21,8 +21,3 @@ acquire_timeout=3
 
 [short_url]
 domain="https://u.ysdor.cn"
-
-[wechat]
-url="https://api.weixin.qq.com"
-app_id=""
-app_secret=""
