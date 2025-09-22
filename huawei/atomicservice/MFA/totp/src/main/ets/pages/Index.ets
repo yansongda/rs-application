@@ -2,6 +2,7 @@ import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
+import { AtomicServiceNavigation } from '@kit.ArkUI';
 
 const DOMAIN = 0x0000;
 
@@ -26,7 +27,8 @@ struct Index {
     }
   }
 
-  @Builder itemEnd() {
+  @Builder
+  itemEnd(id: string) {
     Row() {
       Button() {
         Text('详情').fontColor('white')
@@ -35,6 +37,9 @@ struct Index {
       .width('60')
       .type(ButtonType.Normal)
       .backgroundColor('#ed7b2f')
+      .onClick(() => {
+        hilog.info(DOMAIN, 'click', 'click: '+id)
+      })
 
       Button() {
         Text('删除').fontColor('white')
@@ -44,70 +49,84 @@ struct Index {
       .width('60')
       .type(ButtonType.Normal)
       .backgroundColor('#e34d59')
+      .onClick(() => {
+        hilog.info(DOMAIN, 'click', 'click: '+id)
+      })
     }
+  }
+
+  @Builder
+  content() {
+    List() {
+      Repeat<IItem>(this.items)
+        .each((ri: RepeatItem<IItem>) => {
+          ListItem() {
+            Column() {
+              Row() {
+                Column() {
+                  Column() {
+                    Text(ri.item.issuer)
+                      .fontSize('30')
+                      .fontColor('#636363')
+                      .textAlign(TextAlign.Center)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  }
+
+                  Column() {
+                    Text(ri.item.username)
+                      .fontSize('12')
+                      .fontColor('gray')
+                      .textAlign(TextAlign.Center)
+                      .maxLines(2)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  }
+                  .margin({top: 5})
+                }
+                .width('40%')
+
+                Column() {
+                  Text(ri.item.code)
+                    .fontSize('50')
+                }
+                .width('60%')
+              }
+              .height('98')
+
+              Progress({
+                value: 24,
+                total: 100,
+                type: ProgressType.Linear
+              })
+                .height('2')
+            }
+            .padding({top: 0, bottom: 0, left: 10, right: 10})
+          }
+          .height('100')
+          .backgroundColor('white')
+          .swipeAction( {
+            end: {
+              builder: () => { this.itemEnd(ri.item.id) },
+            },
+            edgeEffect: SwipeEdgeEffect.None
+          })
+        })
+        .virtualScroll({ totalCount: this.items.length })
+    }
+    .height('100%')
+    .width('100%')
   }
 
   build() {
     Column() {
-      List() {
-        Repeat<IItem>(this.items)
-          .each((ri: RepeatItem<IItem>) => {
-            ListItem() {
-              Column() {
-                Row() {
-                  Column() {
-                    Column() {
-                      Text(ri.item.issuer)
-                        .fontSize('30')
-                        .fontColor('#636363')
-                        .textAlign(TextAlign.Center)
-                        .maxLines(1)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    }
-
-                    Column() {
-                      Text(ri.item.username)
-                        .fontSize('12')
-                        .fontColor('gray')
-                        .textAlign(TextAlign.Center)
-                        .maxLines(2)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    }
-                    .margin({top: 5})
-                  }
-                  .width('40%')
-
-                  Column() {
-                    Text(ri.item.code)
-                      .fontSize('50')
-                  }
-                  .width('60%')
-                }
-                .height('98')
-
-                Progress({
-                  value: 24,
-                  total: 100,
-                  type: ProgressType.Linear
-                })
-                  .height('2')
-              }
-              .padding({top: 0, bottom: 0, left: 10, right: 10})
-            }
-            .height('100')
-            .backgroundColor('white')
-            .swipeAction( {
-              end: {
-                builder: () => { this.itemEnd() },
-              },
-            })
-          })
-          .virtualScroll({ totalCount: this.items.length })
-      }
-      .height('100%')
-      .width('100%')
+      AtomicServiceNavigation({
+        title: 'TOTP',
+        navigationContent: () => {
+          this.content()
+        }
+      })
     }
-    .backgroundColor('#f3f3f3')
+    .backgroundColor($r('sys.color.comp_background_focus'))
   }
 
   /**
