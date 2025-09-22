@@ -176,7 +176,7 @@ pub async fn update_username(id: u64, username: &str) -> Result<()> {
 }
 
 pub async fn delete(id: u64) -> Result<()> {
-    let sql = "delete from tool.totp where id = $1";
+    let sql = "delete from tool.totp where id = ?";
     let started_at = Instant::now();
 
     sqlx::query(sql)

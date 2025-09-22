@@ -28,13 +28,10 @@ pub async fn login(request: &LoginRequest) -> Result<access_token::AccessToken> 
 }
 
 async fn login_wechat(request: &LoginRequest) -> Result<(u64, access_token::AccessTokenData)> {
-    let third_id = request.third_id.as_deref().unwrap_or("wx36601dc74412c674");
-
-    // todo: 第一次上线为了兼容，暂时使用上述替代
-    // let third_id = request.
-    //     third_id
-    //     .as_ref()
-    //     .ok_or(Error::ParamsLoginPlatformThirdIdFormatInvalid(None))?;
+    let third_id = request
+        .third_id
+        .as_ref()
+        .ok_or(Error::ParamsLoginPlatformThirdIdFormatInvalid(None))?;
 
     let code = request
         .code

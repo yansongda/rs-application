@@ -19,10 +19,9 @@ impl Validator for LoginRequest {
             return Err(Error::ParamsLoginPlatformUnsupported(None));
         }
 
-        // todo: 第一次上线为了兼容，暂时不验证 third_id
-        // if self.third_id.is_none() {
-        //     return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
-        // }
+        if self.third_id.is_none() {
+            return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
+        }
 
         if let Some(code) = &self.code
             && code.chars().count() > 8

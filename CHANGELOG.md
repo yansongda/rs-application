@@ -1,3 +1,9 @@
+## v1.12.1
+
+### optimize
+
+- optimize(backend): 删除与优化兼容性代码 (#95)
+
 ## v1.12.0
 
 ### added
