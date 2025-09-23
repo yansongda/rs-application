@@ -18,7 +18,7 @@ struct Index {
       this.items.push({
         id: index.toString(),
         issuer: '闫嵩达',
-        username: 'me@yansongda.cnyansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongdayansongda',
+        username: 'me@yansongda.cn',
         code: '123456',
         config: {
           period: 30,
@@ -27,36 +27,18 @@ struct Index {
     }
   }
 
-  @Builder
-  itemEnd(id: string) {
-    Row() {
-      Button() {
-        Text('详情').fontColor('white')
-      }
-      .height('100%')
-      .width('60')
-      .type(ButtonType.Normal)
-      .backgroundColor('#ed7b2f')
-      .onClick(() => {
-        hilog.info(DOMAIN, 'click', 'click: '+id)
-      })
-
-      Button() {
-        Text('删除').fontColor('white')
-
-      }
-      .height('100%')
-      .width('60')
-      .type(ButtonType.Normal)
-      .backgroundColor('#e34d59')
-      .onClick(() => {
-        hilog.info(DOMAIN, 'click', 'click: '+id)
+  build() {
+    Column() {
+      AtomicServiceNavigation({
+        title: 'TOTP',
+        navigationContent: () => this.navigationContent()
       })
     }
+    .backgroundColor($r('sys.color.comp_background_focus'))
   }
 
   @Builder
-  content() {
+  navigationContent() {
     List() {
       Repeat<IItem>(this.items)
         .each((ri: RepeatItem<IItem>) => {
@@ -106,7 +88,7 @@ struct Index {
           .backgroundColor('white')
           .swipeAction( {
             end: {
-              builder: () => { this.itemEnd(ri.item.id) },
+              builder: () => { this.swipeAction(ri.item.id) },
             },
             edgeEffect: SwipeEdgeEffect.None
           })
@@ -117,16 +99,32 @@ struct Index {
     .width('100%')
   }
 
-  build() {
-    Column() {
-      AtomicServiceNavigation({
-        title: 'TOTP',
-        navigationContent: () => {
-          this.content()
-        }
+  @Builder
+  swipeAction(id: string) {
+    Row() {
+      Button() {
+        Text('详情').fontColor('white')
+      }
+      .height('100%')
+      .width('60')
+      .type(ButtonType.Normal)
+      .backgroundColor('#3c84e8')
+      .onClick(() => {
+        hilog.info(DOMAIN, 'click', 'click: '+id)
+      })
+
+      Button() {
+        Text('删除').fontColor('white')
+
+      }
+      .height('100%')
+      .width('60')
+      .type(ButtonType.Normal)
+      .backgroundColor('#efa04f')
+      .onClick(() => {
+        hilog.info(DOMAIN, 'click', 'click: '+id)
       })
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
   }
 
   /**
