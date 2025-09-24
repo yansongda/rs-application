@@ -12,7 +12,6 @@ struct Index {
   @Local items: Array<IItem> = [];
 
   aboutToAppear() {
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
     // this.loginWithHuaweiID();
     for (let index = 0; index < 100; index++) {
       this.items.push({
@@ -30,7 +29,7 @@ struct Index {
   build() {
     Column() {
       AtomicServiceNavigation({
-        title: 'TOTP',
+        title: $r("app.string.title_name"),
         navigationContent: () => this.navigationContent()
       })
     }
@@ -48,8 +47,8 @@ struct Index {
                 Column() {
                   Column() {
                     Text(ri.item.issuer)
-                      .fontSize('30')
-                      .fontColor('#636363')
+                      .fontSize($r('app.integer.issuer_font_size'))
+                      .fontColor($r('app.color.issuer_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -57,35 +56,35 @@ struct Index {
 
                   Column() {
                     Text(ri.item.username)
-                      .fontSize('12')
-                      .fontColor('gray')
+                      .fontSize($r('app.integer.username_font_size'))
+                      .fontColor($r('app.color.username_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }
-                  .margin({top: 5})
+                  .margin({top: $r('app.integer.username_margin_top')})
                 }
-                .width('40%')
+                .width($r("app.string.info_width"))
 
                 Column() {
                   Text(ri.item.code)
-                    .fontSize('50')
+                    .fontSize($r('app.integer.code_font_size'))
                 }
-                .width('60%')
+                .width($r("app.string.code_width"))
               }
-              .height('98')
+              .height($r('app.integer.body_height'))
 
               Progress({
                 value: 24,
                 total: 100,
                 type: ProgressType.Linear
               })
-                .height('2')
+                .height($r('app.integer.progress_height'))
             }
-            .padding({top: 0, bottom: 0, left: 10, right: 10})
+            .padding({top: $r('app.integer.item_body_padding_top'), bottom: $r('app.integer.item_body_padding_bottom'), left: $r('app.integer.item_body_padding_left'), right: $r('app.integer.item_body_padding_right')})
           }
-          .height('100')
-          .backgroundColor('white')
+          .height($r('app.integer.item_height'))
+          .backgroundColor($r('app.color.item_background'))
           .swipeAction( {
             end: {
               builder: () => { this.swipeAction(ri.item.id) },
@@ -95,32 +94,32 @@ struct Index {
         })
         .virtualScroll({ totalCount: this.items.length })
     }
-    .height('100%')
-    .width('100%')
+    .height($r('app.string.list_height'))
+    .width($r('app.string.list_width'))
   }
 
   @Builder
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text('详情').fontColor('white')
+        Text($r("app.string.swipe_detail_name")).fontColor($r('app.color.swipe_action_font'))
       }
-      .height('100%')
-      .width('60')
+      .height($r("app.string.swipe_action_height"))
+      .width($r("app.integer.swipe_action_width"))
       .type(ButtonType.Normal)
-      .backgroundColor('#3c84e8')
+      .backgroundColor($r('app.color.swipe_action_detail_background'))
       .onClick(() => {
         hilog.info(DOMAIN, 'click', 'click: '+id)
       })
 
       Button() {
-        Text('删除').fontColor('white')
+        Text($r("app.string.swipe_delete_name")).fontColor($r('app.color.swipe_action_font'))
 
       }
-      .height('100%')
-      .width('60')
+      .height($r("app.string.swipe_action_height"))
+      .width($r("app.integer.swipe_action_width"))
       .type(ButtonType.Normal)
-      .backgroundColor('#efa04f')
+      .backgroundColor($r('app.color.swipe_action_delete_background'))
       .onClick(() => {
         hilog.info(DOMAIN, 'click', 'click: '+id)
       })

@@ -3,6 +3,30 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "issuer_font",
+      "value": "#636363"
+    },
+    {
+      "name": "username_font",
+      "value": "#808080"
+    },
+    {
+      "name": "item_background",
+      "value": "#ffffff"
+    },
+    {
+      "name": "swipe_action_font",
+      "value": "#ffffff"
+    },
+    {
+      "name": "swipe_action_detail_background",
+      "value": "#3c84e8"
+    },
+    {
+      "name": "swipe_action_delete_background",
+      "value": "#efa04f"
     }
   ]
 }

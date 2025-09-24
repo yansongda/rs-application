@@ -5,12 +5,44 @@
       "value": "多因子认证（MFA）服务: TOTP 算法"
     },
     {
-      "name": "EntryAbility_desc",
+      "name": "entry_ability_desc",
       "value": "多因子认证（MFA）服务: TOTP 算法"
     },
     {
-      "name": "EntryAbility_label",
+      "name": "entry_ability_label",
       "value": "MFA"
+    },
+    {
+      "name": "title_name",
+      "value": "TOTP"
+    },
+    {
+      "name": "swipe_detail_name",
+      "value": "详情"
+    },
+    {
+      "name": "swipe_delete_name",
+      "value": "删除"
+    },
+    {
+      "name": "info_width",
+      "value": "40%"
+    },
+    {
+      "name": "code_width",
+      "value": "60%"
+    },
+    {
+      "name": "list_width",
+      "value": "100%"
+    },
+    {
+      "name": "list_height",
+      "value": "100%"
+    },
+    {
+      "name": "swipe_action_height",
+      "value": "100%"
     }
   ]
 }

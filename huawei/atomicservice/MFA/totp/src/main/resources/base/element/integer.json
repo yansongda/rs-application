@@ -1,0 +1,52 @@
+{
+  "integer": [
+    {
+      "name": "issuer_font_size",
+      "value": 30
+    },
+    {
+      "name": "username_font_size",
+      "value": 12
+    },
+    {
+      "name": "username_margin_top",
+      "value": 5
+    },
+    {
+      "name": "code_font_size",
+      "value": 50
+    },
+    {
+      "name": "body_height",
+      "value": 98
+    },
+    {
+      "name": "progress_height",
+      "value": 2
+    },
+    {
+      "name": "item_height",
+      "value": 100
+    },
+    {
+      "name": "swipe_action_width",
+      "value": 60
+    },
+    {
+      "name": "item_body_padding_top",
+      "value": 0
+    },
+    {
+      "name": "item_body_padding_bottom",
+      "value": 0
+    },
+    {
+      "name": "item_body_padding_left",
+      "value": 10
+    },
+    {
+      "name": "item_body_padding_right",
+      "value": 10
+    }
+  ]
+}
