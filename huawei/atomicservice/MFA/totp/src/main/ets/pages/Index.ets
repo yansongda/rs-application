@@ -28,6 +28,7 @@ struct Index {
 
   build() {
     Column() {
+      // Navigation().title('标题')
       AtomicServiceNavigation({
         title: $r("app.string.title_name"),
         navigationContent: () => this.navigationContent()
