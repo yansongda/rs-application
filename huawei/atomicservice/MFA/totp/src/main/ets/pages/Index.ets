@@ -2,7 +2,7 @@ import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
-import { AtomicServiceNavigation } from '@kit.ArkUI';
+import { AtomicServiceNavigation, TitleBarType } from '@kit.ArkUI';
 
 const DOMAIN = 0x0000;
 
@@ -28,11 +28,21 @@ struct Index {
 
   build() {
     Column() {
-      // Navigation().title('标题')
       AtomicServiceNavigation({
         title: $r("app.string.title_name"),
-        navigationContent: () => this.navigationContent()
+        titleOptions: {
+          titleIcon: $r('app.media.default_avatar'),
+          titleBarType: TitleBarType.DRAWER
+        },
+        mode: NavigationMode.Stack,
+        navigationContent: () => this.navigationContent(),
       })
+        .onClick((event: ClickEvent) => {
+          if (event?.x <= 60) {
+            // TODO：获取华为账号的头像、昵称、手机号等
+            hilog.info(DOMAIN, 'navigation click', '%{public}i', event.x)
+          }
+        })
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
   }
@@ -92,6 +102,14 @@ struct Index {
             },
             edgeEffect: SwipeEdgeEffect.None
           })
+          .onAttach(() => {
+            // TODO：挂载进度条刷新、code 定时刷新
+            hilog.info(DOMAIN, 'onAttach', ri.item.id)
+          })
+          .onDetach(() => {
+            // TODO：解除挂载进度条刷新、code 定时刷新
+            hilog.info(DOMAIN, 'onDetach', ri.item.id)
+          })
         })
         .virtualScroll({ totalCount: this.items.length })
     }
@@ -110,31 +128,24 @@ struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.swipe_action_detail_background'))
       .onClick(() => {
+        // TODO：进入详情页面
         hilog.info(DOMAIN, 'click', 'click: '+id)
       })
 
       Button() {
         Text($r("app.string.swipe_delete_name")).fontColor($r('app.color.swipe_action_font'))
-
       }
       .height($r("app.string.swipe_action_height"))
       .width($r("app.integer.swipe_action_width"))
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.swipe_action_delete_background'))
       .onClick(() => {
+        // TODO：删除提示
         hilog.info(DOMAIN, 'click', 'click: '+id)
       })
     }
   }
 
-  /**
-   * Sample code for using HUAWEI ID to log in to atomic service.
-   * According to the Atomic Service Review Guide, when a atomic service has an account system,
-   * the option to log in with a HUAWEI ID must be provided.
-   * The following presets the atomic service to use the HUAWEI ID silent login function.
-   * To enable the atomic service to log in successfully using the HUAWEI ID, please refer
-   * to the HarmonyOS HUAWEI ID Access Guide to configure the client ID and fingerprint certificate.
-   */
   private loginWithHuaweiID() {
     // Create a login request and set parameters
     const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
