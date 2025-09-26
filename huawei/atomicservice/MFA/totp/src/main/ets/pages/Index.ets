@@ -2,8 +2,8 @@ import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
-import { AtomicServiceNavigation, TitleBarType, AlertDialog } from '@kit.ArkUI';
-import { HashMap } from '@kit.ArkTS';
+import { AlertDialog, AtomicServiceNavigation, TitleBarType } from '@kit.ArkUI';
+import { ItemsRuntime } from '../models/ItemsRuntime';
 
 const DOMAIN = 0x0000;
 
@@ -14,18 +14,12 @@ interface swipeActionData {
   id: string;
 }
 
-interface IItemRuntimeData {
-  progress: number
-  timeoutId: number;
-  intervalId: number;
-}
-
 @Entry
 @ComponentV2
 struct Index {
   @Local items: Array<IItem> = [];
+  private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   private swipeActionData?: swipeActionData;
-  private itemsRuntime: HashMap<number, IItemRuntimeData> = new HashMap();
 
   deleteConfirmController: CustomDialogController = new CustomDialogController({
     builder: AlertDialog({
@@ -42,6 +36,7 @@ struct Index {
             return;
           }
 
+          hilog.info(0, 'alert delete', '%{public}i', this.swipeActionData.index)
           // todo: 1、调接口删除数据；2、确认 detach 事件
           this.items.splice(this.swipeActionData.index, 1);
           this.swipeActionData = undefined;
@@ -111,7 +106,7 @@ struct Index {
                 .width($r("app.string.info_width"))
 
                 Column() {
-                  Text(ri.item.code)
+                  Text(this.itemsRuntime.get(ri.index)?.code ?? ri.item.code)
                     .fontSize($r('app.integer.code_font_size'))
                 }
                 .width($r("app.string.code_width"))
@@ -119,7 +114,7 @@ struct Index {
               .height($r('app.integer.body_height'))
 
               Progress({
-                value: this.getItemRuntime(ri.index)?.progress ?? ri.item.config.period,
+                value: this.itemsRuntime.get(ri.index)?.progress ?? ri.item.config.period,
                 total: ri.item.config.period,
                 type: ProgressType.Linear
               })
@@ -136,32 +131,10 @@ struct Index {
             edgeEffect: SwipeEdgeEffect.None,
           })
           .onAttach(() => {
-            // TODO：挂载进度条刷新、code 定时刷新
-            const runtime = this.getItemRuntime(ri.index);
-
-            if ('undefined' === typeof runtime) {
-              this.itemsRuntime?.set(ri.index, {} as IItemRuntimeData)
-            }
-
-            clearTimeout(runtime?.timeoutId)
-            clearInterval(runtime?.intervalId)
-
-            const period: number = ri.item.config.period ?? 30;
-            const now = new Date();
-            const progress = period - (now.getSeconds() % period);
-
-            runtime?.progress = progress;
-            this.data.countdownIntervalIdentity = setInterval(() => {
-              countdown--;
-              if (countdown <= 0) {
-                clearInterval(this.data.countdownIntervalIdentity);
-              }
-              this.setData({ remainSeconds: countdown });
-            }, 1000);
+            this.itemsRuntime.initRuntime(ri.index, ri.item);
           })
           .onDetach(() => {
-            // TODO：解除挂载进度条刷新、code 定时刷新
-            hilog.info(DOMAIN, 'onDetach', ri.item.id)
+            this.itemsRuntime.clearRuntime(ri.index);
           })
         })
         .virtualScroll({ totalCount: this.items.length })
@@ -197,24 +170,6 @@ struct Index {
         this.deleteConfirmController.open();
       })
     }
-  }
-
-  private getItemRuntime(index: number): undefined | IItemRuntimeData {
-    try {
-      return this.itemsRuntime.get(index);
-    } catch (error) {
-    }
-
-    return undefined;
-  }
-
-  private setItemRuntime(index: number, data: IItemRuntimeData) {
-    try {
-      this.itemsRuntime.set(index, data);
-    } catch (error) {
-    }
-
-    return undefined;
   }
 
   private loginWithHuaweiID() {
