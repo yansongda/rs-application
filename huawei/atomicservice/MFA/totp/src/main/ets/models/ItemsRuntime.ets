@@ -1,6 +1,5 @@
 import { HashMap } from '@kit.ArkTS';
 import { IItem } from '../types/Item';
-import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export interface IItemRuntime
 {
@@ -106,7 +105,6 @@ export class ItemsRuntime
   }
 
   start(id: string) {
-    hilog.info(0, 'item runtime start', 'start: %{public}s', id);
     this.stop(id);
 
     const now = new Date();
@@ -126,7 +124,6 @@ export class ItemsRuntime
     const timeoutId = setTimeout(() => {
       // TODO: 调用接口更新 code
       runtime.code = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
-      hilog.info(0, 'item runtime start', 'refresh code: %{public}s', id);
       this.start(id);
     }, Math.max(progress, 1) * 1000);
 
@@ -135,8 +132,6 @@ export class ItemsRuntime
   }
 
   stop(id: string) {
-    hilog.info(0, 'item runtime stop', 'enter: %{public}s', id);
-
     const runtime = this.get(id);
 
     clearTimeout(runtime.timeoutId)
@@ -199,7 +194,6 @@ export class ItemsRuntime
   }
 
   private init(id: string, item: IItem): ItemRuntime {
-    hilog.info(0, 'item runtime init', 'enter: %{public}s', id);
     this.stop(id);
 
     const runtime = new ItemRuntime({

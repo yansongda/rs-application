@@ -30,8 +30,7 @@ struct Index {
             return;
           }
 
-          hilog.info(0, 'alert delete', '%{public}s', this.swipeActionId)
-          // todo: 1、调接口删除数据；2、确认 detach 事件
+          // todo: 1、调接口删除数据
           this.itemsRuntime.clear(this.swipeActionId);
           this.ids = this.itemsRuntime.getKeys();
           this.swipeActionId = undefined;
@@ -43,6 +42,7 @@ struct Index {
   aboutToAppear() {
     // this.loginWithHuaweiID();
 
+    // todo: 1、调接口查询所有数据
     let items: Array<IItem> = [];
     for (let index = 0; index < 100; index++) {
       items.push({
@@ -155,7 +155,6 @@ struct Index {
       .backgroundColor($r('app.color.swipe_action_detail_background'))
       .onClick(() => {
         // TODO：进入详情页面
-        hilog.info(DOMAIN, 'click', 'click: '+id)
       })
 
       Button() {
