@@ -7,19 +7,13 @@ import { ItemsRuntime } from '../models/ItemsRuntime';
 
 const DOMAIN = 0x0000;
 
-interface swipeActionData {
-  // 索引位置
-  index: number;
-  // 数据id
-  id: string;
-}
-
 @Entry
 @ComponentV2
 struct Index {
-  @Local items: Array<IItem> = [];
+  @Local
+  private ids: Array<string> = [];
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
-  private swipeActionData?: swipeActionData;
+  private swipeActionId?: string;
 
   deleteConfirmController: CustomDialogController = new CustomDialogController({
     builder: AlertDialog({
@@ -32,14 +26,15 @@ struct Index {
         value: '删除',
         role: ButtonRole.ERROR,
         action: () => {
-          if ('undefined' == typeof this.swipeActionData) {
+          if ('undefined' == typeof this.swipeActionId) {
             return;
           }
 
-          hilog.info(0, 'alert delete', '%{public}i', this.swipeActionData.index)
+          hilog.info(0, 'alert delete', '%{public}s', this.swipeActionId)
           // todo: 1、调接口删除数据；2、确认 detach 事件
-          this.items.splice(this.swipeActionData.index, 1);
-          this.swipeActionData = undefined;
+          this.itemsRuntime.clear(this.swipeActionId);
+          this.ids = this.itemsRuntime.getKeys();
+          this.swipeActionId = undefined;
         }
       },
     }),
@@ -47,17 +42,22 @@ struct Index {
 
   aboutToAppear() {
     // this.loginWithHuaweiID();
+
+    let items: Array<IItem> = [];
     for (let index = 0; index < 100; index++) {
-      this.items.push({
+      items.push({
         id: index.toString(),
-        issuer: '闫嵩达',
-        username: 'me@yansongda.cn',
+        issuer: '闫嵩达'+index,
+        username: 'me'+index+'@yansongda.cn',
         code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
         config: {
           period: 30,
         } as IItemConfig,
       } as IItem)
     }
+
+    this.itemsRuntime = new ItemsRuntime(items);
+    this.ids = this.itemsRuntime.getKeys();
   }
 
   build() {
@@ -78,14 +78,14 @@ struct Index {
   @Builder
   navigationContent() {
     List() {
-      Repeat<IItem>(this.items)
-        .each((ri: RepeatItem<IItem>) => {
+      Repeat<string>(this.ids)
+        .each((ri: RepeatItem<string>) => {
           ListItem() {
             Column() {
               Row() {
                 Column() {
                   Column() {
-                    Text(ri.item.issuer)
+                    Text(this.itemsRuntime.getIssuer(ri.item.valueOf()))
                       .fontSize($r('app.integer.issuer_font_size'))
                       .fontColor($r('app.color.issuer_font'))
                       .textAlign(TextAlign.Center)
@@ -94,7 +94,7 @@ struct Index {
                   }
 
                   Column() {
-                    Text(ri.item.username)
+                    Text(this.itemsRuntime.getUsername(ri.item.valueOf()))
                       .fontSize($r('app.integer.username_font_size'))
                       .fontColor($r('app.color.username_font'))
                       .textAlign(TextAlign.Center)
@@ -106,7 +106,7 @@ struct Index {
                 .width($r("app.string.info_width"))
 
                 Column() {
-                  Text(this.itemsRuntime.get(ri.index)?.code ?? ri.item.code)
+                  Text(this.itemsRuntime.get(ri.item.valueOf()).code)
                     .fontSize($r('app.integer.code_font_size'))
                 }
                 .width($r("app.string.code_width"))
@@ -114,8 +114,8 @@ struct Index {
               .height($r('app.integer.body_height'))
 
               Progress({
-                value: this.itemsRuntime.get(ri.index)?.progress ?? ri.item.config.period,
-                total: ri.item.config.period,
+                value: this.itemsRuntime.get(ri.item.valueOf()).progress,
+                total: this.itemsRuntime.get(ri.item.valueOf()).period,
                 type: ProgressType.Linear
               })
                 .height($r('app.integer.progress_height'))
@@ -126,25 +126,25 @@ struct Index {
           .backgroundColor($r('app.color.item_background'))
           .swipeAction({
             end: {
-              builder: () => { this.swipeAction(ri.index, ri.item.id) },
+              builder: () => { this.swipeAction(ri.item.valueOf()) },
             },
             edgeEffect: SwipeEdgeEffect.None,
           })
           .onAttach(() => {
-            this.itemsRuntime.initRuntime(ri.index, ri.item);
+            this.itemsRuntime.start(ri.item.valueOf());
           })
           .onDetach(() => {
-            this.itemsRuntime.clearRuntime(ri.index);
+            this.itemsRuntime.stop(ri.item.valueOf());
           })
         })
-        .virtualScroll({ totalCount: this.items.length })
+        .virtualScroll({ totalCount: this.itemsRuntime.getKeys().length })
     }
     .height($r('app.string.list_height'))
     .width($r('app.string.list_width'))
   }
 
   @Builder
-  swipeAction(index: number, id: string) {
+  swipeAction(id: string) {
     Row() {
       Button() {
         Text($r("app.string.swipe_detail_name")).fontColor($r('app.color.swipe_action_font'))
@@ -166,7 +166,7 @@ struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.swipe_action_delete_background'))
       .onClick(() => {
-        this.swipeActionData = {index, id} as swipeActionData;
+        this.swipeActionId = id;
         this.deleteConfirmController.open();
       })
     }

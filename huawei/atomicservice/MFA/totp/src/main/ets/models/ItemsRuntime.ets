@@ -6,6 +6,7 @@ export interface IItemRuntime
 {
   code: string | undefined;
   progress: number | undefined;
+  period: number;
   timeoutId: number | undefined;
   intervalId: number | undefined;
 }
@@ -19,6 +20,9 @@ export class ItemRuntime
   @Trace
   private _progress: number | undefined;
 
+  // 为了避免每一次从原始数据中查询 index，这里做个冗余
+  private _period: number = 30;
+
   private _timeoutId: number | undefined;
 
   private _intervalId: number | undefined;
@@ -26,6 +30,7 @@ export class ItemRuntime
   constructor(runtime: IItemRuntime) {
     this._code = runtime.code;
     this._progress = runtime.progress;
+    this._period = runtime.period;
     this._timeoutId = runtime.timeoutId;
     this._intervalId = runtime.intervalId;
   }
@@ -46,100 +51,171 @@ export class ItemRuntime
     return this._progress;
   }
 
+  public set period(value: number) {
+    this._period = value;
+  }
+
+  public get period(): number {
+    return this._period;
+  }
+
   public get timeoutId(): number | undefined {
     return this._timeoutId;
+  }
+
+  public set timeoutId(value: number | undefined) {
+    this._timeoutId = value;
   }
 
   public get intervalId(): number | undefined {
     return this._intervalId;
   }
+
+  public set intervalId(value: number | undefined) {
+    this._intervalId = value;
+  }
 }
 
 export class ItemsRuntime
 {
-  private instance: HashMap<number, ItemRuntime> = new HashMap();
+  private _items: Array<IItem> = [];
 
-  get(index: number): undefined | ItemRuntime {
-    try {
-      return this.instance.get(index);
-    } catch (error) {
-    }
+  private _runtimes: HashMap<string, ItemRuntime> = new HashMap();
 
-    return undefined;
-  }
-
-  set(index: number, data: ItemRuntime) {
-    try {
-      this.instance.set(index, data);
-    } catch (error) {
-    }
-  }
-
-  setProgress(index: number, progress: number) {
-    const runtime = this.get(index);
-
-    if ('undefined' === typeof runtime) {
+  constructor(items: undefined | Array<IItem> = undefined) {
+    if ('undefined' === typeof items) {
       return;
     }
 
-    runtime.progress = progress;
+    this._items = items;
+
+    items.forEach((item) => {
+      this.init(item.id, item);
+    })
   }
 
-  setCode(index: number, code: string) {
-    const runtime = this.get(index);
+  getKeys(): string[] {
+    try {
+      const keys = this._runtimes.keys();
 
-    if ('undefined' === typeof runtime) {
-      return;
+      return Array.from(keys);
+    } catch (error) {
     }
 
-    runtime.code = code;
+    return [];
   }
 
-  initRuntime(index: number, item: IItem) {
-    hilog.info(0, 'runtime item', 'enter initRuntime: %{public}i', index);
-    this.clearRuntime(index);
+  start(id: string) {
+    hilog.info(0, 'item runtime start', 'start: %{public}s', id);
+    this.stop(id);
 
-    const period: number = item.config.period ?? 30;
     const now = new Date();
-    let progress = period - (now.getSeconds() % period);
-    const timeoutSeconds = progress;
+    const runtime = this.get(id);
+
+    let progress = runtime.period - (now.getSeconds() % runtime.period);
+    runtime.progress = progress;
 
     const intervalId = setInterval(() => {
       progress--;
       if (progress <= 0) {
-        clearInterval(this.get(index)?.intervalId);
+        clearInterval(this.get(id).intervalId);
       }
-      this.setProgress(index, progress);
+      runtime.progress = progress;
     }, 1000);
 
     const timeoutId = setTimeout(() => {
       // TODO: 调用接口更新 code
-      hilog.info(0, 'runtime item', 'enter refresh code: %{public}i', index);
-      this.initRuntime(index, item);
-    }, timeoutSeconds * 1000);
+      runtime.code = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
+      hilog.info(0, 'item runtime start', 'refresh code: %{public}s', id);
+      this.start(id);
+    }, Math.max(progress, 1) * 1000);
 
-    this.set(index, new ItemRuntime({
-      code: item.code,
-      progress,
-      intervalId,
-      timeoutId,
-    } as IItemRuntime));
+    runtime.timeoutId = timeoutId;
+    runtime.intervalId = intervalId;
   }
 
-  clearRuntime(index: number) {
-    hilog.info(0, 'runtime item', 'enter clearRuntime: %{public}i', index);
+  stop(id: string) {
+    hilog.info(0, 'item runtime stop', 'enter: %{public}s', id);
 
-    const runtime = this.get(index);
-
-    if ('undefined' === typeof runtime) {
-      return;
-    }
+    const runtime = this.get(id);
 
     clearTimeout(runtime.timeoutId)
     clearInterval(runtime.intervalId)
 
+    runtime.intervalId = undefined;
+    runtime.timeoutId = undefined;
+  }
+
+  clear(id: string) {
+    this.stop(id);
+
     try {
-      this.instance.remove(index);
+      this._runtimes.remove(id);
+    } catch (error) {
+    }
+
+    const index = this.getItemIndex(id);
+
+    if (index) {
+      this._items.splice(index, 1);
+    }
+  }
+
+  get(id: string): ItemRuntime {
+    let runtime: undefined | ItemRuntime = undefined;
+
+    try {
+      runtime = this._runtimes.get(id);
+    } catch (error) {
+    }
+
+    return runtime ?? new ItemRuntime({} as IItemRuntime);
+  }
+
+  getIssuer(id: string): string {
+    const index = this.getItemIndex(id);
+
+    if ('undefined' !== typeof index) {
+      return this._items[index].issuer;
+    }
+
+    return 'NaN';
+  }
+
+  getUsername(id: string): string {
+    const index = this.getItemIndex(id);
+
+    if ('undefined' !== typeof index) {
+      return this._items[index].username;
+    }
+
+    return 'NaN';
+  }
+
+  private getItemIndex(id: string): undefined | number {
+    const index = this._items.findIndex((item) => item.id === id);
+
+    return -1 === index ? undefined : index;
+  }
+
+  private init(id: string, item: IItem): ItemRuntime {
+    hilog.info(0, 'item runtime init', 'enter: %{public}s', id);
+    this.stop(id);
+
+    const runtime = new ItemRuntime({
+      code: item.code,
+      progress: item.config.period,
+      period: item.config.period,
+    } as IItemRuntime);
+
+    this.set(id, runtime);
+
+    return runtime;
+  }
+
+  private set(id: string, runtime: ItemRuntime) {
+    try {
+      this._runtimes.set(id, runtime);
     } catch (error) {
     }
   }
