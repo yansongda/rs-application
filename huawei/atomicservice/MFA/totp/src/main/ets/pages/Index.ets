@@ -2,42 +2,17 @@ import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
-import { AlertDialog, AtomicServiceNavigation, TitleBarType } from '@kit.ArkUI';
+import { AlertDialogV2, AdvancedDialogV2Button, AtomicServiceNavigation, TitleBarType } from '@kit.ArkUI';
 import { ItemsRuntime } from '../models/ItemsRuntime';
+import { scanBarcode } from '@kit.ScanKit';
 
 const DOMAIN = 0x0000;
 
 @Entry
 @ComponentV2
 struct Index {
-  @Local
-  private ids: Array<string> = [];
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   private swipeActionId?: string;
-
-  deleteConfirmController: CustomDialogController = new CustomDialogController({
-    builder: AlertDialog({
-      primaryTitle: '确认删除？',
-      content: '删除后将无法恢复，请谨慎操作',
-      primaryButton: {
-        value: '取消',
-      },
-      secondaryButton: {
-        value: '删除',
-        role: ButtonRole.ERROR,
-        action: () => {
-          if ('undefined' == typeof this.swipeActionId) {
-            return;
-          }
-
-          // todo: 1、调接口删除数据
-          this.itemsRuntime.clear(this.swipeActionId);
-          this.ids = this.itemsRuntime.getKeys();
-          this.swipeActionId = undefined;
-        }
-      },
-    }),
-  })
 
   aboutToAppear() {
     // this.loginWithHuaweiID();
@@ -57,11 +32,10 @@ struct Index {
     }
 
     this.itemsRuntime = new ItemsRuntime(items);
-    this.ids = this.itemsRuntime.getKeys();
   }
 
   build() {
-    Column() {
+    Stack({ alignContent: Alignment.BottomEnd}) {
       AtomicServiceNavigation({
         title: $r("app.string.title_name"),
         titleOptions: {
@@ -71,6 +45,29 @@ struct Index {
         mode: NavigationMode.Stack,
         navigationContent: () => this.navigationContent(),
       })
+
+      Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
+        Row() {
+          Text() {
+            SymbolSpan($r('sys.symbol.line_viewfinder'))
+              .fontSize($r('app.integer.add_button_font_size'))
+              .fontColor([Color.White])
+          }
+          .margin({right: $r('app.integer.add_button_icon_margin_right')})
+
+          Text($r('app.string.add_name'))
+            .fontSize($r('app.integer.add_button_font_size'))
+        }
+      }
+      .fontColor(Color.White)
+      .padding({top: $r('app.integer.add_button_padding_top'), bottom: $r('app.integer.add_button_padding_bottom'), left: $r('app.integer.add_button_padding_left'), right: $r('app.integer.add_button_padding_right')})
+      .margin({bottom: $r('app.integer.add_button_margin_bottom'), right: $r('app.integer.add_button_margin_right')})
+      .onClick(() => {
+        scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
+          // todo: 添加
+          hilog.info(0, 'add button result', result.originalValue)
+        });
+      })
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
   }
@@ -78,7 +75,7 @@ struct Index {
   @Builder
   navigationContent() {
     List() {
-      Repeat<string>(this.ids)
+      Repeat<string>(Array.from(this.itemsRuntime.ids.values()))
         .each((ri: RepeatItem<string>) => {
           ListItem() {
             Column() {
@@ -120,7 +117,7 @@ struct Index {
               })
                 .height($r('app.integer.progress_height'))
             }
-            .padding({top: $r('app.integer.item_body_padding_top'), bottom: $r('app.integer.item_body_padding_bottom'), left: $r('app.integer.item_body_padding_left'), right: $r('app.integer.item_body_padding_right')})
+            .padding({left: $r('app.integer.item_body_padding_left'), right: $r('app.integer.item_body_padding_right')})
           }
           .height($r('app.integer.item_height'))
           .backgroundColor($r('app.color.item_background'))
@@ -137,7 +134,7 @@ struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
         })
-        .virtualScroll({ totalCount: this.itemsRuntime.getKeys().length })
+        .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
     }
     .height($r('app.string.list_height'))
     .width($r('app.string.list_width'))
@@ -166,10 +163,41 @@ struct Index {
       .backgroundColor($r('app.color.swipe_action_delete_background'))
       .onClick(() => {
         this.swipeActionId = id;
-        this.deleteConfirmController.open();
+        this.getUIContext().getPromptAction().openCustomDialog({
+          builder: () => {
+            this.deleteDialog();
+          }
+        }).catch(() => {
+          // TODO: Implement error handling.
+        })
       })
     }
   }
+
+  @Builder
+  deleteDialog() {
+    AlertDialogV2({
+      primaryTitle: '确认删除',
+      content: '删除后将无法恢复，请谨慎操作',
+      primaryButton: new AdvancedDialogV2Button({
+        content: '取消',
+      }),
+      secondaryButton: new AdvancedDialogV2Button({
+        content: '删除',
+        role: ButtonRole.ERROR,
+        action: () => {
+          if ('undefined' == typeof this.swipeActionId) {
+            return;
+          }
+
+          // todo: 1、调接口删除数据
+          this.itemsRuntime.clear(this.swipeActionId);
+          this.swipeActionId = undefined;
+        }
+      }),
+    })
+  }
+
 
   private loginWithHuaweiID() {
     // Create a login request and set parameters

@@ -33,20 +33,44 @@
       "value": 60
     },
     {
-      "name": "item_body_padding_top",
-      "value": 0
-    },
-    {
-      "name": "item_body_padding_bottom",
-      "value": 0
-    },
-    {
       "name": "item_body_padding_left",
       "value": 10
     },
     {
       "name": "item_body_padding_right",
       "value": 10
+    },
+    {
+      "name": "add_button_margin_bottom",
+      "value": 50
+    },
+    {
+      "name": "add_button_margin_right",
+      "value": 50
+    },
+    {
+      "name": "add_button_padding_left",
+      "value": 10
+    },
+    {
+      "name": "add_button_padding_right",
+      "value": 10
+    },
+    {
+      "name": "add_button_padding_top",
+      "value": 10
+    },
+    {
+      "name": "add_button_padding_bottom",
+      "value": 10
+    },
+    {
+      "name": "add_button_font_size",
+      "value": 20
+    },
+    {
+      "name": "add_button_icon_margin_right",
+      "value": 5
     }
   ]
 }

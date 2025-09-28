@@ -43,6 +43,10 @@
     {
       "name": "swipe_action_height",
       "value": "100%"
+    },
+    {
+      "name": "add_name",
+      "value": "增加"
     }
   ]
 }

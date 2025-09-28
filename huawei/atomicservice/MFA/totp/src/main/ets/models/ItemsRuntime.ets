@@ -75,8 +75,12 @@ export class ItemRuntime
   }
 }
 
+@ObservedV2
 export class ItemsRuntime
 {
+  @Trace
+  private _ids: Set<string> = new Set();
+
   private _items: Array<IItem> = [];
 
   private _runtimes: HashMap<string, ItemRuntime> = new HashMap();
@@ -86,22 +90,15 @@ export class ItemsRuntime
       return;
     }
 
-    this._items = items;
+    this._items = [];
 
     items.forEach((item) => {
       this.init(item.id, item);
     })
   }
 
-  getKeys(): string[] {
-    try {
-      const keys = this._runtimes.keys();
-
-      return Array.from(keys);
-    } catch (error) {
-    }
-
-    return [];
+  get ids(): Set<string> {
+    return this._ids;
   }
 
   start(id: string) {
@@ -149,10 +146,11 @@ export class ItemsRuntime
     } catch (error) {
     }
 
-    const index = this.getItemIndex(id);
+    this._ids.delete(id);
 
-    if (index) {
-      this._items.splice(index, 1);
+    const itemIndex = this.getItemIndex(id);
+    if (itemIndex) {
+      this._items.splice(itemIndex, 1);
     }
   }
 
@@ -202,15 +200,13 @@ export class ItemsRuntime
       period: item.config.period,
     } as IItemRuntime);
 
-    this.set(id, runtime);
-
-    return runtime;
-  }
-
-  private set(id: string, runtime: ItemRuntime) {
     try {
       this._runtimes.set(id, runtime);
+      this._items.push(item);
+      this._ids.add(id);
     } catch (error) {
     }
+
+    return runtime;
   }
 }
