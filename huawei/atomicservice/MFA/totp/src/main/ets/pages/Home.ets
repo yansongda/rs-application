@@ -3,7 +3,12 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AtomicServiceNavigation, TitleBarType } from '@kit.ArkUI';
 import { scanBarcode } from '@kit.ScanKit';
-import { Index } from './Index';
+import { buildIndex } from './Index';
+import { buildDetail } from './Detail';
+
+export interface INavigationDestinationParam {
+  id: string;
+}
 
 @Entry
 @ComponentV2
@@ -18,13 +23,14 @@ struct Home {
     Stack({ alignContent: Alignment.BottomEnd}) {
       AtomicServiceNavigation({
         navPathStack: this.pages,
-        title: $r("app.string.title_name"),
+        title: $r("app.string.index_page_name"),
         titleOptions: {
           titleIcon: $r('app.media.default_avatar'),
           titleBarType: TitleBarType.DRAWER,
         },
         mode: NavigationMode.Stack,
         navigationContent: () => this.navigationContent(),
+        navDestinationBuilder: this.navDestinationBuilder
       })
 
       Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
@@ -36,7 +42,7 @@ struct Home {
           }
           .margin({right: $r('app.integer.add_button_icon_margin_right')})
 
-          Text($r('app.string.add_name'))
+          Text($r('app.string.index_page_add_name'))
             .fontSize($r('app.integer.add_button_font_size'))
         }
       }
@@ -55,7 +61,14 @@ struct Home {
 
   @Builder
   navigationContent() {
-    Index({pages: this.pages})
+    buildIndex(this.pages)
+  }
+
+  @Builder
+  navDestinationBuilder(name: string, param: undefined|INavigationDestinationParam) {
+    if (name === 'detail' && param) {
+      buildDetail(param.id as string)
+    }
   }
 
   private loginWithHuaweiID() {

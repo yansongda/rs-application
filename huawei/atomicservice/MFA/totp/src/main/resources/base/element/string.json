@@ -13,40 +13,44 @@
       "value": "MFA"
     },
     {
-      "name": "title_name",
+      "name": "index_page_name",
       "value": "TOTP"
     },
     {
-      "name": "swipe_detail_name",
+      "name": "index_page_swipe_detail_name",
       "value": "详情"
     },
     {
-      "name": "swipe_delete_name",
+      "name": "index_page_swipe_delete_name",
       "value": "删除"
     },
     {
-      "name": "info_width",
+      "name": "index_page_info_width",
       "value": "40%"
     },
     {
-      "name": "code_width",
+      "name": "index_page_code_width",
       "value": "60%"
     },
     {
-      "name": "list_width",
+      "name": "index_page_list_width",
       "value": "100%"
     },
     {
-      "name": "list_height",
+      "name": "index_page_list_height",
       "value": "100%"
     },
     {
-      "name": "swipe_action_height",
+      "name": "index_page_swipe_action_height",
       "value": "100%"
     },
     {
-      "name": "add_name",
+      "name": "index_page_add_name",
       "value": "增加"
+    },
+    {
+      "name": "detail_page_name",
+      "value": "详情"
     }
   ]
 }

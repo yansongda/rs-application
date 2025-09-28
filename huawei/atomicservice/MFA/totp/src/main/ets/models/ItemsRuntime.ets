@@ -1,5 +1,6 @@
 import { HashMap } from '@kit.ArkTS';
 import { IItem } from '../types/Item';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export interface IItemRuntime
 {
@@ -120,6 +121,7 @@ export class ItemsRuntime
 
     const timeoutId = setTimeout(() => {
       // TODO: 调用接口更新 code
+      hilog.info(0, 'totp/runtimes', 'refresh code');
       runtime.code = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
       this.start(id);
     }, Math.max(progress, 1) * 1000);

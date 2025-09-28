@@ -2,9 +2,17 @@ import { ItemsRuntime } from '../models/ItemsRuntime';
 import { AlertDialogV2, AdvancedDialogV2Button } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
+import { INavigationDestinationParam } from './Home';
 
+
+@Builder
+export function buildIndex(pages: NavPathStack) {
+  Index({ pages })
+}
+
+@Entry
 @ComponentV2
-export struct Index {
+struct Index {
   @Param
   pages: NavPathStack = new NavPathStack();
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
@@ -55,13 +63,13 @@ export struct Index {
                   }
                   .margin({top: $r('app.integer.username_margin_top')})
                 }
-                .width($r("app.string.info_width"))
+                .width($r("app.string.index_page_info_width"))
 
                 Column() {
                   Text(this.itemsRuntime.get(ri.item.valueOf()).code)
                     .fontSize($r('app.integer.code_font_size'))
                 }
-                .width($r("app.string.code_width"))
+                .width($r("app.string.index_page_code_width"))
               }
               .height($r('app.integer.body_height'))
 
@@ -89,24 +97,22 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            // TODO：进入详情页面
-            hilog.info(0, 'totp/index', 'click item')
-            this.pages.pushPath({ name: 'detail' })
+            this.pages.pushPath({ name: 'detail', param: { id: ri.item.valueOf() } as INavigationDestinationParam })
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
     }
-    .height($r('app.string.list_height'))
-    .width($r('app.string.list_width'))
+    .height($r('app.string.index_page_list_height'))
+    .width($r('app.string.index_page_list_width'))
   }
 
   @Builder
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.swipe_detail_name")).fontColor($r('app.color.swipe_action_font'))
+        Text($r("app.string.index_page_swipe_detail_name")).fontColor($r('app.color.swipe_action_font'))
       }
-      .height($r("app.string.swipe_action_height"))
+      .height($r("app.string.index_page_swipe_action_height"))
       .width($r("app.integer.swipe_action_width"))
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.swipe_action_detail_background'))
@@ -115,9 +121,9 @@ export struct Index {
       })
 
       Button() {
-        Text($r("app.string.swipe_delete_name")).fontColor($r('app.color.swipe_action_font'))
+        Text($r("app.string.index_page_swipe_delete_name")).fontColor($r('app.color.swipe_action_font'))
       }
-      .height($r("app.string.swipe_action_height"))
+      .height($r("app.string.index_page_swipe_action_height"))
       .width($r("app.integer.swipe_action_width"))
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.swipe_action_delete_background'))
