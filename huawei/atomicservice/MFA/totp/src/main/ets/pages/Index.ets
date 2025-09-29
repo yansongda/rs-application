@@ -2,19 +2,16 @@ import { ItemsRuntime } from '../models/ItemsRuntime';
 import { AlertDialogV2, AdvancedDialogV2Button } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
-import { INavigationDestinationParam } from './Home';
 
-
-@Builder
-export function buildIndex(pages: NavPathStack) {
-  Index({ pages })
+export interface INavigationDestinationParam {
+  id: string;
 }
 
-@Entry
+@Preview
 @ComponentV2
-struct Index {
-  @Param
-  pages: NavPathStack = new NavPathStack();
+export struct Index {
+  @Param @Require
+  pages: NavPathStack;
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   private swipeActionId?: string;
 
@@ -24,8 +21,8 @@ struct Index {
     for (let index = 0; index < 100; index++) {
       items.push({
         id: index.toString(),
-        issuer: '闫嵩达'+index,
-        username: 'me'+index+'@yansongda.cn',
+        issuer: '闫嵩达大'+index,
+        username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'+index+'@yansongda.cn',
         code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
         config: {
           period: 30,
@@ -46,8 +43,8 @@ struct Index {
                 Column() {
                   Column() {
                     Text(this.itemsRuntime.getIssuer(ri.item.valueOf()))
-                      .fontSize($r('app.integer.issuer_font_size'))
-                      .fontColor($r('app.color.issuer_font'))
+                      .fontSize($r('app.integer.index_page_issuer_font_size'))
+                      .fontColor($r('app.color.index_page_issuer_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -55,35 +52,36 @@ struct Index {
 
                   Column() {
                     Text(this.itemsRuntime.getUsername(ri.item.valueOf()))
-                      .fontSize($r('app.integer.username_font_size'))
-                      .fontColor($r('app.color.username_font'))
+                      .fontSize($r('app.integer.index_page_username_font_size'))
+                      .fontColor($r('app.color.index_page_username_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }
-                  .margin({top: $r('app.integer.username_margin_top')})
+                  .margin({top: $r('app.integer.index_page_username_margin_top')})
                 }
                 .width($r("app.string.index_page_info_width"))
 
                 Column() {
                   Text(this.itemsRuntime.get(ri.item.valueOf()).code)
-                    .fontSize($r('app.integer.code_font_size'))
+                    .fontSize($r('app.integer.index_page_code_font_size'))
                 }
                 .width($r("app.string.index_page_code_width"))
               }
-              .height($r('app.integer.body_height'))
+              .height($r('app.integer.index_page_body_height'))
+              .padding({left: $r('app.integer.index_page_item_body_padding_left'), right: $r('app.integer.index_page_item_body_padding_right')})
 
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress,
                 total: this.itemsRuntime.get(ri.item.valueOf()).period,
                 type: ProgressType.Linear
               })
-                .height($r('app.integer.progress_height'))
+                .height($r('app.integer.index_page_progress_height'))
             }
-            .padding({left: $r('app.integer.item_body_padding_left'), right: $r('app.integer.item_body_padding_right')})
           }
-          .height($r('app.integer.item_height'))
-          .backgroundColor($r('app.color.item_background'))
+          .borderRadius($r('app.integer.index_page_item_border_radius'))
+          .height($r('app.integer.index_page_item_height'))
+          .backgroundColor($r('app.color.index_page_item_background'))
           .swipeAction({
             end: {
               builder: () => { this.swipeAction(ri.item.valueOf()) },
@@ -97,7 +95,7 @@ struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPath({ name: 'detail', param: { id: ri.item.valueOf() } as INavigationDestinationParam })
+            this.pages.pushPathByName('detail', { id: ri.item.valueOf() } as INavigationDestinationParam)
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -110,23 +108,23 @@ struct Index {
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.index_page_swipe_detail_name")).fontColor($r('app.color.swipe_action_font'))
+        Text($r("app.string.index_page_swipe_detail_name")).fontColor($r('app.color.index_page_swipe_action_font'))
       }
       .height($r("app.string.index_page_swipe_action_height"))
-      .width($r("app.integer.swipe_action_width"))
+      .width($r("app.integer.index_page_swipe_action_width"))
       .type(ButtonType.Normal)
-      .backgroundColor($r('app.color.swipe_action_detail_background'))
+      .backgroundColor($r('app.color.index_page_swipe_action_detail_background'))
       .onClick(() => {
-        // TODO：进入详情页面
+        this.pages.pushPathByName('detail', { id } as INavigationDestinationParam)
       })
 
       Button() {
-        Text($r("app.string.index_page_swipe_delete_name")).fontColor($r('app.color.swipe_action_font'))
+        Text($r("app.string.index_page_swipe_delete_name")).fontColor($r('app.color.index_page_swipe_action_font'))
       }
       .height($r("app.string.index_page_swipe_action_height"))
-      .width($r("app.integer.swipe_action_width"))
+      .width($r("app.integer.index_page_swipe_action_width"))
       .type(ButtonType.Normal)
-      .backgroundColor($r('app.color.swipe_action_delete_background'))
+      .backgroundColor($r('app.color.index_page_swipe_action_delete_background'))
       .onClick(() => {
         this.swipeActionId = id;
         this.getUIContext().getPromptAction().openCustomDialog({

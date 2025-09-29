@@ -1,18 +1,13 @@
 import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { AtomicServiceNavigation, TitleBarType } from '@kit.ArkUI';
 import { scanBarcode } from '@kit.ScanKit';
-import { buildIndex } from './Index';
-import { buildDetail } from './Detail';
-
-export interface INavigationDestinationParam {
-  id: string;
-}
+import { Index } from './Index';
 
 @Entry
 @ComponentV2
 struct Home {
+  @Local
   private pages: NavPathStack = new NavPathStack();
 
   aboutToAppear() {
@@ -21,34 +16,30 @@ struct Home {
 
   build() {
     Stack({ alignContent: Alignment.BottomEnd}) {
-      AtomicServiceNavigation({
-        navPathStack: this.pages,
-        title: $r("app.string.index_page_name"),
-        titleOptions: {
-          titleIcon: $r('app.media.default_avatar'),
-          titleBarType: TitleBarType.DRAWER,
-        },
-        mode: NavigationMode.Stack,
-        navigationContent: () => this.navigationContent(),
-        navDestinationBuilder: this.navDestinationBuilder
-      })
+      Navigation(this.pages) {
+        Index({ pages: this.pages })
+      }
+      .title(this.title())
+      .titleMode(NavigationTitleMode.Mini)
+      .mode(NavigationMode.Stack)
+      .hideBackButton(true)
 
       Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
         Row() {
           Text() {
             SymbolSpan($r('sys.symbol.line_viewfinder'))
-              .fontSize($r('app.integer.add_button_font_size'))
+              .fontSize($r('app.integer.home_page_add_button_font_size'))
               .fontColor([Color.White])
           }
-          .margin({right: $r('app.integer.add_button_icon_margin_right')})
+          .margin({right: $r('app.integer.home_page_add_button_icon_margin_right')})
 
           Text($r('app.string.index_page_add_name'))
-            .fontSize($r('app.integer.add_button_font_size'))
+            .fontSize($r('app.integer.home_page_add_button_font_size'))
         }
       }
       .fontColor(Color.White)
-      .padding({top: $r('app.integer.add_button_padding_top'), bottom: $r('app.integer.add_button_padding_bottom'), left: $r('app.integer.add_button_padding_left'), right: $r('app.integer.add_button_padding_right')})
-      .margin({bottom: $r('app.integer.add_button_margin_bottom'), right: $r('app.integer.add_button_margin_right')})
+      .padding({top: $r('app.integer.home_page_add_button_padding_top'), bottom: $r('app.integer.home_page_add_button_padding_bottom'), left: $r('app.integer.home_page_add_button_padding_left'), right: $r('app.integer.home_page_add_button_padding_right')})
+      .margin({bottom: $r('app.integer.home_page_add_button_margin_bottom'), right: $r('app.integer.home_page_add_button_margin_right')})
       .onClick(() => {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
           // todo: 添加
@@ -57,18 +48,17 @@ struct Home {
       })
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder
-  navigationContent() {
-    buildIndex(this.pages)
-  }
-
-  @Builder
-  navDestinationBuilder(name: string, param: undefined|INavigationDestinationParam) {
-    if (name === 'detail' && param) {
-      buildDetail(param.id as string)
+  title() {
+    Row() {
+      Image($r('app.media.default_avatar')).width($r('app.integer.home_page_avatar_size')).height($r('app.integer.home_page_avatar_size')).margin({ left: $r('app.integer.home_page_avatar_margin'), right: $r('app.integer.home_page_avatar_margin') })
+      Text($r("app.string.index_page_name")).fontWeight(FontWeight.Bold).fontSize($r('app.integer.home_page_title_font_size'))
     }
+    .width('100%')
+    .margin({ top: $r('app.integer.home_page_title_margin') })
   }
 
   private loginWithHuaweiID() {
