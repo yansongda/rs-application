@@ -7,7 +7,6 @@ export interface INavigationDestinationParam {
   id: string;
 }
 
-@Preview
 @ComponentV2
 export struct Index {
   @Param @Require
@@ -43,7 +42,7 @@ export struct Index {
                 Column() {
                   Column() {
                     Text(this.itemsRuntime.getIssuer(ri.item.valueOf()))
-                      .fontSize($r('app.integer.index_page_issuer_font_size'))
+                      .fontSize(30)
                       .fontColor($r('app.color.index_page_issuer_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(1)
@@ -52,35 +51,35 @@ export struct Index {
 
                   Column() {
                     Text(this.itemsRuntime.getUsername(ri.item.valueOf()))
-                      .fontSize($r('app.integer.index_page_username_font_size'))
+                      .fontSize(12)
                       .fontColor($r('app.color.index_page_username_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }
-                  .margin({top: $r('app.integer.index_page_username_margin_top')})
+                  .margin({top: 5})
                 }
-                .width($r("app.string.index_page_info_width"))
+                .width('40%')
 
                 Column() {
                   Text(this.itemsRuntime.get(ri.item.valueOf()).code)
-                    .fontSize($r('app.integer.index_page_code_font_size'))
+                    .fontSize(50)
                 }
-                .width($r("app.string.index_page_code_width"))
+                .width('60%')
               }
-              .height($r('app.integer.index_page_body_height'))
-              .padding({left: $r('app.integer.index_page_item_body_padding_left'), right: $r('app.integer.index_page_item_body_padding_right')})
+              .height(98)
+              .padding({left: 8, right: 8})
 
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress,
                 total: this.itemsRuntime.get(ri.item.valueOf()).period,
                 type: ProgressType.Linear
               })
-                .height($r('app.integer.index_page_progress_height'))
+                .height(2)
             }
           }
-          .borderRadius($r('app.integer.index_page_item_border_radius'))
-          .height($r('app.integer.index_page_item_height'))
+          .borderRadius(10)
+          .height(100)
           .backgroundColor($r('app.color.index_page_item_background'))
           .swipeAction({
             end: {
@@ -100,18 +99,18 @@ export struct Index {
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
     }
-    .height($r('app.string.index_page_list_height'))
-    .width($r('app.string.index_page_list_width'))
+    .height('100%')
+    .width('100%')
   }
 
   @Builder
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.index_page_swipe_detail_name")).fontColor($r('app.color.index_page_swipe_action_font'))
+        Text($r("app.string.index_page_detail_name")).fontColor($r('app.color.index_page_swipe_action_font'))
       }
-      .height($r("app.string.index_page_swipe_action_height"))
-      .width($r("app.integer.index_page_swipe_action_width"))
+      .height('100%')
+      .width(60)
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.index_page_swipe_action_detail_background'))
       .onClick(() => {
@@ -119,10 +118,10 @@ export struct Index {
       })
 
       Button() {
-        Text($r("app.string.index_page_swipe_delete_name")).fontColor($r('app.color.index_page_swipe_action_font'))
+        Text($r("app.string.index_page_delete_name")).fontColor($r('app.color.index_page_swipe_action_font'))
       }
-      .height($r("app.string.index_page_swipe_action_height"))
-      .width($r("app.integer.index_page_swipe_action_width"))
+      .height('100%')
+      .width(60)
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.index_page_swipe_action_delete_background'))
       .onClick(() => {
@@ -141,13 +140,13 @@ export struct Index {
   @Builder
   deleteDialog() {
     AlertDialogV2({
-      primaryTitle: '确认删除',
-      content: '删除后将无法恢复，请谨慎操作',
+      primaryTitle: $r('app.string.index_page_delete_title'),
+      content: $r('app.string.index_page_delete_content'),
       primaryButton: new AdvancedDialogV2Button({
-        content: '取消',
+        content: $r('app.string.index_page_cancel_name'),
       }),
       secondaryButton: new AdvancedDialogV2Button({
-        content: '删除',
+        content: $r('app.string.index_page_delete_name'),
         role: ButtonRole.ERROR,
         action: () => {
           if ('undefined' == typeof this.swipeActionId) {

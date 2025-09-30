@@ -1,96 +1,24 @@
 {
   "integer": [
     {
-      "name": "home_page_add_button_margin_bottom",
-      "value": 50
-    },
-    {
-      "name": "home_page_add_button_margin_right",
-      "value": 50
-    },
-    {
-      "name": "home_page_add_button_padding_left",
-      "value": 10
-    },
-    {
-      "name": "home_page_add_button_padding_right",
-      "value": 10
-    },
-    {
-      "name": "home_page_add_button_padding_top",
-      "value": 10
-    },
-    {
-      "name": "home_page_add_button_padding_bottom",
-      "value": 10
-    },
-    {
       "name": "home_page_add_button_font_size",
       "value": 20
     },
     {
-      "name": "home_page_add_button_icon_margin_right",
-      "value": 5
+      "name": "detail_page_block_margin_bottom",
+      "value": 20
     },
     {
-      "name": "home_page_avatar_size",
-      "value": 30
+      "name": "detail_page_block_title_margin_left",
+      "value": 20
     },
     {
-      "name": "home_page_avatar_margin",
+      "name": "detail_page_block_title_margin_bottom",
       "value": 10
     },
     {
-      "name": "home_page_title_margin",
-      "value": 10
-    },
-    {
-      "name": "home_page_title_font_size",
-      "value": 30
-    },
-    {
-      "name": "index_page_issuer_font_size",
-      "value": 30
-    },
-    {
-      "name": "index_page_username_font_size",
-      "value": 12
-    },
-    {
-      "name": "index_page_username_margin_top",
-      "value": 5
-    },
-    {
-      "name": "index_page_code_font_size",
-      "value": 50
-    },
-    {
-      "name": "index_page_body_height",
-      "value": 98
-    },
-    {
-      "name": "index_page_progress_height",
-      "value": 2
-    },
-    {
-      "name": "index_page_item_height",
-      "value": 100
-    },
-    {
-      "name": "index_page_item_border_radius",
-      "value": 10
-    },
-    {
-      "name": "index_page_swipe_action_width",
-      "value": 60
-    },
-    {
-      "name": "index_page_item_body_padding_left",
-      "value": 8
-    },
-    {
-      "name": "index_page_item_body_padding_right",
-      "value": 8
+      "name": "detail_page_block_item_title_font_weight",
+      "value": 500
     }
   ]
 }

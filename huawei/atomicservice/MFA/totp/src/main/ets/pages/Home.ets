@@ -31,15 +31,15 @@ struct Home {
               .fontSize($r('app.integer.home_page_add_button_font_size'))
               .fontColor([Color.White])
           }
-          .margin({right: $r('app.integer.home_page_add_button_icon_margin_right')})
+          .margin({right: 5})
 
           Text($r('app.string.index_page_add_name'))
             .fontSize($r('app.integer.home_page_add_button_font_size'))
         }
       }
       .fontColor(Color.White)
-      .padding({top: $r('app.integer.home_page_add_button_padding_top'), bottom: $r('app.integer.home_page_add_button_padding_bottom'), left: $r('app.integer.home_page_add_button_padding_left'), right: $r('app.integer.home_page_add_button_padding_right')})
-      .margin({bottom: $r('app.integer.home_page_add_button_margin_bottom'), right: $r('app.integer.home_page_add_button_margin_right')})
+      .padding({top: 10, bottom: 10, left: 10, right: 10})
+      .margin({bottom: 50, right: 50})
       .onClick(() => {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
           // todo: 添加
@@ -54,11 +54,11 @@ struct Home {
   @Builder
   title() {
     Row() {
-      Image($r('app.media.default_avatar')).width($r('app.integer.home_page_avatar_size')).height($r('app.integer.home_page_avatar_size')).margin({ left: $r('app.integer.home_page_avatar_margin'), right: $r('app.integer.home_page_avatar_margin') })
-      Text($r("app.string.index_page_name")).fontWeight(FontWeight.Bold).fontSize($r('app.integer.home_page_title_font_size'))
+      Image($r('app.media.default_avatar')).width(30).height(30).margin({ left: 10, right: 10 })
+      Text($r("app.string.index_page_name")).fontWeight(FontWeight.Bold).fontSize(30)
     }
     .width('100%')
-    .margin({ top: $r('app.integer.home_page_title_margin') })
+    .margin({ top: 10 })
   }
 
   private loginWithHuaweiID() {

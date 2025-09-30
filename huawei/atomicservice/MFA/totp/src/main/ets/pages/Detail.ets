@@ -26,30 +26,30 @@ struct Detail {
             total: 30,
             type: ProgressType.Linear
           })
-            .height($r('app.integer.index_page_progress_height'))
+            .height(2)
 
           Text('123456')
             .textAlign(TextAlign.Center)
             .fontSize(70)
-            .margin({top:20})
+            .margin({ top: 20 })
         }
-        .margin({bottom: 20})
+        .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
 
         Column() {
-          Text('基础信息')
+          Text($r('app.string.detail_page_basic_information'))
             .fontColor(Color.Grey)
             .textAlign(TextAlign.Start)
             .width('100%')
-            .margin({left: 20, bottom: 10})
+            .margin({ left: $r('app.integer.detail_page_block_title_margin_left'), bottom: $r('app.integer.detail_page_block_title_margin_bottom') })
 
           List({ space: 10 }) {
             ListItemGroup({ style: ListItemGroupStyle.CARD}) {
               ListItem({ style: ListItemStyle.CARD}) {
                 Row() {
-                  Text('发行方')
-                    .fontWeight(500)
+                  Text($r('app.string.detail_page_issuer'))
+                    .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
                     .textAlign(TextAlign.Start)
-                    .width('20%')
+                    .width($r('app.string.detail_page_block_item_title_width'))
 
                   Row() {
                     Text('Github')
@@ -64,16 +64,16 @@ struct Detail {
                     .textAlign(TextAlign.End)
                     .width('10%')
                   }
-                  .width('80%')
+                  .width($r('app.string.detail_page_block_item_content_width'))
                 }
               }
 
               ListItem({ style: ListItemStyle.CARD}) {
                 Row() {
-                  Text('用户名')
-                    .fontWeight(500)
+                  Text($r('app.string.detail_page_username'))
+                    .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
                     .textAlign(TextAlign.Start)
-                    .width('20%')
+                    .width($r('app.string.detail_page_block_item_title_width'))
 
                   Row() {
                     Text('meaaaaaaaaaaaaaaaaaaaaaffffffffffffffffff@yansongda.cn')
@@ -88,17 +88,17 @@ struct Detail {
                     .textAlign(TextAlign.End)
                     .width('10%')
                   }
-                  .width('80%')
+                  .width($r('app.string.detail_page_block_item_content_width'))
                 }
                 .width('100%')
               }
             }
-            .divider({strokeWidth:1})
+            .divider({ strokeWidth: 1 })
           }
           .width('100%')
           .height('100%')
         }
-        .margin({bottom: 20})
+        .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
