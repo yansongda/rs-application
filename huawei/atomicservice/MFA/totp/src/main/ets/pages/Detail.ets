@@ -21,18 +21,17 @@ struct Detail {
     NavDestination() {
       Column() {
         Column() {
-          Text('实时秘钥')
-            .fontColor(Color.Grey)
-            .textAlign(TextAlign.Start)
-            .width('100%')
-            .margin({left: 30, bottom: 10})
+          Progress({
+            value: 22,
+            total: 30,
+            type: ProgressType.Linear
+          })
+            .height($r('app.integer.index_page_progress_height'))
 
-          Column() {
-            Text('123456')
-              .textAlign(TextAlign.Center)
-              .fontSize(70)
-              .width('100%')
-          }
+          Text('123456')
+            .textAlign(TextAlign.Center)
+            .fontSize(70)
+            .margin({top:20})
         }
         .margin({bottom: 20})
 
@@ -41,13 +40,14 @@ struct Detail {
             .fontColor(Color.Grey)
             .textAlign(TextAlign.Start)
             .width('100%')
-            .margin({left: 30, bottom: 10})
+            .margin({left: 20, bottom: 10})
 
           List({ space: 10 }) {
             ListItemGroup({ style: ListItemGroupStyle.CARD}) {
               ListItem({ style: ListItemStyle.CARD}) {
                 Row() {
                   Text('发行方')
+                    .fontWeight(500)
                     .textAlign(TextAlign.Start)
                     .width('20%')
 
@@ -71,6 +71,7 @@ struct Detail {
               ListItem({ style: ListItemStyle.CARD}) {
                 Row() {
                   Text('用户名')
+                    .fontWeight(500)
                     .textAlign(TextAlign.Start)
                     .width('20%')
 
@@ -78,7 +79,7 @@ struct Detail {
                     Text('meaaaaaaaaaaaaaaaaaaaaaffffffffffffffffff@yansongda.cn')
                       .textAlign(TextAlign.End)
                       .width('90%')
-                      .maxLines(1)
+                      .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
 
                     Text() {
@@ -97,6 +98,7 @@ struct Detail {
           .width('100%')
           .height('100%')
         }
+        .margin({bottom: 20})
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
