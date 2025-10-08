@@ -11,7 +11,7 @@ export function builder(param: Object) {
 struct Detail {
   @Param @Require
   detailId: string;
-  pages: NavPathStack = new NavPathStack();
+  pages: NavPathStack | undefined = undefined;
 
   aboutToAppear(): void {
     hilog.info(0, 'totp/detail', 'about to appear: '+this.detailId)
