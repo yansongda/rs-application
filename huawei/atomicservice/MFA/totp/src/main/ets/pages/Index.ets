@@ -3,10 +3,6 @@ import { AlertDialogV2, AdvancedDialogV2Button } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../types/Item';
 
-export interface INavigationDestinationParam {
-  id: string;
-}
-
 @ComponentV2
 export struct Index {
   @Param @Require
@@ -41,7 +37,7 @@ export struct Index {
               Row() {
                 Column() {
                   Column() {
-                    Text(this.itemsRuntime.getIssuer(ri.item.valueOf()))
+                    Text(this.itemsRuntime.get(ri.item.valueOf()).issuer)
                       .fontSize(30)
                       .fontColor($r('app.color.index_page_issuer_font'))
                       .textAlign(TextAlign.Center)
@@ -50,7 +46,7 @@ export struct Index {
                   }
 
                   Column() {
-                    Text(this.itemsRuntime.getUsername(ri.item.valueOf()))
+                    Text(this.itemsRuntime.get(ri.item.valueOf()).username)
                       .fontSize(12)
                       .fontColor($r('app.color.index_page_username_font'))
                       .textAlign(TextAlign.Center)
@@ -72,7 +68,7 @@ export struct Index {
 
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress,
-                total: this.itemsRuntime.get(ri.item.valueOf()).period,
+                total: this.itemsRuntime.get(ri.item.valueOf()).config.period,
                 type: ProgressType.Linear
               })
                 .height(2)
@@ -94,7 +90,7 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPathByName('detail', { id: ri.item.valueOf() } as INavigationDestinationParam)
+            this.pages.pushPathByName('detail', this.itemsRuntime.get(ri.item.valueOf()))
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -114,7 +110,7 @@ export struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName('detail', { id } as INavigationDestinationParam)
+        this.pages.pushPathByName('detail', this.itemsRuntime.get(id))
       })
 
       Button() {

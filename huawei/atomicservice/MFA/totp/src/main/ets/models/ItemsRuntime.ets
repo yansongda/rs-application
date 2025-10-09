@@ -1,12 +1,14 @@
 import { HashMap } from '@kit.ArkTS';
-import { IItem } from '../types/Item';
+import { IItem, IItemConfig } from '../types/Item';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export interface IItemRuntime
 {
   code: string | undefined;
   progress: number | undefined;
-  period: number;
+  issuer: string;
+  username: string;
+  config: IItemConfig;
   timeoutId: number | undefined;
   intervalId: number | undefined;
 }
@@ -20,8 +22,11 @@ export class ItemRuntime
   @Trace
   private _progress: number | undefined;
 
-  // 为了避免每一次从原始数据中查询 index，这里做个冗余
-  private _period: number = 30;
+  private _issuer: string;
+
+  private _username: string;
+
+  private _config: IItemConfig;
 
   private _timeoutId: number | undefined;
 
@@ -30,7 +35,9 @@ export class ItemRuntime
   constructor(runtime: IItemRuntime) {
     this._code = runtime.code;
     this._progress = runtime.progress;
-    this._period = runtime.period;
+    this._issuer = runtime.issuer;
+    this._username = runtime.username;
+    this._config = runtime.config;
     this._timeoutId = runtime.timeoutId;
     this._intervalId = runtime.intervalId;
   }
@@ -51,12 +58,28 @@ export class ItemRuntime
     return this._progress;
   }
 
-  public set period(value: number) {
-    this._period = value;
+  public set issuer(value: string) {
+    this._issuer = value;
   }
 
-  public get period(): number {
-    return this._period;
+  public get issuer(): string {
+    return this._issuer;
+  }
+
+  public set username(value: string) {
+    this._username = value;
+  }
+
+  public get username(): string {
+    return this._username;
+  }
+
+  public set config(value: IItemConfig) {
+    this._config = value;
+  }
+
+  public get config(): IItemConfig {
+    return this._config;
   }
 
   public get timeoutId(): number | undefined {
@@ -82,8 +105,6 @@ export class ItemsRuntime
   @Trace
   private _ids: Set<string> = new Set();
 
-  private _items: Array<IItem> = [];
-
   private _runtimes: HashMap<string, ItemRuntime> = new HashMap();
 
   constructor(items: undefined | Array<IItem> = undefined) {
@@ -91,7 +112,10 @@ export class ItemsRuntime
       return;
     }
 
-    this._items = [];
+    try {
+      this._runtimes.clear();
+    } catch (error) {
+    }
 
     items.forEach((item) => {
       this.init(item.id, item);
@@ -108,7 +132,7 @@ export class ItemsRuntime
     const now = new Date();
     const runtime = this.get(id);
 
-    let progress = runtime.period - (now.getSeconds() % runtime.period);
+    let progress = runtime.config.period - (now.getSeconds() % runtime.config.period);
     runtime.progress = progress;
 
     const intervalId = setInterval(() => {
@@ -149,11 +173,6 @@ export class ItemsRuntime
     }
 
     this._ids.delete(id);
-
-    const itemIndex = this.getItemIndex(id);
-    if (itemIndex) {
-      this._items.splice(itemIndex, 1);
-    }
   }
 
   get(id: string): ItemRuntime {
@@ -167,44 +186,19 @@ export class ItemsRuntime
     return runtime ?? new ItemRuntime({} as IItemRuntime);
   }
 
-  getIssuer(id: string): string {
-    const index = this.getItemIndex(id);
-
-    if ('undefined' !== typeof index) {
-      return this._items[index].issuer;
-    }
-
-    return 'NaN';
-  }
-
-  getUsername(id: string): string {
-    const index = this.getItemIndex(id);
-
-    if ('undefined' !== typeof index) {
-      return this._items[index].username;
-    }
-
-    return 'NaN';
-  }
-
-  private getItemIndex(id: string): undefined | number {
-    const index = this._items.findIndex((item) => item.id === id);
-
-    return -1 === index ? undefined : index;
-  }
-
   private init(id: string, item: IItem): ItemRuntime {
     this.stop(id);
 
     const runtime = new ItemRuntime({
       code: item.code,
       progress: item.config.period,
-      period: item.config.period,
+      issuer: item.issuer,
+      username: item.username,
+      config: item.config,
     } as IItemRuntime);
 
     try {
       this._runtimes.set(id, runtime);
-      this._items.push(item);
       this._ids.add(id);
     } catch (error) {
     }

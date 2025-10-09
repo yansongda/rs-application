@@ -1,34 +1,28 @@
-import { hilog } from "@kit.PerformanceAnalysisKit"
-import { INavigationDestinationParam } from "./Index";
+import { ItemRuntime } from "../models/ItemsRuntime";
 
 @Builder
-export function builder(param: Object) {
-  Detail({ detailId: (param as INavigationDestinationParam).id })
+export function builder() {
+  Detail()
 }
 
 @Preview
 @ComponentV2
 struct Detail {
-  @Param @Require
-  detailId: string;
+  private runtime: ItemRuntime | undefined = undefined;
   pages: NavPathStack | undefined = undefined;
-
-  aboutToAppear(): void {
-    hilog.info(0, 'totp/detail', 'about to appear: '+this.detailId)
-  }
 
   build() {
     NavDestination() {
       Column() {
         Column() {
           Progress({
-            value: 22,
-            total: 30,
+            value: this.runtime?.progress ?? 0,
+            total: this.runtime?.config.period ?? 30,
             type: ProgressType.Linear
           })
             .height(2)
 
-          Text('123456')
+          Text(this.runtime?.code ?? 'NaN')
             .textAlign(TextAlign.Center)
             .fontSize(70)
             .margin({ top: 20 })
@@ -52,7 +46,7 @@ struct Detail {
                     .width($r('app.string.detail_page_block_item_title_width'))
 
                   Row() {
-                    Text('Github')
+                    Text(this.runtime?.issuer ?? 'NaN')
                       .textAlign(TextAlign.End)
                       .width('90%')
                       .maxLines(1)
@@ -76,7 +70,7 @@ struct Detail {
                     .width($r('app.string.detail_page_block_item_title_width'))
 
                   Row() {
-                    Text('meaaaaaaaaaaaaaaaaaaaaaffffffffffffffffff@yansongda.cn')
+                    Text(this.runtime?.username ?? 'NaN')
                       .textAlign(TextAlign.End)
                       .width('90%')
                       .maxLines(2)
@@ -105,6 +99,11 @@ struct Detail {
     .title($r('app.string.detail_page_name'))
     .onReady((context: NavDestinationContext) => {
       this.pages = context.pathStack;
+      this.runtime = context.pathInfo.param as ItemRuntime;
+    })
+    .onWillHide(() => {
+      this.pages = undefined;
+      this.runtime = undefined;
     })
   }
 }
