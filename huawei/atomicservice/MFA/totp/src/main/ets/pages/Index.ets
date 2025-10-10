@@ -8,6 +8,7 @@ export struct Index {
   @Param @Require
   pages: NavPathStack;
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
+  private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
 
   aboutToAppear() {
@@ -29,7 +30,7 @@ export struct Index {
   }
 
   build() {
-    List() {
+    List({ scroller: this.scroller }) {
       Repeat<string>(Array.from(this.itemsRuntime.ids.values()))
         .each((ri: RepeatItem<string>) => {
           ListItem() {
@@ -110,7 +111,13 @@ export struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName('detail', this.itemsRuntime.get(id))
+        this.pages.pushPathByName('detail', this.itemsRuntime.get(id));
+
+        try {
+          this.scroller.closeAllSwipeActions();
+        } catch (error) {
+          hilog.error(0, 'totp/index', '调用 `closeAllSwipeActions` 失败')
+        }
       })
 
       Button() {

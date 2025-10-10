@@ -3,6 +3,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scanBarcode } from '@kit.ScanKit';
 import { Index } from './Index';
+import { util } from '@kit.ArkTS';
 
 @Entry
 @ComponentV2
@@ -64,17 +65,27 @@ struct Home {
   private loginWithHuaweiID() {
     const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
     loginRequest.forceLogin = false;
-    const controller = new authentication.AuthenticationController();
-    controller.executeRequest(loginRequest).then((data) => {
-      const loginWithHuaweiIDResponse = data as authentication.LoginWithHuaweiIDResponse;
-      const authCode = loginWithHuaweiIDResponse.data?.authorizationCode;
-      // Send authCode to the backend in exchange for unionID, session
+    loginRequest.state = util.generateRandomUUID();
 
-    }).catch((error: BusinessError) => {
-      hilog.error(0, 'testTag', 'error: %{public}s', JSON.stringify(error));
-      if (error.code === authentication.AuthenticationErrorCode.ACCOUNT_NOT_LOGGED_IN) {
-        // HUAWEI ID is not logged in, it is recommended to jump to the login guide page
-      }
-    });
+    (new authentication.AuthenticationController())
+      .executeRequest(loginRequest)
+      .then((data) => {
+        const loginWithHuaweiIDResponse = data as authentication.LoginWithHuaweiIDResponse;
+        const state = loginWithHuaweiIDResponse.state;
+        if (state && loginRequest.state !== state) {
+          hilog.error(0, 'totp/home', `Failed to login. The state is different, response state: ${state}`);
+
+          return;
+        }
+
+        const authCode = loginWithHuaweiIDResponse.data?.authorizationCode;
+
+        // TODO: Send authCode to the backend in exchange for unionID, session
+      })
+      .catch((error: BusinessError) => {
+        if (error.code === authentication.AuthenticationErrorCode.ACCOUNT_NOT_LOGGED_IN) {
+          // HUAWEI ID is not logged in, it is recommended to jump to the login guide page
+        }
+      });
   }
 }
