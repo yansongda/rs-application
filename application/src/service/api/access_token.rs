@@ -4,12 +4,13 @@ use application_database::account::third_user;
 use application_database::account::user;
 use application_database::account::{Platform, third_config};
 use application_kernel::result::{Error, Result};
-use application_util::wechat;
+use application_util::{huawei, wechat};
 
 pub async fn login(request: &LoginRequest) -> Result<access_token::AccessToken> {
     let platform = request.platform.unwrap();
     let (user_id, access_token_data) = match platform {
         Platform::Wechat => login_wechat(request).await,
+        Platform::Huawei => login_huawei(request).await,
         _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
@@ -58,6 +59,39 @@ async fn login_wechat(request: &LoginRequest) -> Result<(u64, access_token::Acce
     Ok((
         get_third_user_id(&Platform::Wechat, open_id).await?,
         access_token::AccessTokenData::from(wechat_response),
+    ))
+}
+
+async fn login_huawei(request: &LoginRequest) -> Result<(u64, access_token::AccessTokenData)> {
+    let third_id = request
+        .third_id
+        .as_ref()
+        .ok_or(Error::ParamsLoginPlatformThirdIdFormatInvalid(None))?;
+
+    let code = request
+        .code
+        .as_ref()
+        .ok_or(Error::ParamsLoginCodeFormatInvalid(None))?;
+
+    let config = third_config::fetch(&Platform::Huawei, third_id).await?;
+
+    let app_secret = config
+        .config
+        .as_ref()
+        .and_then(|c| c.huawei.as_ref())
+        .ok_or(Error::InternalDatabaseDataInvalid(None))?
+        .app_secret
+        .as_ref();
+
+    let huawei_response = huawei::token(code.as_str(), config.third_id.as_str(), app_secret).await?;
+
+    let open_id = huawei_response
+        .get_open_id()
+        .ok_or(Error::ThirdHttpHuaweiResponseParse(None))?;
+
+    Ok((
+        get_third_user_id(&Platform::Huawei, open_id).await?,
+        access_token::AccessTokenData::from(huawei_response),
     ))
 }
 

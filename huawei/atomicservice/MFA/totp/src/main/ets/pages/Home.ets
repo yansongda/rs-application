@@ -12,7 +12,7 @@ struct Home {
   private pages: NavPathStack = new NavPathStack();
 
   aboutToAppear() {
-    // this.loginWithHuaweiID();
+    this.loginWithHuaweiID();
   }
 
   build() {
@@ -78,14 +78,13 @@ struct Home {
           return;
         }
 
-        const authCode = loginWithHuaweiIDResponse.data?.authorizationCode;
+        const unionId = loginWithHuaweiIDResponse.data!.unionID
 
         // TODO: Send authCode to the backend in exchange for unionID, session
       })
       .catch((error: BusinessError) => {
-        if (error.code === authentication.AuthenticationErrorCode.ACCOUNT_NOT_LOGGED_IN) {
-          // HUAWEI ID is not logged in, it is recommended to jump to the login guide page
-        }
+        // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
+        hilog.error(0, 'totp/home', '元服务登录出错: %{public}s', error.message)
       });
   }
 }
