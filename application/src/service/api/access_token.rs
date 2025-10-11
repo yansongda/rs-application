@@ -51,12 +51,8 @@ async fn login_wechat(request: &LoginRequest) -> Result<(u64, access_token::Acce
     let wechat_response =
         wechat::login(code.as_str(), config.third_id.as_str(), app_secret).await?;
 
-    let open_id = wechat_response
-        .get_open_id()
-        .ok_or(Error::ThirdHttpWechatResponseParse(None))?;
-
     Ok((
-        get_third_user_id(&Platform::Wechat, open_id).await?,
+        get_third_user_id(&Platform::Wechat, wechat_response.openid.as_str()).await?,
         access_token::AccessTokenData::from(wechat_response),
     ))
 }
