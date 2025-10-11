@@ -80,14 +80,24 @@ async fn login_huawei(request: &LoginRequest) -> Result<(u64, access_token::Acce
         .as_ref();
 
     let token_response = huawei::token(code.as_str(), config.third_id.as_str(), app_secret).await?;
-
-    let open_id = huawei_response
-        .get_open_id()
-        .ok_or(Error::ThirdHttpHuaweiResponseParse(None))?;
+    let token_info_response = huawei::token_info(token_response.access_token.as_str()).await?;
 
     Ok((
-        get_third_user_id(&Platform::Huawei, open_id).await?,
-        access_token::AccessTokenData::from(huawei_response),
+        get_third_user_id(&Platform::Huawei, token_info_response.union_id.as_str()).await?,
+        access_token::AccessTokenData {
+            wechat: None,
+            huawei: Some(access_token::HuaweiAccessTokenData {
+                token_type: token_response.token_type,
+                access_token: token_response.access_token,
+                scope: token_response.scope,
+                refresh_token: token_response.refresh_token,
+                client_id: token_info_response.client_id,
+                expires_in: token_info_response.expires_in,
+                union_id: token_info_response.union_id,
+                project_id: token_info_response.project_id,
+                r#type: token_info_response.r#type,
+            }),
+        },
     ))
 }
 

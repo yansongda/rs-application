@@ -24,6 +24,7 @@ pub struct AccessToken {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AccessTokenData {
     pub wechat: Option<WechatAccessTokenData>,
+    pub huawei: Option<HuaweiAccessTokenData>,
 }
 
 impl AccessTokenData {
@@ -34,6 +35,13 @@ impl AccessTokenData {
                     Ok(base62::encode(murmur3::hash128(
                         format!("{}:{}", data.open_id, data.session_key).as_bytes(),
                     )))
+                } else {
+                    Err(Error::InternalDataToAccessTokenError(None))
+                }
+            }
+            Platform::Huawei => {
+                if let Some(data) = &self.huawei {
+                    Ok(data.access_token.to_owned())
                 } else {
                     Err(Error::InternalDataToAccessTokenError(None))
                 }
@@ -64,8 +72,23 @@ impl From<LoginResponse> for AccessTokenData {
     fn from(response: LoginResponse) -> Self {
         AccessTokenData {
             wechat: Some(WechatAccessTokenData::from(response)),
+            huawei: None,
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HuaweiAccessTokenData {
+    pub token_type: String,
+    pub access_token: String,
+    pub scope: String,
+    pub refresh_token: String,
+    pub client_id: String,
+    pub expires_in: i64,
+    pub union_id: String,
+    pub project_id: String,
+    #[serde(rename = "type")]
+    pub r#type: i64,
 }
 
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {

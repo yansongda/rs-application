@@ -98,7 +98,33 @@ where
             .map_err(|_| Error::ThirdHttpResponseParse(None))?,
     };
 
+    if !result.inner.is_success() {
+        return Err(Error::ThirdHttpResponseResult(None));
+    }
+
     info!("请求第三方服务接口结果 {:?}", result);
 
     Ok(result)
+}
+
+pub fn map_request_err(e: Error, platform: &str) -> Error {
+    match e {
+        Error::ThirdHttpRequest(_) => Error::ThirdHttpRequest(Some(format!(
+            "第三方错误: {} API 请求出错，请联系管理员",
+            platform
+        ))),
+        Error::ThirdHttpResponse(_) => Error::ThirdHttpResponse(Some(format!(
+            "第三方错误: {} API 响应接收出错，请联系管理员",
+            platform
+        ))),
+        Error::ThirdHttpResponseParse(_) => Error::ThirdHttpResponseParse(Some(format!(
+            "第三方错误: {} API 响应解析出错，请联系管理员",
+            platform
+        ))),
+        Error::ThirdHttpResponseResult(_) => Error::ThirdHttpResponseResult(Some(format!(
+            "第三方错误: {} API 响应结果出错，请联系管理员",
+            platform
+        ))),
+        _ => Error::ThirdHttpRequest(None),
+    }
 }
