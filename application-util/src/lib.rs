@@ -1,3 +1,3 @@
 pub mod http;
-pub mod wechat;
 pub mod huawei;
+pub mod wechat;

@@ -29,15 +29,12 @@ pub struct Config {
 pub struct WechatConfig {
     pub app_id: String,
     pub app_secret: String,
-    pub login_url: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HuaweiConfig {
     pub app_id: String,
     pub app_secret: String,
-    pub oauth2_token_url: String,
-    pub oauth2_token_info_url: String,
 }
 
 pub async fn fetch(

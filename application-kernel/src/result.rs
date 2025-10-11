@@ -33,10 +33,8 @@ pub enum Error {
 
     ThirdHttpRequest(Option<&'static str>),
     ThirdHttpResponse(Option<&'static str>),
-    ThirdHttpWechatRequest(Option<&'static str>),
-    ThirdHttpWechatResponse(Option<&'static str>),
-    ThirdHttpWechatResponseCode(Option<&'static str>),
-    ThirdHttpWechatResponseParse(Option<&'static str>),
+    ThirdHttpResponseParse(Option<&'static str>),
+    ThirdHttpResponseResult(Option<&'static str>),
 
     InternalReadBodyFailed(Option<&'static str>),
     InternalDatabaseAcquire(Option<&'static str>),
@@ -157,21 +155,13 @@ impl Error {
                 9801,
                 message.unwrap_or_else(|| "第三方错误: 第三方 API 响应出错，请联系管理员"),
             ),
-            Error::ThirdHttpWechatRequest(message) => (
+            Error::ThirdHttpResponseParse(message) => (
                 9802,
-                message.unwrap_or_else(|| "第三方错误: 微信 API 请求出错，请联系管理员"),
+                message.unwrap_or_else(|| "第三方错误: 第三方 API 响应解析出错，请联系管理员"),
             ),
-            Error::ThirdHttpWechatResponse(message) => (
-                9803,
-                message.unwrap_or_else(|| "第三方错误: 微信 API 响应接收出错，请联系管理员"),
-            ),
-            Error::ThirdHttpWechatResponseCode(message) => (
-                9804,
-                message.unwrap_or_else(|| "第三方错误: 微信 API 结果出错，请联系管理员"),
-            ),
-            Error::ThirdHttpWechatResponseParse(message) => (
-                9804,
-                message.unwrap_or_else(|| "第三方错误: 微信 API 结果解析出错，请联系管理员"),
+            Error::ThirdHttpResponseResult(message) => (
+                9805,
+                message.unwrap_or_else(|| "第三方错误: 第三方 API 业务结果出错，请联系管理员"),
             ),
 
             Error::InternalReadBodyFailed(message) => (
