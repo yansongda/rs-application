@@ -1,6 +1,12 @@
+## v1.12.2
+
+### optimized
+
+- optimize(backend): 优化 http 请求公共类 (#96)
+
 ## v1.12.1
 
-### optimize
+### optimized
 
 - optimize(backend): 删除与优化兼容性代码 (#95)
 

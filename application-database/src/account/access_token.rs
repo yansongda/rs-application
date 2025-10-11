@@ -47,14 +47,14 @@ impl AccessTokenData {
 pub struct WechatAccessTokenData {
     pub open_id: String,
     pub session_key: String,
-    pub union_id: Option<String>,
+    pub union_id: String,
 }
 
 impl From<LoginResponse> for WechatAccessTokenData {
     fn from(response: LoginResponse) -> Self {
         WechatAccessTokenData {
-            open_id: response.openid.unwrap_or_default(),
-            session_key: response.session_key.unwrap_or_default(),
+            open_id: response.openid,
+            session_key: response.session_key,
             union_id: response.unionid,
         }
     }

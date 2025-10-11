@@ -28,7 +28,6 @@ pub struct Config {
 pub struct WechatConfig {
     pub app_id: String,
     pub app_secret: String,
-    pub login_url: String,
 }
 
 pub async fn fetch(
