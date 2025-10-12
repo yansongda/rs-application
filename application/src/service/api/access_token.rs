@@ -76,7 +76,7 @@ async fn login_huawei(request: &LoginRequest) -> Result<(u64, access_token::Acce
         .as_ref()
         .and_then(|c| c.huawei.as_ref())
         .ok_or(Error::InternalDatabaseDataInvalid(None))?
-        .app_secret
+        .client_secret
         .as_ref();
 
     let token_response = huawei::token(code.as_str(), config.third_id.as_str(), app_secret).await?;

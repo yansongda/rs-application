@@ -98,11 +98,11 @@ where
             .map_err(|_| Error::ThirdHttpResponseParse(None))?,
     };
 
+    info!("请求第三方服务接口结果 {:?}", result);
+
     if !result.inner.is_success() {
         return Err(Error::ThirdHttpResponseResult(None));
     }
-
-    info!("请求第三方服务接口结果 {:?}", result);
 
     Ok(result)
 }
@@ -122,7 +122,7 @@ pub fn map_request_err(e: Error, platform: &str) -> Error {
             platform
         ))),
         Error::ThirdHttpResponseResult(_) => Error::ThirdHttpResponseResult(Some(format!(
-            "第三方错误: {} API 响应结果出错，请联系管理员",
+            "第三方错误: {} API 响应业务结果出错，请联系管理员",
             platform
         ))),
         _ => Error::ThirdHttpRequest(None),

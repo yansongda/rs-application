@@ -3,7 +3,8 @@ POST {{domain}}/api/v1/access-token/login
 Content-Type: application/json
 
 {
-    "platform": "wechat",
+    "platform": "huawei",
+    "third_id": "aaa",
     "code": "codecodecodecode"
 }
 

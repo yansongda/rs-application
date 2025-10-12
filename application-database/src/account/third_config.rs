@@ -33,8 +33,8 @@ pub struct WechatConfig {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HuaweiConfig {
-    pub app_id: String,
-    pub app_secret: String,
+    pub client_id: String,
+    pub client_secret: String,
 }
 
 pub async fn fetch(

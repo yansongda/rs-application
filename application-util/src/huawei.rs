@@ -23,11 +23,11 @@ pub struct TokenResponseError {
     pub error_description: String,
 }
 
-pub async fn token(code: &str, app_id: &str, app_secret: &str) -> Result<TokenResponse> {
+pub async fn token(code: &str, app_id: &str, client_secret: &str) -> Result<TokenResponse> {
     let form = [
         ("grant_type", "authorization_code"),
         ("client_id", app_id),
-        ("client_secret", app_secret),
+        ("client_secret", client_secret),
         ("code", code),
     ];
 
