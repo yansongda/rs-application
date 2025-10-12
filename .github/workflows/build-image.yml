@@ -35,7 +35,7 @@ jobs:
       - name: Recognize tag
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            tag="application-api-$GITHUB_REF_NAME"
+            tag="application-api-$GITHUB_REF_NAME-$GITHUB_SHA"
           else
             tag=$GITHUB_REF_NAME
           fi

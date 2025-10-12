@@ -195,7 +195,7 @@ impl Error {
                 }),
             ),
             Error::ParamsLoginPlatformThirdIdFormatInvalid(message) => (
-                2019,
+                2020,
                 message.to_owned().unwrap_or_else(|| {
                     "参数错误: 您访问的平台暂不支持，请重试或联系管理员".to_owned()
                 }),
@@ -220,7 +220,7 @@ impl Error {
                 }),
             ),
             Error::ThirdHttpResponseResult(message) => (
-                9805,
+                9803,
                 message.to_owned().unwrap_or_else(|| {
                     "第三方错误: 第三方 API 业务结果出错，请联系管理员".to_owned()
                 }),
