@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "application"
-version = "1.12.2"
+version = "1.13.0"
 dependencies = [
  "application-database",
  "application-kernel",
@@ -57,7 +57,7 @@ dependencies = [
 
 [[package]]
 name = "application-database"
-version = "1.12.2"
+version = "1.13.0"
 dependencies = [
  "application-kernel",
  "application-util",
@@ -72,7 +72,7 @@ dependencies = [
 
 [[package]]
 name = "application-kernel"
-version = "1.12.2"
+version = "1.13.0"
 dependencies = [
  "chrono",
  "config",
@@ -84,7 +84,7 @@ dependencies = [
 
 [[package]]
 name = "application-macro"
-version = "1.12.2"
+version = "1.13.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -93,7 +93,7 @@ dependencies = [
 
 [[package]]
 name = "application-util"
-version = "1.12.2"
+version = "1.13.0"
 dependencies = [
  "application-kernel",
  "reqwest",
