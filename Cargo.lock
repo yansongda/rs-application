@@ -64,11 +64,11 @@ dependencies = [
  "application-util",
  "base62",
  "chrono",
- "fasthash",
  "serde",
  "sqlx",
  "totp-rs",
  "tracing",
+ "uuid",
 ]
 
 [[package]]

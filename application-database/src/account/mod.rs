@@ -7,6 +7,7 @@ use sqlx::{Decode, Encode, MySql, Type};
 use std::fmt::{Display, Formatter};
 
 pub mod access_token;
+pub mod refresh_token;
 pub mod third_config;
 pub mod third_user;
 pub mod user;

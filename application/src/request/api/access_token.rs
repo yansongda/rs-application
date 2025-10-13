@@ -1,4 +1,3 @@
-use chrono::{DateTime, Local};
 use crate::request::Validator;
 use application_database::account::Platform;
 use application_kernel::result::Error;
@@ -32,7 +31,11 @@ impl Validator for LoginRequest {
         if let Some(code) = &self.code
             && code.chars().count() > 8
         {
-            return Ok(self.to_owned());
+            return Ok(LoginRequestParams {
+                platform: self.platform.unwrap(),
+                third_id: self.third_id.as_ref().unwrap().to_string(),
+                code: code.to_string(),
+            });
         }
 
         Err(Error::ParamsLoginCodeFormatInvalid(None))
@@ -42,8 +45,8 @@ impl Validator for LoginRequest {
 #[derive(Debug, Serialize)]
 pub struct LoginResponse {
     pub access_token: String,
-    pub expired_at: Option<DateTime<Local>>,
-    pub refresh_token: Option<String>,
+    pub expired_in: i32,
+    pub refresh_token: String,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -53,8 +56,14 @@ pub struct RefreshLoginRequest {
     pub refresh_token: Option<String>,
 }
 
+pub struct RefreshLoginRequestParams {
+    pub platform: Platform,
+    pub third_id: String,
+    pub refresh_token: String,
+}
+
 impl Validator for RefreshLoginRequest {
-    type Data = RefreshLoginRequest;
+    type Data = RefreshLoginRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
@@ -65,10 +74,14 @@ impl Validator for RefreshLoginRequest {
             return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
         }
 
-        if let Some(code) = &self.code
-            && code.chars().count() > 8
+        if let Some(refresh_token) = &self.refresh_token
+            && refresh_token.chars().count() > 8
         {
-            return Ok(self.to_owned());
+            return Ok(RefreshLoginRequestParams {
+                platform: self.platform.unwrap(),
+                third_id: self.third_id.as_ref().unwrap().to_string(),
+                refresh_token: refresh_token.to_string(),
+            });
         }
 
         Err(Error::ParamsLoginCodeFormatInvalid(None))

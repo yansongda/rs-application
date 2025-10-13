@@ -24,7 +24,7 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response();
     }
 
-    let access_token= access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str()).await;
+    let access_token = access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str()).await;
 
     if let Some(access_token) = access_token {
         if access_token.is_expired() {
@@ -33,7 +33,7 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
 
         request.extensions_mut().insert(access_token.unwrap());
 
-        return next.run(request).await
+        return next.run(request).await;
     }
 
     ApiErr(Error::AuthorizationDataNotFound(None)).into_response();

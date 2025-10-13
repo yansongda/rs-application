@@ -3,12 +3,12 @@ use crate::account::Platform;
 use application_kernel::result::{Error, Result};
 use application_util::wechat::LoginResponse;
 use chrono::{DateTime, Local};
-use fasthash::murmur3;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
 use std::time::Instant;
 use tracing::{error, info};
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct AccessToken {
@@ -36,30 +36,6 @@ impl AccessToken {
 pub struct AccessTokenData {
     pub wechat: Option<WechatAccessTokenData>,
     pub huawei: Option<HuaweiAccessTokenData>,
-}
-
-impl AccessTokenData {
-    pub fn to_access_token(&self, platform: &Platform) -> Result<String> {
-        match platform {
-            Platform::Wechat => {
-                if let Some(data) = &self.wechat {
-                    Ok(base62::encode(murmur3::hash128(
-                        format!("{}:{}", data.open_id, data.session_key).as_bytes(),
-                    )))
-                } else {
-                    Err(Error::InternalDataToAccessTokenError(None))
-                }
-            }
-            Platform::Huawei => {
-                if let Some(data) = &self.huawei {
-                    Ok(data.access_token.to_owned())
-                } else {
-                    Err(Error::InternalDataToAccessTokenError(None))
-                }
-            }
-            _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -127,6 +103,17 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     Err(Error::ParamsAccessTokenNotFound(None))
 }
 
+pub async fn update_or_insert(
+    platform: &Platform,
+    user_id: u64,
+    data: AccessTokenData,
+) -> Result<AccessToken> {
+    match fetch_by_user_id(user_id).await {
+        Ok(exist) => update(exist, data).await,
+        Err(_) => insert(platform, user_id, data).await,
+    }
+}
+
 pub async fn fetch_by_user_id(user_id: u64) -> Result<AccessToken> {
     let sql = "select * from account.access_token where user_id = ? limit 1";
     let started_at = Instant::now();
@@ -158,7 +145,7 @@ pub async fn insert(
     data: AccessTokenData,
 ) -> Result<AccessToken> {
     let sql = "insert into account.access_token (user_id, access_token, data, platform) values (?, ?, ?, ?)";
-    let access_token = data.to_access_token(platform)?;
+    let access_token = Uuid::now_v7().to_string();
     let started_at = Instant::now();
 
     let result = sqlx::query(sql)
@@ -184,6 +171,7 @@ pub async fn insert(
         platform: platform.to_owned(),
         access_token,
         data: Json(data),
+        expired_at: None,
         created_at: Local::now(),
         updated_at: Local::now(),
     })
@@ -192,7 +180,7 @@ pub async fn insert(
 pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
     let sql = "update account.access_token set access_token = ?, data = ? where id = ?";
     let started_at = Instant::now();
-    let access_token_string = data.to_access_token(&access_token.platform)?;
+    let access_token_string = Uuid::now_v7().to_string();
 
     let _ = sqlx::query(sql)
         .bind(&access_token_string)
