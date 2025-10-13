@@ -8,6 +8,7 @@ pub enum Error {
     AuthorizationDataNotFound(Option<String>),
     AuthorizationInvalidFormat(Option<String>),
     AuthorizationPermissionUngranted(Option<String>),
+    AuthorizationAccessTokenExpired(Option<String>),
 
     ParamsJsonInvalid(Option<String>),
     ParamsLoginPlatformUnsupported(Option<String>),
@@ -72,6 +73,12 @@ impl Error {
                 message
                     .to_owned()
                     .unwrap_or_else(|| "认证失败: 未授权，请勿越权使用".to_owned()),
+            ),
+            Error::AuthorizationAccessTokenExpired(message) => (
+                1004,
+                message
+                    .to_owned()
+                    .unwrap_or_else(|| "认证失败: 认证信息已过期，请重新登录".to_owned()),
             ),
 
             Error::ParamsJsonInvalid(message) => (

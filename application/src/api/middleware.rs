@@ -24,18 +24,19 @@ pub async fn authorization(mut request: Request, next: Next) -> Response {
         return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response();
     }
 
-    let access_token: Result<access_token::AccessToken> =
-        access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
-            .await
-            .map_err(|_| Error::AuthorizationDataNotFound(None));
+    let access_token= access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str()).await;
 
-    if let Err(e) = access_token {
-        return ApiErr(e).into_response();
+    if let Some(access_token) = access_token {
+        if access_token.is_expired() {
+            return ApiErr(Error::AuthorizationAccessTokenExpired(None)).into_response();
+        }
+
+        request.extensions_mut().insert(access_token.unwrap());
+
+        return next.run(request).await
     }
 
-    request.extensions_mut().insert(access_token.unwrap());
-
-    next.run(request).await
+    ApiErr(Error::AuthorizationDataNotFound(None)).into_response();
 }
 
 pub async fn log_request(req: Request, next: Next) -> Response {

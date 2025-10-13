@@ -1,6 +1,6 @@
+use chrono::{DateTime, Local};
 use crate::request::Validator;
 use application_database::account::Platform;
-use application_database::account::access_token::AccessToken;
 use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
@@ -11,8 +11,14 @@ pub struct LoginRequest {
     pub code: Option<String>,
 }
 
+pub struct LoginRequestParams {
+    pub platform: Platform,
+    pub third_id: String,
+    pub code: String,
+}
+
 impl Validator for LoginRequest {
-    type Data = LoginRequest;
+    type Data = LoginRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
@@ -36,12 +42,35 @@ impl Validator for LoginRequest {
 #[derive(Debug, Serialize)]
 pub struct LoginResponse {
     pub access_token: String,
+    pub expired_at: Option<DateTime<Local>>,
+    pub refresh_token: Option<String>,
 }
 
-impl From<AccessToken> for LoginResponse {
-    fn from(data: AccessToken) -> Self {
-        Self {
-            access_token: data.access_token,
+#[derive(Debug, Clone, Deserialize)]
+pub struct RefreshLoginRequest {
+    pub platform: Option<Platform>,
+    pub third_id: Option<String>,
+    pub refresh_token: Option<String>,
+}
+
+impl Validator for RefreshLoginRequest {
+    type Data = RefreshLoginRequest;
+
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
+        if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
+            return Err(Error::ParamsLoginPlatformUnsupported(None));
         }
+
+        if self.third_id.is_none() {
+            return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
+        }
+
+        if let Some(code) = &self.code
+            && code.chars().count() > 8
+        {
+            return Ok(self.to_owned());
+        }
+
+        Err(Error::ParamsLoginCodeFormatInvalid(None))
     }
 }

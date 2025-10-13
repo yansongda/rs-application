@@ -1,4 +1,4 @@
-use crate::request::api::access_token::LoginRequest;
+use crate::request::api::access_token::{LoginRequest, RefreshLoginRequest};
 use application_database::account::access_token;
 use application_database::account::third_user;
 use application_database::account::user;
@@ -26,6 +26,10 @@ pub async fn login(request: &LoginRequest) -> Result<access_token::AccessToken> 
         }
         e => Err(e),
     }
+}
+
+pub async fn refresh_login(request: &RefreshLoginRequest) -> Result<access_token::AccessToken> {
+    // todo
 }
 
 async fn login_wechat(request: &LoginRequest) -> Result<(u64, access_token::AccessTokenData)> {

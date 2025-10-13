@@ -17,8 +17,19 @@ pub struct AccessToken {
     pub platform: Platform,
     pub access_token: String,
     pub data: Json<AccessTokenData>,
+    pub expired_at: Option<DateTime<Local>>,
     pub created_at: DateTime<Local>,
     pub updated_at: DateTime<Local>,
+}
+
+impl AccessToken {
+    pub fn is_expired(&self) -> bool {
+        if let Some(expired_at) = self.expired_at {
+            return Local::now() < expired_at;
+        }
+
+        false
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
