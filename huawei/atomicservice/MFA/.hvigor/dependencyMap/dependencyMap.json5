@@ -1,0 +1,1 @@
+{"basePath":"/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA/.hvigor/dependencyMap/dependencyMap.json5","rootDependency":"./oh-package.json5","dependencyMap":{"totp":"./totp/oh-package.json5"},"modules":[{"name":"totp","srcPath":"../../../totp"}]}

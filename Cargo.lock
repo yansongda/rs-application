@@ -19,13 +19,14 @@ dependencies = [
 
 [[package]]
 name = "application-api"
-version = "1.13.1"
+version = "1.13.2"
 dependencies = [
  "application-database",
  "application-kernel",
  "application-util",
  "axum",
  "base62",
+ "chrono",
  "fasthash",
  "http-body-util",
  "rs-snowflake",
@@ -42,7 +43,7 @@ dependencies = [
 
 [[package]]
 name = "application-database"
-version = "1.13.1"
+version = "1.13.2"
 dependencies = [
  "application-kernel",
  "application-util",
@@ -56,7 +57,7 @@ dependencies = [
 
 [[package]]
 name = "application-kernel"
-version = "1.13.1"
+version = "1.13.2"
 dependencies = [
  "chrono",
  "config",
@@ -68,7 +69,7 @@ dependencies = [
 
 [[package]]
 name = "application-macro"
-version = "1.13.1"
+version = "1.13.2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -77,7 +78,7 @@ dependencies = [
 
 [[package]]
 name = "application-util"
-version = "1.13.1"
+version = "1.13.2"
 dependencies = [
  "application-kernel",
  "reqwest",

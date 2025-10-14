@@ -1,0 +1,32 @@
+{
+  "modulePathMap": {
+    "totp": "/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA/totp"
+  },
+  "compileMode": "esmodule",
+  "projectRootPath": "/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA",
+  "nodeModulesPath": "/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA/totp/.preview/default/intermediates/loader_out/default/node_modules",
+  "byteCodeHarInfo": {},
+  "declarationEntry": [],
+  "moduleName": "totp",
+  "hspNameOhmMap": {},
+  "harNameOhmMap": {},
+  "packageManagerType": "ohpm",
+  "compileEntry": [
+    "/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA/totp/src/main/ets/pages/Detail.ets"
+  ],
+  "otherCompileFiles": [],
+  "dynamicImportLibInfo": {},
+  "routerMap": [
+    {
+      "ohmurl": "@bundle:com.atomicservice.6917576589568238756/totp/ets/pages/Detail",
+      "name": "detail",
+      "pageSourceFile": "/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA/totp/src/main/ets/pages/Detail.ets",
+      "buildFunction": "builder"
+    }
+  ],
+  "hspResourcesMap": {},
+  "updateVersionInfo": {},
+  "anBuildOutPut": "/Users/yansongda/000-Coding/rs-application/huawei/atomicservice/MFA/totp/.preview/default/intermediates/loader_out/default/an/arm64-v8a",
+  "anBuildMode": "type",
+  "buildConfigPath": ".preview/config/buildConfig.json"
+}

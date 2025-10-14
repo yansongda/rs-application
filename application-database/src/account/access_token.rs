@@ -32,6 +32,16 @@ impl AccessToken {
 
         false
     }
+
+    pub fn get_expired_in(&self) -> u32 {
+        if let Some(expired_at) = self.expired_at {
+            let duration = expired_at.signed_duration_since(Local::now());
+
+            return duration.num_seconds() as u32;
+        }
+
+        G_CONFIG.access_token.expired_in
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
