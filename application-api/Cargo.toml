@@ -16,6 +16,7 @@ application-kernel = { path = "../application-kernel" }
 application-database = { path = "../application-database" }
 application-util = { path = "../application-util"}
 
+chrono = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 serde = { workspace = true }
