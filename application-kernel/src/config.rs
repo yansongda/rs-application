@@ -96,8 +96,8 @@ impl Default for ShortUrl {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(default)]
 pub struct AccessToken {
-    pub expired_in: i32,
-    pub refresh_expired_in: i32,
+    pub expired_in: u32,
+    pub refresh_expired_in: u32,
 }
 
 impl Default for AccessToken {

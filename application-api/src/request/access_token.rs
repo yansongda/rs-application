@@ -1,7 +1,6 @@
 use crate::request::Validator;
 use application_database::account::Platform;
 use application_database::account::access_token::AccessToken;
-use application_kernel::config::G_CONFIG;
 use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
@@ -47,7 +46,7 @@ impl Validator for LoginRequest {
 #[derive(Debug, Serialize)]
 pub struct LoginResponse {
     pub access_token: String,
-    pub expired_in: i32,
+    pub expired_in: u32,
     pub refresh_token: String,
 }
 
@@ -93,14 +92,14 @@ impl Validator for RefreshLoginRequest {
 #[derive(Debug, Serialize)]
 pub struct RefreshLoginResponse {
     pub access_token: String,
-    pub expired_in: i32,
+    pub expired_in: u32,
 }
 
 impl From<AccessToken> for RefreshLoginResponse {
     fn from(token: AccessToken) -> Self {
         RefreshLoginResponse {
-            access_token: token.access_token,
-            expired_in: G_CONFIG.access_token.expired_in,
+            access_token: token.access_token.to_owned(),
+            expired_in: token.get_expired_in(),
         }
     }
 }

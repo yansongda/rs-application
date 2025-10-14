@@ -1,3 +1,9 @@
+## v1.13.2
+
+### optimized
+
+- optimize(backend): 优化 token 的过期时间计算方式 (#99)
+
 ## v1.13.1
 
 ### fixed
