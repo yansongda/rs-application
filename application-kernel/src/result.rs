@@ -5,9 +5,12 @@ pub type Result<D> = std::result::Result<D, Error>;
 #[derive(PartialEq, Eq, Hash, Debug, Clone)]
 pub enum Error {
     AuthorizationHeaderMissing(Option<String>),
-    AuthorizationDataNotFound(Option<String>),
+    AuthorizationAccessTokenInvalid(Option<String>),
     AuthorizationInvalidFormat(Option<String>),
     AuthorizationPermissionUngranted(Option<String>),
+    AuthorizationAccessTokenExpired(Option<String>),
+    AuthorizationRefreshTokenInvalid(Option<String>),
+    AuthorizationRefreshTokenExpired(Option<String>),
 
     ParamsJsonInvalid(Option<String>),
     ParamsLoginPlatformUnsupported(Option<String>),
@@ -30,6 +33,7 @@ pub enum Error {
     ParamsUserAvatarLengthInvalid(Option<String>),
     ParamsThirdConfigNotFound(Option<String>),
     ParamsLoginPlatformThirdIdFormatInvalid(Option<String>),
+    ParamsRefreshTokenNotFound(Option<String>),
 
     ThirdHttpRequest(Option<String>),
     ThirdHttpResponse(Option<String>),
@@ -55,7 +59,7 @@ impl Error {
                     .to_owned()
                     .unwrap_or_else(|| "认证失败: 缺少认证信息，请重新登录".to_owned()),
             ),
-            Error::AuthorizationDataNotFound(message) => (
+            Error::AuthorizationAccessTokenInvalid(message) => (
                 1001,
                 message
                     .to_owned()
@@ -72,6 +76,24 @@ impl Error {
                 message
                     .to_owned()
                     .unwrap_or_else(|| "认证失败: 未授权，请勿越权使用".to_owned()),
+            ),
+            Error::AuthorizationAccessTokenExpired(message) => (
+                1004,
+                message
+                    .to_owned()
+                    .unwrap_or_else(|| "认证失败: 认证信息已过期，请重新登录".to_owned()),
+            ),
+            Error::AuthorizationRefreshTokenInvalid(message) => (
+                1005,
+                message
+                    .to_owned()
+                    .unwrap_or_else(|| "认证失败: 认证信息不正确，请重新登录".to_owned()),
+            ),
+            Error::AuthorizationRefreshTokenExpired(message) => (
+                1006,
+                message
+                    .to_owned()
+                    .unwrap_or_else(|| "认证失败: 认证信息已过期，请重新登录".to_owned()),
             ),
 
             Error::ParamsJsonInvalid(message) => (
@@ -199,6 +221,12 @@ impl Error {
                 message.to_owned().unwrap_or_else(|| {
                     "参数错误: 您访问的平台暂不支持，请重试或联系管理员".to_owned()
                 }),
+            ),
+            Error::ParamsRefreshTokenNotFound(message) => (
+                2021,
+                message
+                    .to_owned()
+                    .unwrap_or_else(|| "参数错误: Refresh Token 未找到".to_owned()),
             ),
 
             Error::ThirdHttpRequest(message) => (

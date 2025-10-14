@@ -1,13 +1,12 @@
-use std::fmt::Debug;
-use std::net::{IpAddr, SocketAddr};
-use std::str::FromStr;
-use std::time::Duration;
-
-use crate::api::response::Response;
+use crate::response::Response;
 use application_kernel::config::G_CONFIG;
 use axum::Router;
 use axum::http::Request;
 use axum::routing::get;
+use std::fmt::Debug;
+use std::net::{IpAddr, SocketAddr};
+use std::str::FromStr;
+use std::time::Duration;
 use tower::ServiceBuilder;
 use tower_http::cors::CorsLayer;
 use tower_http::request_id::{
@@ -19,9 +18,11 @@ use tracing_subscriber::registry::LookupSpan;
 
 mod extract;
 mod middleware;
+mod request;
 mod response;
 mod routes;
-mod v1;
+mod service;
+pub mod v1;
 
 pub struct App {
     listen: SocketAddr,

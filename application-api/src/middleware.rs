@@ -3,7 +3,7 @@ use axum::body::{Body, Bytes};
 use http_body_util::BodyExt;
 use std::time::Instant;
 
-use crate::api::response::ApiErr;
+use crate::response::ApiErr;
 use application_kernel::result::{Error, Result};
 use axum::extract::Request;
 use axum::http::header::CONTENT_TYPE;
@@ -12,28 +12,28 @@ use axum::response::{IntoResponse, Response};
 use tracing::info;
 
 pub async fn authorization(mut request: Request, next: Next) -> Response {
-    let authorization = request.headers().get("Authorization");
+    let authorization = match request.headers().get("Authorization") {
+        Some(header) => header,
+        None => return ApiErr(Error::AuthorizationHeaderMissing(None)).into_response(),
+    };
 
-    if authorization.is_none() {
-        return ApiErr(Error::AuthorizationHeaderMissing(None)).into_response();
+    let auth = match authorization.to_str() {
+        Ok(auth) => auth,
+        Err(_) => return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response(),
+    };
+
+    let token = auth.strip_prefix("Bearer ").unwrap_or(auth);
+
+    let access_token = match access_token::fetch(token).await {
+        Ok(token) => token,
+        _ => return ApiErr(Error::AuthorizationAccessTokenInvalid(None)).into_response(),
+    };
+
+    if access_token.is_expired() {
+        return ApiErr(Error::AuthorizationAccessTokenExpired(None)).into_response();
     }
 
-    let auth = authorization.unwrap().to_str();
-
-    if auth.is_err() {
-        return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response();
-    }
-
-    let access_token: Result<access_token::AccessToken> =
-        access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str())
-            .await
-            .map_err(|_| Error::AuthorizationDataNotFound(None));
-
-    if let Err(e) = access_token {
-        return ApiErr(e).into_response();
-    }
-
-    request.extensions_mut().insert(access_token.unwrap());
+    request.extensions_mut().insert(access_token);
 
     next.run(request).await
 }
