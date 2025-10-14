@@ -15,6 +15,5 @@ tracing = { workspace = true }
 
 sqlx = { version = "~0.8.0", features = [ "runtime-tokio", "tls-rustls", "mysql", "chrono" ] }
 
-uuid = { version = "~1.18.1", features = ["v7"] }
-base62 = { version = "~2.2.0" }
+uuid = { version = "1.18.1", features = ["v7"] }
 totp-rs = { version = "~5.7.0", features = ["otpauth"] }

@@ -1,4 +1,4 @@
-use application::api::App;
+use application_api::App;
 use application_kernel::logger::Logger;
 use tracing::info;
 

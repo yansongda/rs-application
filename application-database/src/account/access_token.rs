@@ -195,7 +195,7 @@ pub async fn insert(
     info!(elapsed, sql, user_id, access_token, ?data);
 
     // todo: 微信的 access_token 永不过期，后续需要处理
-    if Platform::Wechat == platform.to_owned() {
+    if Platform::Wechat == *platform {
         expired_at = None;
     }
 

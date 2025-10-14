@@ -1,6 +1,4 @@
-use crate::request::api::totp::{
-    DetailResponse, EditIssuerRequestParams, EditUsernameRequestParams,
-};
+use crate::request::totp::{DetailResponse, EditIssuerRequestParams, EditUsernameRequestParams};
 use application_database::account::access_token;
 use application_database::tool::totp;
 use application_kernel::result::{Error, Result};

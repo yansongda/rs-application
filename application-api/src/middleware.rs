@@ -3,7 +3,7 @@ use axum::body::{Body, Bytes};
 use http_body_util::BodyExt;
 use std::time::Instant;
 
-use crate::api::response::ApiErr;
+use crate::response::ApiErr;
 use application_kernel::result::{Error, Result};
 use axum::extract::Request;
 use axum::http::header::CONTENT_TYPE;

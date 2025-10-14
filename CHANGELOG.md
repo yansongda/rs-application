@@ -1,8 +1,14 @@
-## v1.13.0
+## v1.14.0
 
 ### added
 
 - feat: 增加华为元服务 (#97)
+
+## v1.13.0
+
+### optimized
+
+- optimize(backend): 完善 access-token 认证机制 (#97)
 
 ## v1.12.2
 

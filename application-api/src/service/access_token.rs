@@ -1,4 +1,4 @@
-use crate::request::api::access_token::{LoginRequestParams, RefreshLoginRequestParams};
+use crate::request::access_token::{LoginRequestParams, RefreshLoginRequestParams};
 use application_database::account::third_user;
 use application_database::account::user;
 use application_database::account::{Platform, third_config};
@@ -24,7 +24,10 @@ pub async fn login(
     )
     .await?;
 
-    Ok((refresh_token::update_or_insert(access_token.id).await?, access_token))
+    Ok((
+        refresh_token::update_or_insert(access_token.id).await?,
+        access_token,
+    ))
 }
 
 pub async fn login_refresh(
