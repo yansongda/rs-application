@@ -14,7 +14,7 @@ fn api_v1_account() -> Router {
         "/access-token",
         Router::new()
             .route("/login", post(v1::access_token::login))
-            .route("/login-refresh", post(v1::access_token::login_refresh)),
+            .route("/login/refresh", post(v1::access_token::login_refresh)),
     );
 
     let authorized = Router::new()
