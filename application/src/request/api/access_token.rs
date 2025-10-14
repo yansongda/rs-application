@@ -1,5 +1,7 @@
 use crate::request::Validator;
 use application_database::account::Platform;
+use application_database::account::access_token::AccessToken;
+use application_kernel::config::G_CONFIG;
 use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
@@ -33,7 +35,7 @@ impl Validator for LoginRequest {
         {
             return Ok(LoginRequestParams {
                 platform: self.platform.unwrap(),
-                third_id: self.third_id.as_ref().unwrap().to_string(),
+                third_id: self.third_id.as_ref().unwrap().to_owned(),
                 code: code.to_string(),
             });
         }
@@ -79,11 +81,26 @@ impl Validator for RefreshLoginRequest {
         {
             return Ok(RefreshLoginRequestParams {
                 platform: self.platform.unwrap(),
-                third_id: self.third_id.as_ref().unwrap().to_string(),
+                third_id: self.third_id.as_ref().unwrap().to_owned(),
                 refresh_token: refresh_token.to_string(),
             });
         }
 
         Err(Error::ParamsLoginCodeFormatInvalid(None))
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct RefreshLoginResponse {
+    pub access_token: String,
+    pub expired_in: i32,
+}
+
+impl From<AccessToken> for RefreshLoginResponse {
+    fn from(token: AccessToken) -> Self {
+        RefreshLoginResponse {
+            access_token: token.access_token,
+            expired_in: G_CONFIG.access_token.expired_in,
+        }
     }
 }

@@ -16,48 +16,37 @@ pub async fn login(
         _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
-    let access_token =
-        access_token::update_or_insert(&platform, user_id, access_token_data).await?;
+    let access_token = access_token::update_or_insert(
+        &platform,
+        request.third_id.as_str(),
+        user_id,
+        access_token_data,
+    )
+    .await?;
 
     Ok((refresh_token::insert(access_token.id).await?, access_token))
 }
 
-pub async fn refresh_login(
+pub async fn login_refresh(
     request: &RefreshLoginRequestParams,
 ) -> Result<access_token::AccessToken> {
-    let platform = request.platform;
-    let exist =
-        access_token::fetch_by_refresh_token(&platform, request.refresh_token.as_str()).await?;
+    let refresh_token = refresh_token::fetch(request.refresh_token.as_str())
+        .await
+        .map_err(|_| Error::AuthorizationRefreshTokenInvalid(None))?;
 
-    let (user_id, access_token_data) = match platform {
-        Platform::Wechat => {
-            login_wechat(&LoginRequestParams {
-                platform,
-                third_id: request.third_id.clone(),
-                code: exist
-                    .wechat
-                    .as_ref()
-                    .map(|t| t.code.clone())
-                    .unwrap_or_default(),
-            })
-            .await
-        }
-        Platform::Huawei => {
-            login_huawei(&LoginRequestParams {
-                platform,
-                third_id: request.third_id.clone(),
-                code: exist
-                    .huawei
-                    .as_ref()
-                    .map(|t| t.access_token.clone())
-                    .unwrap_or_default(),
-            })
-            .await
-        }
-        _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
-    }?;
+    if refresh_token.is_expired() {
+        return Err(Error::AuthorizationRefreshTokenExpired(None));
+    }
 
-    access_token::update(exist, access_token_data).await
+    let access_token = refresh_token.access_token().await?;
+
+    if access_token.platform != request.platform || access_token.third_id != request.third_id {
+        return Err(Error::AuthorizationPermissionUngranted(None));
+    }
+
+    let data = access_token.data.0.clone();
+
+    access_token::update(access_token, data).await
 }
 
 async fn login_wechat(
@@ -105,11 +94,9 @@ async fn login_huawei(
             wechat: None,
             huawei: Some(access_token::HuaweiAccessTokenData {
                 token_type: token_response.token_type,
-                access_token: token_response.access_token,
                 scope: token_response.scope,
                 refresh_token: token_response.refresh_token,
                 client_id: token_info_response.client_id,
-                expires_in: token_info_response.expires_in,
                 union_id: token_info_response.union_id,
                 project_id: token_info_response.project_id,
                 r#type: token_info_response.r#type,

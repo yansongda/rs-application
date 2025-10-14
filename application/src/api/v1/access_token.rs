@@ -2,7 +2,9 @@ use crate::api::extract::Json;
 use crate::api::response::Resp;
 use crate::api::response::Response;
 use crate::request::Validator;
-use crate::request::api::access_token::{LoginRequest, LoginResponse, RefreshLoginRequest};
+use crate::request::api::access_token::{
+    LoginRequest, LoginResponse, RefreshLoginRequest, RefreshLoginResponse,
+};
 use crate::service;
 use application_database::account::access_token::AccessToken;
 use application_kernel::config::G_CONFIG;
@@ -20,12 +22,12 @@ pub async fn login(Json(request): Json<LoginRequest>) -> Resp<LoginResponse> {
     }))
 }
 
-pub async fn refresh_login(Json(request): Json<RefreshLoginRequest>) -> Resp<LoginResponse> {
+pub async fn login_refresh(Json(request): Json<RefreshLoginRequest>) -> Resp<RefreshLoginResponse> {
     let req = request.validate()?;
 
-    let token = service::api::access_token::refresh_login(&req).await?;
+    let token = service::api::access_token::login_refresh(&req).await?;
 
-    Ok(Response::success(new_token.into()))
+    Ok(Response::success(token.into()))
 }
 
 pub async fn valid(Extension(_): Extension<AccessToken>) -> Resp<()> {

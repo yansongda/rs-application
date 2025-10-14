@@ -1,4 +1,6 @@
 use crate::Pool;
+use crate::account::access_token;
+use crate::account::access_token::AccessToken;
 use application_kernel::config::G_CONFIG;
 use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
@@ -21,6 +23,10 @@ pub struct RefreshToken {
 impl RefreshToken {
     pub fn is_expired(&self) -> bool {
         Local::now() < self.expired_at
+    }
+
+    pub async fn access_token(&self) -> Result<AccessToken> {
+        access_token::fetch_by_id(self.access_token_id).await
     }
 }
 
@@ -46,7 +52,7 @@ pub async fn fetch(refresh_token: &str) -> Result<RefreshToken> {
         return Ok(data);
     }
 
-    Err(Error::ParamsAccessTokenNotFound(None))
+    Err(Error::ParamsRefreshTokenNotFound(None))
 }
 
 pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
@@ -59,7 +65,7 @@ pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
     let result = sqlx::query(sql)
         .bind(access_token_id)
         .bind(&refresh_token)
-        .bind(&expired_at)
+        .bind(expired_at)
         .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {

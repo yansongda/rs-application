@@ -12,7 +12,9 @@ pub fn api_v1() -> Router {
 fn api_v1_account() -> Router {
     let unauthorized = Router::new().nest(
         "/access-token",
-        Router::new().route("/login", post(v1::access_token::login)),
+        Router::new()
+            .route("/login", post(v1::access_token::login))
+            .route("/login/refresh", post(v1::access_token::login_refresh)),
     );
 
     let authorized = Router::new()

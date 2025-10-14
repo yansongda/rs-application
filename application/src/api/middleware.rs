@@ -12,31 +12,30 @@ use axum::response::{IntoResponse, Response};
 use tracing::info;
 
 pub async fn authorization(mut request: Request, next: Next) -> Response {
-    let authorization = request.headers().get("Authorization");
+    let authorization = match request.headers().get("Authorization") {
+        Some(header) => header,
+        None => return ApiErr(Error::AuthorizationHeaderMissing(None)).into_response(),
+    };
 
-    if authorization.is_none() {
-        return ApiErr(Error::AuthorizationHeaderMissing(None)).into_response();
+    let auth = match authorization.to_str() {
+        Ok(auth) => auth,
+        Err(_) => return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response(),
+    };
+
+    let token = auth.strip_prefix("Bearer ").unwrap_or(auth);
+
+    let access_token = match access_token::fetch(token).await {
+        Ok(token) => token,
+        _ => return ApiErr(Error::AuthorizationAccessTokenInvalid(None)).into_response(),
+    };
+
+    if access_token.is_expired() {
+        return ApiErr(Error::AuthorizationAccessTokenExpired(None)).into_response();
     }
 
-    let auth = authorization.unwrap().to_str();
+    request.extensions_mut().insert(access_token);
 
-    if auth.is_err() {
-        return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response();
-    }
-
-    let access_token = access_token::fetch(auth.unwrap().replace("Bearer ", "").as_str()).await;
-
-    if let Some(access_token) = access_token {
-        if access_token.is_expired() {
-            return ApiErr(Error::AuthorizationAccessTokenExpired(None)).into_response();
-        }
-
-        request.extensions_mut().insert(access_token.unwrap());
-
-        return next.run(request).await;
-    }
-
-    ApiErr(Error::AuthorizationDataNotFound(None)).into_response();
+    next.run(request).await
 }
 
 pub async fn log_request(req: Request, next: Next) -> Response {
