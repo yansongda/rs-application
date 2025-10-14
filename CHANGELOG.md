@@ -4,6 +4,12 @@
 
 - feat: 增加华为元服务 (#97)
 
+## v1.13.1
+
+### fixed
+
+- fix(backend): 修正 refresh_token 访问 url (#98)
+
 ## v1.13.0
 
 ### optimized
