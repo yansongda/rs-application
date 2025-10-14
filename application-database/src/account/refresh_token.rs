@@ -30,6 +30,13 @@ impl RefreshToken {
     }
 }
 
+pub async fn update_or_insert(access_token_id: u64) -> Result<RefreshToken> {
+    match fetch_by_access_token_id(access_token_id).await {
+        Ok(refresh_token) => update(refresh_token).await,
+        Err(_) => insert(access_token_id).await,
+    }
+}
+
 pub async fn fetch(refresh_token: &str) -> Result<RefreshToken> {
     let sql = "select * from account.refresh_token where refresh_token = ? limit 1";
     let started_at = Instant::now();
@@ -47,6 +54,31 @@ pub async fn fetch(refresh_token: &str) -> Result<RefreshToken> {
     let elapsed = started_at.elapsed().as_secs_f32();
 
     info!(elapsed, sql, refresh_token);
+
+    if let Some(data) = result {
+        return Ok(data);
+    }
+
+    Err(Error::ParamsRefreshTokenNotFound(None))
+}
+
+pub async fn fetch_by_access_token_id(access_token_id: u64) -> Result<RefreshToken> {
+    let sql = "select * from account.refresh_token where access_token_id = ? limit 1";
+    let started_at = Instant::now();
+
+    let result: Option<RefreshToken> = sqlx::query_as(sql)
+        .bind(access_token_id)
+        .fetch_optional(Pool::mysql("account")?)
+        .await
+        .map_err(|e| {
+            error!("查询 refresh_token 失败: {:?}", e);
+
+            Error::InternalDatabaseQuery(None)
+        })?;
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, access_token_id);
 
     if let Some(data) = result {
         return Ok(data);
@@ -86,4 +118,34 @@ pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
         created_at: Local::now(),
         updated_at: Local::now(),
     })
+}
+
+pub async fn update(mut refresh_token: RefreshToken) -> Result<RefreshToken> {
+    let sql = "update account.refresh_token set refresh_token = ?, expired_at = ? where id = ?";
+    let refresh_token_value = Uuid::now_v7().to_string();
+    let expired_at =
+        Local::now() + chrono::Duration::seconds(G_CONFIG.access_token.refresh_expired_in as i64);
+    let started_at = Instant::now();
+
+    let _ = sqlx::query(sql)
+        .bind(&refresh_token_value)
+        .bind(expired_at)
+        .bind(refresh_token.id)
+        .execute(Pool::mysql("account")?)
+        .await
+        .map_err(|e| {
+            error!("更新 refresh_token 失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, refresh_token.id);
+
+    refresh_token.refresh_token = refresh_token_value;
+    refresh_token.expired_at = expired_at;
+    refresh_token.updated_at = Local::now();
+
+    Ok(refresh_token)
 }

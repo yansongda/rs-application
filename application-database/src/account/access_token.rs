@@ -158,7 +158,7 @@ pub async fn update_or_insert(
     data: AccessTokenData,
 ) -> Result<AccessToken> {
     match fetch_by_user_id(user_id).await {
-        Ok(exist) => update(exist, data).await,
+        Ok(access_token) => update(access_token, data).await,
         Err(_) => insert(platform, third_id, user_id, data).await,
     }
 }
@@ -169,7 +169,7 @@ pub async fn insert(
     user_id: u64,
     data: AccessTokenData,
 ) -> Result<AccessToken> {
-    let sql = "insert into account.access_token (user_id, access_token, data, platform) values (?, ?, ?, ?)";
+    let sql = "insert into account.access_token (user_id, access_token, data, platform, third_id) values (?, ?, ?, ?, ?)";
     let access_token = Uuid::now_v7().to_string();
     let mut expired_at = Some(
         Local::now() + chrono::Duration::seconds(G_CONFIG.access_token.refresh_expired_in as i64),
@@ -181,6 +181,7 @@ pub async fn insert(
         .bind(&access_token)
         .bind(Json(&data))
         .bind(platform)
+        .bind(third_id)
         .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
@@ -214,10 +215,10 @@ pub async fn insert(
 pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
     let sql = "update account.access_token set access_token = ?, data = ? where id = ?";
     let started_at = Instant::now();
-    let access_token_string = Uuid::now_v7().to_string();
+    let access_token_value = Uuid::now_v7().to_string();
 
     let _ = sqlx::query(sql)
-        .bind(&access_token_string)
+        .bind(&access_token_value)
         .bind(Json(&data))
         .bind(access_token.id)
         .execute(Pool::mysql("account")?)
@@ -232,7 +233,7 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
 
     info!(elapsed, sql, access_token.id, ?data);
 
-    access_token.access_token = access_token_string;
+    access_token.access_token = access_token_value;
     access_token.data = Json(data);
     access_token.updated_at = Local::now();
 

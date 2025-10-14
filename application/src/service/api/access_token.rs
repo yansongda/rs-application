@@ -24,7 +24,7 @@ pub async fn login(
     )
     .await?;
 
-    Ok((refresh_token::insert(access_token.id).await?, access_token))
+    Ok((refresh_token::update_or_insert(access_token.id).await?, access_token))
 }
 
 pub async fn login_refresh(
