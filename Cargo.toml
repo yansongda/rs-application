@@ -1,11 +1,11 @@
 [workspace]
-members = ["application", "application-*"]
-default-members = ["application", "application-*"]
+members = ["application-*"]
+default-members = ["application-*"]
 resolver = "3"
 
 [workspace.package]
 rust-version = "1.90.0"
-version = "1.12.2"
+version = "1.13.0"
 edition = "2024"
 publish = false
 

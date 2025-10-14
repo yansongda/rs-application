@@ -2,8 +2,8 @@ use axum::routing::{get, post};
 use axum::{Router, middleware};
 use tower::ServiceBuilder;
 
-use crate::api::middleware::authorization;
-use crate::api::v1;
+use crate::middleware::authorization;
+use crate::v1;
 
 pub fn api_v1() -> Router {
     Router::new().merge(api_v1_account()).merge(api_v1_tool())
@@ -12,7 +12,9 @@ pub fn api_v1() -> Router {
 fn api_v1_account() -> Router {
     let unauthorized = Router::new().nest(
         "/access-token",
-        Router::new().route("/login", post(v1::access_token::login)),
+        Router::new()
+            .route("/login", post(v1::access_token::login))
+            .route("/login-refresh", post(v1::access_token::login_refresh)),
     );
 
     let authorized = Router::new()

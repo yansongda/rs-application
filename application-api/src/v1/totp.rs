@@ -1,20 +1,18 @@
 use axum::Extension;
 
-use crate::api::extract::Json;
-use crate::api::response::Resp;
-use crate::api::response::Response;
+use crate::extract::Json;
 use crate::request::Validator;
-use crate::request::api::totp::{
+use crate::request::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
     EditUsernameRequest,
 };
+use crate::response::Resp;
+use crate::response::Response;
 use crate::service;
 use application_database::account::access_token::AccessToken;
 
 pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {
-    Ok(Response::success(
-        service::api::totp::all(access_token).await?,
-    ))
+    Ok(Response::success(service::totp::all(access_token).await?))
 }
 
 pub async fn detail(
@@ -24,7 +22,7 @@ pub async fn detail(
     let id = request.validate()?;
 
     Ok(Response::success(
-        service::api::totp::detail(access_token, id).await?,
+        service::totp::detail(access_token, id).await?,
     ))
 }
 
@@ -34,7 +32,7 @@ pub async fn create(
 ) -> Resp<()> {
     let uri = request.validate()?;
 
-    service::api::totp::create(access_token, uri).await?;
+    service::totp::create(access_token, uri).await?;
 
     Ok(Response::success(()))
 }
@@ -45,7 +43,7 @@ pub async fn edit_issuer(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::api::totp::edit_issuer(access_token, params).await?;
+    service::totp::edit_issuer(access_token, params).await?;
 
     Ok(Response::success(()))
 }
@@ -56,7 +54,7 @@ pub async fn edit_username(
 ) -> Resp<()> {
     let params = request.validate()?;
 
-    service::api::totp::edit_username(access_token, params).await?;
+    service::totp::edit_username(access_token, params).await?;
 
     Ok(Response::success(()))
 }
@@ -67,7 +65,7 @@ pub async fn delete(
 ) -> Resp<()> {
     let id = request.validate()?;
 
-    service::api::totp::delete(access_token, id).await?;
+    service::totp::delete(access_token, id).await?;
 
     Ok(Response::success(()))
 }

@@ -24,6 +24,7 @@ pub struct Config {
     pub bin: HashMap<String, Bin>,
     pub databases: HashMap<String, Database>,
     pub short_url: ShortUrl,
+    pub access_token: AccessToken,
 }
 
 impl Default for Config {
@@ -33,6 +34,7 @@ impl Default for Config {
             bin: HashMap::new(),
             databases: HashMap::new(),
             short_url: ShortUrl::default(),
+            access_token: AccessToken::default(),
         }
     }
 }
@@ -87,6 +89,22 @@ impl Default for ShortUrl {
     fn default() -> Self {
         Self {
             domain: "https://u.ysdor.cn".to_string(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(default)]
+pub struct AccessToken {
+    pub expired_in: i32,
+    pub refresh_expired_in: i32,
+}
+
+impl Default for AccessToken {
+    fn default() -> Self {
+        Self {
+            expired_in: 3600,
+            refresh_expired_in: 86400 * 30,
         }
     }
 }
