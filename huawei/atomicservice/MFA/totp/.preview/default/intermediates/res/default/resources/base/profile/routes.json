@@ -1,9 +1,0 @@
-{
-  "routerMap": [
-    {
-      "name": "detail",
-      "pageSourceFile": "src/main/ets/pages/Detail.ets",
-      "buildFunction": "builder"
-    }
-  ]
-}
