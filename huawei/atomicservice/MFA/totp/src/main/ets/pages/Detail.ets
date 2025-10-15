@@ -21,6 +21,7 @@ struct Detail {
             type: ProgressType.Linear
           })
             .height(2)
+            .color($r('app.color.main'))
 
           Text(this.runtime?.code ?? 'NaN')
             .textAlign(TextAlign.Center)

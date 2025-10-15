@@ -38,6 +38,7 @@ struct Home {
             .fontSize($r('app.integer.home_page_add_button_font_size'))
         }
       }
+      .backgroundColor($r('app.color.main'))
       .fontColor(Color.White)
       .padding({top: 10, bottom: 10, left: 10, right: 10})
       .margin({bottom: 50, right: 50})

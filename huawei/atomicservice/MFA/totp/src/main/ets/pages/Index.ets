@@ -70,9 +70,10 @@ export struct Index {
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress,
                 total: this.itemsRuntime.get(ri.item.valueOf()).config.period,
-                type: ProgressType.Linear
+                type: ProgressType.Linear,
               })
                 .height(2)
+                .color($r('app.color.main'))
             }
           }
           .borderRadius(10)
