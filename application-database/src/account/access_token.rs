@@ -34,6 +34,7 @@ impl AccessToken {
     }
 
     pub fn get_expired_in(&self) -> u32 {
+        // todo： 微信的 access_token 永不过期，后续需要处理
         if let Some(expired_at) = self.expired_at {
             let duration = expired_at.signed_duration_since(Local::now());
 
