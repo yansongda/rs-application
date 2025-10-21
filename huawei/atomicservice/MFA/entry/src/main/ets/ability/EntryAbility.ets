@@ -1,0 +1,89 @@
+import { UIAbility } from '@kit.AbilityKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window, PersistenceV2, LoadingDialogV2, AlertDialogV2, AdvancedDialogV2Button } from '@kit.ArkUI';
+import { authentication } from '@kit.AccountKit';
+import { util } from '@kit.ArkTS';
+import { Domain } from '../Constant'
+import { Authorization } from '../models/Auth';
+
+export default class EntryAbility extends UIAbility {
+  private loginLoading: CustomDialogController = new CustomDialogController({
+    builder: LoadingDialogV2({
+      content: $r('app.string.entry_ability_login'),
+    }),
+  })
+  private loginConfirm: CustomDialogController = new CustomDialogController({
+    builder: AlertDialogV2({
+      primaryTitle: $r('app.string.entry_ability_login_failed_title'),
+      content: $r('app.string.entry_ability_login_failed_content'),
+      secondaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.entry_ability_login_failed_retry'),
+        role: ButtonRole.ERROR,
+        action: () => {
+          this.onWindowStageCreate(this.context.windowStage)
+        }
+      }),
+    }),
+  })
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
+    this.loginLoading.open();
+
+    let authorization = this.loginWithHuaweiID();
+
+    if ('undefined' === typeof authorization) {
+      this.loginConfirm.open();
+    }
+
+    windowStage.loadContent('pages/Home', (err) => {
+      if (err.code) {
+        // 理论上来说，这里不会出现
+        hilog.error(Domain.ABILITY, 'ability/EntryAbility', '加载页面失败. Cause: %{public}s', JSON.stringify(err));
+
+        return;
+      }
+
+      PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => authorization})
+    });
+  }
+
+  onWindowStageDestroy(): void {
+  }
+
+  onForeground(): void {
+  }
+
+  onBackground(): void {
+  }
+
+  private loginWithHuaweiID(): undefined | Authorization {
+    const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
+    loginRequest.forceLogin = false;
+    loginRequest.state = util.generateRandomUUID();
+
+    (new authentication.AuthenticationController())
+      .executeRequest(loginRequest)
+      .then((data) => {
+        const loginWithHuaweiIDResponse = data as authentication.LoginWithHuaweiIDResponse;
+        const state = loginWithHuaweiIDResponse.state;
+        if (state && loginRequest.state !== state) {
+          hilog.error(Domain.ABILITY, 'ability/EntryAbility', `Failed to login. The state is different, response state: ${state}`);
+
+          return;
+        }
+
+        const unionId = loginWithHuaweiIDResponse.data!.unionID
+
+        // TODO: Send authCode to the backend in exchange for unionID, session
+
+        return undefined;
+      })
+      .catch((error: BusinessError) => {
+        // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
+        hilog.error(Domain.ABILITY, 'totp/home', '元服务登录出错: %{public}s', error.message)
+      });
+
+    return undefined;
+  }
+}

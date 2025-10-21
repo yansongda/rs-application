@@ -13,8 +13,28 @@
       "value": "MFA"
     },
     {
+      "name": "entry_ability_login",
+      "value": "正在登录..."
+    },
+    {
+      "name": "entry_ability_login_failed_title",
+      "value": "登录失败"
+    },
+    {
+      "name": "entry_ability_login_failed_content",
+      "value": "是否重试登录"
+    },
+    {
+      "name": "entry_ability_login_failed_retry",
+      "value": "重试"
+    },
+    {
       "name": "index_page_name",
       "value": "TOTP"
+    },
+    {
+      "name": "index_page_data_loading",
+      "value": "加载中..."
     },
     {
       "name": "index_page_detail_name",

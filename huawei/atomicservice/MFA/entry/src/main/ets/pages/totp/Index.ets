@@ -1,7 +1,7 @@
-import { ItemsRuntime } from '../models/ItemsRuntime';
-import { AlertDialogV2, AdvancedDialogV2Button } from '@kit.ArkUI';
+import { ItemsRuntime } from '../../models/Runtime';
+import { AlertDialogV2, AdvancedDialogV2Button, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { IItem, IItemConfig } from '../types/Item';
+import { IItem, IItemConfig } from '../../types/Item';
 
 @ComponentV2
 export struct Index {
@@ -10,8 +10,11 @@ export struct Index {
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
+  private dialogId?: number;
 
   aboutToAppear() {
+    this.openDialog(() => { this.loadingData() })
+
     // todo: 1、调接口查询所有数据
     let items: Array<IItem> = [];
     for (let index = 0; index < 100; index++) {
@@ -25,8 +28,11 @@ export struct Index {
         } as IItemConfig,
       } as IItem)
     }
-
     this.itemsRuntime = new ItemsRuntime(items);
+
+    setTimeout(() => {
+      this.closeDialog();
+    }, 1000)
   }
 
   build() {
@@ -92,7 +98,7 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPathByName('detail', this.itemsRuntime.get(ri.item.valueOf()))
+            this.pages.pushPathByName('totp/detail', this.itemsRuntime.get(ri.item.valueOf()))
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -112,7 +118,7 @@ export struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName('detail', this.itemsRuntime.get(id));
+        this.pages.pushPathByName('totp/detail', this.itemsRuntime.get(id));
 
         try {
           this.scroller.closeAllSwipeActions();
@@ -130,15 +136,17 @@ export struct Index {
       .backgroundColor($r('app.color.index_page_swipe_action_delete_background'))
       .onClick(() => {
         this.swipeActionId = id;
-        this.getUIContext().getPromptAction().openCustomDialog({
-          builder: () => {
-            this.deleteDialog();
-          }
-        }).catch(() => {
-          hilog.error(0, 'totp/index', '调用 `openCustomDialog` 失败')
-        })
+
+        this.openDialog(() => this.deleteDialog());
       })
     }
+  }
+
+  @Builder
+  loadingData() {
+    LoadingDialogV2({
+      content: $r('app.string.index_page_data_loading'),
+    })
   }
 
   @Builder
@@ -163,5 +171,24 @@ export struct Index {
         }
       }),
     })
+  }
+
+  private openDialog(builder: CustomBuilder) {
+    this.getUIContext().getPromptAction().openCustomDialog({ builder })
+      .then((dialogId) => this.dialogId = dialogId)
+      .catch(() => {
+        hilog.error(0, 'totp/index', '调用 `openCustomDialog` 失败')
+      })
+  }
+
+  private closeDialog() {
+    if (this.dialogId) {
+      try {
+        this.getUIContext().getPromptAction().closeCustomDialog(this.dialogId);
+      } catch (error) {
+      }
+    }
+
+    this.dialogId = undefined;
   }
 }

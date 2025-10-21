@@ -41,8 +41,8 @@
   },
   "modules": [
     {
-      "name": "totp",
-      "srcPath": "./totp",
+      "name": "entry",
+      "srcPath": "./entry",
       "targets": [
         {
           "name": "default",

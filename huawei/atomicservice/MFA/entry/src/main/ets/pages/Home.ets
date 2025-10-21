@@ -1,19 +1,12 @@
-import { authentication } from '@kit.AccountKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scanBarcode } from '@kit.ScanKit';
-import { Index } from './Index';
-import { util } from '@kit.ArkTS';
+import { Index } from './totp/Index';
 
 @Entry
 @ComponentV2
 struct Home {
   @Local
   private pages: NavPathStack = new NavPathStack();
-
-  aboutToAppear() {
-    this.loginWithHuaweiID();
-  }
 
   build() {
     Stack({ alignContent: Alignment.BottomEnd}) {
@@ -61,31 +54,5 @@ struct Home {
     }
     .width('100%')
     .margin({ top: 10 })
-  }
-
-  private loginWithHuaweiID() {
-    const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
-    loginRequest.forceLogin = false;
-    loginRequest.state = util.generateRandomUUID();
-
-    (new authentication.AuthenticationController())
-      .executeRequest(loginRequest)
-      .then((data) => {
-        const loginWithHuaweiIDResponse = data as authentication.LoginWithHuaweiIDResponse;
-        const state = loginWithHuaweiIDResponse.state;
-        if (state && loginRequest.state !== state) {
-          hilog.error(0, 'totp/home', `Failed to login. The state is different, response state: ${state}`);
-
-          return;
-        }
-
-        const unionId = loginWithHuaweiIDResponse.data!.unionID
-
-        // TODO: Send authCode to the backend in exchange for unionID, session
-      })
-      .catch((error: BusinessError) => {
-        // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
-        hilog.error(0, 'totp/home', '元服务登录出错: %{public}s', error.message)
-      });
   }
 }

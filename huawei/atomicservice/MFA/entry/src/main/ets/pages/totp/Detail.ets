@@ -1,4 +1,4 @@
-import { ItemRuntime } from "../models/ItemsRuntime";
+import { ItemRuntime } from "../../models/Runtime";
 
 @Builder
 export function builder() {

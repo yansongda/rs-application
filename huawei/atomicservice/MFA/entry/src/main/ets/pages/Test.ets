@@ -1,4 +1,4 @@
-import { INavigationDestinationParam } from "./Index";
+import { INavigationDestinationParam } from "./totp/Index";
 
 @Builder
 export function builder(param: Object) {

@@ -184,6 +184,10 @@ export class ItemsRuntime
     return runtime ?? new ItemRuntime({} as IItemRuntime);
   }
 
+  isEmpty(): boolean {
+    return this._ids.size > 0;
+  }
+
   private init(id: string, item: IItem): ItemRuntime {
     this.stop(id);
 
