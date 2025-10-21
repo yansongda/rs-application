@@ -1,11 +1,9 @@
 export enum Domain {
   ABILITY = 0,
 
-  MODELS = 1,
+  UTILS = 1,
 
-  PAGES = 2,
+  MODELS = 2,
 
   PAGES_TOTP_INDEX = 3,
-
-  PAGES_TOTP_DETAIL = 4,
 }

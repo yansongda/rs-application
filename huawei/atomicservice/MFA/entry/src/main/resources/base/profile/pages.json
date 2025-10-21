@@ -1,6 +1,5 @@
 {
   "src": [
-    "pages/Home",
-    "pages/Loading"
+    "pages/Home"
   ]
 }

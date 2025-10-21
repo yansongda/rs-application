@@ -2,37 +2,37 @@ import { ItemsRuntime } from '../../models/Runtime';
 import { AlertDialogV2, AdvancedDialogV2Button, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../../types/Item';
+import { Domain } from '../../Constant';
+import { closeDialog, openDialog } from '../../utils/dialog';
 
 @ComponentV2
 export struct Index {
   @Param @Require
   pages: NavPathStack;
+  @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
-  private dialogId?: number;
 
   aboutToAppear() {
-    this.openDialog(() => { this.loadingData() })
+    openDialog(this.getUIContext(), () => { this.loadingData() }, (dialogId) => {
+      // todo: 1、调接口查询所有数据
+      let items: Array<IItem> = [];
+      for (let index = 0; index < 100; index++) {
+        items.push({
+          id: index.toString(),
+          issuer: '闫嵩达大'+index,
+          username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'+index+'@yansongda.cn',
+          code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
+          config: {
+            period: 30,
+          } as IItemConfig,
+        } as IItem)
+      }
+      this.itemsRuntime = new ItemsRuntime(items);
 
-    // todo: 1、调接口查询所有数据
-    let items: Array<IItem> = [];
-    for (let index = 0; index < 100; index++) {
-      items.push({
-        id: index.toString(),
-        issuer: '闫嵩达大'+index,
-        username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'+index+'@yansongda.cn',
-        code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
-        config: {
-          period: 30,
-        } as IItemConfig,
-      } as IItem)
-    }
-    this.itemsRuntime = new ItemsRuntime(items);
-
-    setTimeout(() => {
-      this.closeDialog();
-    }, 1000)
+      closeDialog(this.getUIContext(), dialogId);
+    })
   }
 
   build() {
@@ -123,7 +123,7 @@ export struct Index {
         try {
           this.scroller.closeAllSwipeActions();
         } catch (error) {
-          hilog.error(0, 'totp/index', '调用 `closeAllSwipeActions` 失败')
+          hilog.error(Domain.PAGES_TOTP_INDEX, 'totp/index', '调用 `closeAllSwipeActions` 失败')
         }
       })
 
@@ -137,7 +137,7 @@ export struct Index {
       .onClick(() => {
         this.swipeActionId = id;
 
-        this.openDialog(() => this.deleteDialog());
+        openDialog(this.getUIContext(), () => this.deleteDialog())
       })
     }
   }
@@ -171,24 +171,5 @@ export struct Index {
         }
       }),
     })
-  }
-
-  private openDialog(builder: CustomBuilder) {
-    this.getUIContext().getPromptAction().openCustomDialog({ builder })
-      .then((dialogId) => this.dialogId = dialogId)
-      .catch(() => {
-        hilog.error(0, 'totp/index', '调用 `openCustomDialog` 失败')
-      })
-  }
-
-  private closeDialog() {
-    if (this.dialogId) {
-      try {
-        this.getUIContext().getPromptAction().closeCustomDialog(this.dialogId);
-      } catch (error) {
-      }
-    }
-
-    this.dialogId = undefined;
   }
 }
