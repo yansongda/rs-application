@@ -137,7 +137,7 @@ export struct Index {
       .onClick(() => {
         this.swipeActionId = id;
 
-        openDialog(this.getUIContext(), () => this.deleteDialog())
+        openDialog<void>(this.getUIContext(), () => this.deleteDialog());
       })
     }
   }

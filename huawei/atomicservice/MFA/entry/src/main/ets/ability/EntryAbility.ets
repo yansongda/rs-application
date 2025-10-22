@@ -9,14 +9,14 @@ import { Authorization } from '../models/Auth';
 import { closeDialog, openDialog } from '../utils/dialog';
 
 @Builder
-function login() {
+function loginDialog() {
   LoadingDialogV2({
     content: $r('app.string.entry_ability_login'),
   })
 }
 
 @Builder
-function loginConfirm(action: () => void) {
+function loginConfirmDialog(action: () => void) {
   AlertDialogV2({
     primaryTitle: $r('app.string.entry_ability_login_failed_title'),
     content: $r('app.string.entry_ability_login_failed_content'),
@@ -29,29 +29,36 @@ function loginConfirm(action: () => void) {
 }
 
 export default class EntryAbility extends UIAbility {
-  private dialogId?: number;
-
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    let uiContext = windowStage.getMainWindowSync().getUIContext();
+    let uiContext: UIContext | undefined;
 
-    if (this.dialogId) {
-      closeDialog(uiContext, this.dialogId);
+    try {
+      uiContext = windowStage.getMainWindowSync().getUIContext();
+    } catch (error) {
     }
 
-    openDialog(uiContext, () => login(), (dialogId) => {
-      let authorization = this.login(uiContext, dialogId);
+    let authorization = this.login(uiContext);
 
-      windowStage.loadContent('pages/Home', (err) => {
-        if (err.code) {
-          // 理论上来说，这里不会出现
-          hilog.error(Domain.ABILITY, 'ability/EntryAbility', '加载页面失败. Cause: %{public}s', JSON.stringify(err));
+    if (!authorization) {
+      this.openDialog(
+        () => loginConfirmDialog((): void => this.onWindowStageCreate(windowStage)),
+        () => { return undefined; },
+        uiContext,
+      );
 
-          return;
-        }
+      return;
+    }
 
-        PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => authorization})
-      });
-    })
+    windowStage.loadContent('pages/Home', (err) => {
+      if (err.code) {
+        // 理论上来说，这里不会出现
+        hilog.error(Domain.ABILITY, 'ability/EntryAbility', '加载页面失败. Cause: %{public}s', JSON.stringify(err));
+
+        return;
+      }
+
+      PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => authorization})
+    });
   }
 
   onWindowStageDestroy(): void {
@@ -63,20 +70,20 @@ export default class EntryAbility extends UIAbility {
   onBackground(): void {
   }
 
-  private login(uiContext: UIContext, dialogId: number): Authorization {
-    let authorization = this.loginWithHuaweiID();
-
-    closeDialog(uiContext, dialogId);
-
-    if ('undefined' !== typeof authorization) {
-      return authorization;
+  private login(uiContext?: UIContext): Authorization | undefined {
+    if ('undefined' === typeof uiContext) {
+      return this.loginWithHuaweiID();
     }
 
-    openDialog(
-      uiContext,
-      () => loginConfirm(() => this.login(uiContext, dialogId)),
-      (dialogId) => this.dialogId = dialogId,
-    )
+    this.openDialog(() => loginDialog(), (loginDialogId) => {
+      let authorization = this.loginWithHuaweiID();
+
+      this.closeDialog(uiContext, loginDialogId);
+
+      return authorization;
+    }, uiContext);
+
+    return;
   }
 
   private loginWithHuaweiID(): undefined | Authorization {
@@ -98,14 +105,34 @@ export default class EntryAbility extends UIAbility {
         const unionId = loginWithHuaweiIDResponse.data!.unionID
 
         // TODO: Send authCode to the backend in exchange for unionID, session
-
-        return undefined;
       })
       .catch((error: BusinessError) => {
         // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
         hilog.error(Domain.ABILITY, 'ability/EntryAbility', '元服务登录出错: %{public}s', error.message)
       });
 
-    return undefined;
+    setTimeout(() => {}, 5000);
+
+    return ;
+  }
+
+  private openDialog(builder: CustomBuilder, callback: (dialogId?: number) => Authorization | undefined, uiContext?: UIContext): Authorization | undefined {
+    if ('undefined' === typeof uiContext) {
+      if (callback) {
+        return callback(undefined);
+      }
+
+      return;
+    }
+
+    return openDialog<Authorization>(uiContext, builder, callback)
+  }
+
+  private closeDialog(uiContext?: UIContext, dialogId?: number) {
+    if ('undefined' === typeof uiContext || 'undefined' === typeof dialogId) {
+      return
+    }
+
+    closeDialog(uiContext, dialogId);
   }
 }
