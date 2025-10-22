@@ -13,19 +13,19 @@
       "value": "MFA"
     },
     {
-      "name": "entry_ability_login",
+      "name": "home_page_login",
       "value": "正在登录..."
     },
     {
-      "name": "entry_ability_login_failed_title",
+      "name": "home_page_login_failed_title",
       "value": "登录失败"
     },
     {
-      "name": "entry_ability_login_failed_content",
+      "name": "home_page_login_failed_content",
       "value": "是否重试登录"
     },
     {
-      "name": "entry_ability_login_failed_retry",
+      "name": "home_page_login_failed_retry",
       "value": "重试"
     },
     {

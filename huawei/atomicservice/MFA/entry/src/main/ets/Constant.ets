@@ -5,5 +5,15 @@ export enum Domain {
 
   MODELS = 2,
 
-  PAGES_TOTP_INDEX = 3,
+  PAGES_HOME = 3,
+
+  PAGES_TOTP_INDEX = 4,
+}
+
+export enum AuthorizationState {
+  EMPTY_AUTHORIZATION = 0,
+
+  NEED_REFRESH = 1,
+
+  REFRESH_TOKEN_EXPIRED = 2,
 }

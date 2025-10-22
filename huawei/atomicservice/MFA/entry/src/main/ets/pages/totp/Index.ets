@@ -31,7 +31,9 @@ export struct Index {
       }
       this.itemsRuntime = new ItemsRuntime(items);
 
-      closeDialog(this.getUIContext(), dialogId);
+      setTimeout(() => {
+        closeDialog(this.getUIContext(), dialogId);
+      }, 5000);
     })
   }
 
