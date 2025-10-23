@@ -16,11 +16,11 @@ struct Home {
 
   async aboutToAppear(): Promise<void> {
     if (AuthorizationState.EMPTY_AUTHORIZATION === this.authorization.state) {
-      await this.login();
+      await this.auth(() => this.authorization.login());
     }
 
     if (AuthorizationState.NEED_REFRESH === this.authorization.state) {
-      await this.authorization.refresh();
+      await this.auth(() => this.authorization.refresh());
     }
   }
 
@@ -92,9 +92,9 @@ struct Home {
     })
   }
 
-  private async login(): Promise<Authorization | undefined> {
+  private async auth(callback: () => Promise<Authorization | undefined>): Promise<void> {
     let authorization = await openDialog<Authorization>(this.getUIContext(), () => this.loginDialog(), async (loginDialogId) => {
-      let authorization = await this.authorization.login();
+      let authorization = await callback();
 
       closeDialog(this.getUIContext(), loginDialogId);
 
@@ -102,13 +102,7 @@ struct Home {
     });
 
     if (!authorization) {
-      openDialog<undefined>(this.getUIContext(), () => this.loginConfirmDialog(() => {
-        // this.login()
-
-        this.authorization.fack();
-      }));
+      openDialog<undefined>(this.getUIContext(), () => this.loginConfirmDialog(() => this.auth(callback)));
     }
-
-    return;
   }
 }

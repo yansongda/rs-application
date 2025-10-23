@@ -28,7 +28,7 @@ export class Authorization {
       return AuthorizationState.NEED_REFRESH;
     }
 
-    if (this._authorizedAt && this._authorizedAt.getTime() + (86400 * 30) > (new Date).getTime()) {
+    if (this._authorizedAt && this._authorizedAt.getTime() + (86400 * 30) < (new Date).getTime()) {
       return AuthorizationState.REFRESH_TOKEN_EXPIRED;
     }
 
@@ -38,27 +38,26 @@ export class Authorization {
   async login(): Promise<Authorization | undefined> {
     let credential = this.loginWithHuaweiID();
 
+    // todo: 1、解除注释；2、请求 access_token/login 接口
     // if ('undefined' === typeof credential) {
     //   return Promise.resolve(undefined);
     // }
 
-    // todo: 请求 access_token/login 接口
-    return (async (ms: number): Promise<Authorization> => {
-      hilog.info(Domain.MODELS, 'models/auth', 'test')
+    hilog.info(Domain.MODELS, 'models/auth', 'test')
 
-      await ((): Promise<void> => {
-        return new Promise(resolve => setTimeout(resolve, ms));
-      })();
-
-      hilog.info(Domain.MODELS, 'models/auth', 'test1')
-
-      return new Authorization();
+    await ((ms: number): Promise<void> => {
+      return new Promise(resolve => setTimeout(resolve, ms));
     })(5000);
+
+    hilog.info(Domain.MODELS, 'models/auth', 'test1')
+
+    return new Authorization();
   }
 
-  async refresh() {
+  async refresh(): Promise<Authorization | undefined> {
     // todo: 请求 access_token/login/refresh 接口
 
+    return undefined;
   }
 
   fack() {

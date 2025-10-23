@@ -10,12 +10,15 @@ import { Authorization } from '../../models/Auth';
 export struct Index {
   @Param @Require
   pages: NavPathStack;
+
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
+
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
 
   private scroller: ListScroller = new ListScroller();
+
   private swipeActionId?: string;
 
   aboutToAppear() {
@@ -60,10 +63,16 @@ export struct Index {
       Text() {
         SymbolSpan($r('sys.symbol.exclamationmark_circle'))
       }
-      .fontSize(30)
+      .fontSize(50)
 
       Text($r('app.string.index_page_data_empty'))
         .margin({ top: 10 })
+
+      // todo: 测试，待删除
+      Text(this.authorization.state.toString())
+      Button("模拟认证数据").margin({top: 20}).onClick(() => {
+        this.authorization.fack();
+      })
     }
     .margin({ top: 50 })
   }
