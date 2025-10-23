@@ -1,13 +1,10 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 import { scanBarcode } from '@kit.ScanKit';
 import { Index } from './totp/Index';
-import { AlertDialogV2, LoadingDialogV2, PersistenceV2, AdvancedDialogV2Button } from '@kit.ArkUI';
+import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { Authorization } from '../models/Auth';
-import { AuthorizationState, Domain } from '../Constant';
-import { closeDialog, openDialog } from '../utils/dialog';
-import { authentication } from '@kit.AccountKit';
-import { util } from '@kit.ArkTS';
+import { AuthorizationState } from '../Constant';
+import { closeDialog, openDialog } from '../utils/Dialog';
 
 @Entry
 @ComponentV2
@@ -17,15 +14,13 @@ struct Home {
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
-  aboutToAppear(): void {
-    let authorizationState = this.authorization.state();
-
-    if (AuthorizationState.EMPTY_AUTHORIZATION === authorizationState) {
-      this.authorization.login(this.getUIContext());
+  async aboutToAppear(): Promise<void> {
+    if (AuthorizationState.EMPTY_AUTHORIZATION === this.authorization.state) {
+      await this.login();
     }
 
-    if (AuthorizationState.NEED_REFRESH === authorizationState) {
-      this.authorization.refreshToken();
+    if (AuthorizationState.NEED_REFRESH === this.authorization.state) {
+      await this.authorization.refresh();
     }
   }
 
@@ -97,9 +92,9 @@ struct Home {
     })
   }
 
-  private login(): Authorization | undefined {
-    let authorization = openDialog<Authorization>(this.getUIContext(), () => this.loginDialog(), (loginDialogId) => {
-      let authorization = this.loginWithHuaweiID();
+  private async login(): Promise<Authorization | undefined> {
+    let authorization = await openDialog<Authorization>(this.getUIContext(), () => this.loginDialog(), async (loginDialogId) => {
+      let authorization = await this.authorization.login();
 
       closeDialog(this.getUIContext(), loginDialogId);
 
@@ -107,43 +102,13 @@ struct Home {
     });
 
     if (!authorization) {
-      openDialog<undefined>(this.getUIContext(), () => this.loginConfirmDialog(() => this.login()));
+      openDialog<undefined>(this.getUIContext(), () => this.loginConfirmDialog(() => {
+        // this.login()
+
+        this.authorization.fack();
+      }));
     }
 
     return;
-  }
-
-  private loginWithHuaweiID(): undefined | Authorization {
-    const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
-    loginRequest.forceLogin = false;
-    loginRequest.state = util.generateRandomUUID();
-
-    (new authentication.AuthenticationController())
-      .executeRequest(loginRequest)
-      .then((data) => {
-        const loginWithHuaweiIDResponse = data as authentication.LoginWithHuaweiIDResponse;
-        const state = loginWithHuaweiIDResponse.state;
-        if (state && loginRequest.state !== state) {
-          hilog.error(Domain.PAGES_HOME, 'pages/home', '登录失败，state 不同: %{public}s != %{public}s', state, loginRequest.state);
-
-          return;
-        }
-
-        const unionId = loginWithHuaweiIDResponse.data!.unionID
-
-        // TODO: Send authCode to the backend in exchange for unionID, session
-        // this.authorization.authorized_at = new Date();
-        // this._access_token = data.access_token
-      })
-      .catch((error: BusinessError) => {
-        // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
-        hilog.error(Domain.PAGES_HOME, 'pages/home', '元服务登录出错: %{public}s', error.message)
-      });
-
-    setTimeout(() => {
-      return;
-    }, 5000);
-
-    return ;
   }
 }

@@ -1,110 +1,94 @@
-import { authentication } from "@kit.AccountKit";
-import { util } from "@kit.ArkTS";
+import { authentication } from '@kit.AccountKit';
+import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from "@kit.PerformanceAnalysisKit";
-import { AuthorizationState, Domain } from "../Constant";
-import { closeDialog, openDialog } from "../utils/dialog";
-import { AlertDialogV2, LoadingDialogV2, AdvancedDialogV2Button } from "@kit.ArkUI";
-
-@Builder
-function loginDialog() {
-  LoadingDialogV2({
-    content: $r('app.string.home_page_login'),
-  })
-}
-
-@Builder
-function loginConfirmDialog(action: () => void) {
-  AlertDialogV2({
-    primaryTitle: $r('app.string.home_page_login_failed_title'),
-    content: $r('app.string.home_page_login_failed_content'),
-    secondaryButton: new AdvancedDialogV2Button({
-      content: $r('app.string.home_page_login_failed_retry'),
-      role: ButtonRole.ERROR,
-      action
-    }),
-  })
-}
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { AuthorizationState, Domain } from '../Constant';
 
 @ObservedV2
 export class Authorization {
   @Trace
-  private _authorized_at: Date | undefined;
+  private _authorizedAt: Date | undefined;
 
   @Trace
-  private _access_token: string | undefined;
+  private _accessToken: string | undefined;
 
   @Trace
-  private _refresh_token: string | undefined;
+  private _refreshToken: string | undefined;
 
   @Trace
-  private _expired_at: Date | undefined;
+  private _expiredAt: Date | undefined;
 
-  state(): AuthorizationState {
-    if (!this._access_token || !this._refresh_token || !this._expired_at) {
+  @Computed
+  get state(): AuthorizationState {
+    if (!this._accessToken || !this._refreshToken || !this._expiredAt) {
       return AuthorizationState.EMPTY_AUTHORIZATION;
     }
 
-    if (this._expired_at.getTime() < (new Date()).getTime()) {
+    if ((this._expiredAt.getTime() + 300) < (new Date()).getTime()) {
       return AuthorizationState.NEED_REFRESH;
     }
 
-    if (this._authorized_at && this._authorized_at.getTime() + (86400 * 30) > (new Date).getTime()) {
+    if (this._authorizedAt && this._authorizedAt.getTime() + (86400 * 30) > (new Date).getTime()) {
       return AuthorizationState.REFRESH_TOKEN_EXPIRED;
     }
 
-    return AuthorizationState.EMPTY_AUTHORIZATION;
+    return AuthorizationState.NORMAL;
   }
 
-  login(uiContext: UIContext): Authorization | undefined {
-    let authorization = openDialog<Authorization>(uiContext, wrapBuilder(loginDialog).builder(), (loginDialogId) => {
-      let authorization = this.loginWithHuaweiID();
+  async login(): Promise<Authorization | undefined> {
+    let credential = this.loginWithHuaweiID();
 
-      closeDialog(uiContext, loginDialogId);
+    // if ('undefined' === typeof credential) {
+    //   return Promise.resolve(undefined);
+    // }
 
-      return authorization;
-    });
+    // todo: 请求 access_token/login 接口
+    return (async (ms: number): Promise<Authorization> => {
+      hilog.info(Domain.MODELS, 'models/auth', 'test')
 
-    if (!authorization) {
-      openDialog<undefined>(uiContext, wrapBuilder(loginConfirmDialog).builder(() => this.login(uiContext)));
-    }
+      await ((): Promise<void> => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      })();
 
-    return;
+      hilog.info(Domain.MODELS, 'models/auth', 'test1')
+
+      return new Authorization();
+    })(5000);
   }
 
-  private loginWithHuaweiID(): undefined | Authorization {
+  async refresh() {
+    // todo: 请求 access_token/login/refresh 接口
+
+  }
+
+  fack() {
+    this._accessToken = 'test';
+    this._refreshToken = 'test';
+    this._authorizedAt = new Date();
+    this._expiredAt = new Date((new Date()).getTime() + 3600);
+  }
+
+  private loginWithHuaweiID(): undefined | authentication.LoginWithHuaweiIDCredential {
     const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
     loginRequest.forceLogin = false;
     loginRequest.state = util.generateRandomUUID();
 
     (new authentication.AuthenticationController())
       .executeRequest(loginRequest)
-      .then((data) => {
-        const loginWithHuaweiIDResponse = data as authentication.LoginWithHuaweiIDResponse;
-        const state = loginWithHuaweiIDResponse.state;
-        if (state && loginRequest.state !== state) {
-          hilog.error(Domain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s', state, loginRequest.state);
+      .then((loginWithHuaweiIDResponse: authentication.LoginWithHuaweiIDResponse) => {
+        if (loginWithHuaweiIDResponse.state && loginRequest.state !== loginWithHuaweiIDResponse.state) {
+          hilog.error(Domain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s', loginWithHuaweiIDResponse.state, loginRequest.state);
 
           return;
         }
 
-        const unionId = loginWithHuaweiIDResponse.data!.unionID
-
-        // TODO: Send authCode to the backend in exchange for unionID, session
-        this._authorized_at = new Date();
-        // this._access_token = data.access_token
+        return loginWithHuaweiIDResponse.data!;
       })
       .catch((error: BusinessError) => {
         // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
         hilog.error(Domain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
       });
 
-    setTimeout(() => {}, 5000);
-
-    return ;
-  }
-
-  refreshToken() {
-
+    return;
   }
 }

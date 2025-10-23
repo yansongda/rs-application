@@ -16,4 +16,6 @@ export enum AuthorizationState {
   NEED_REFRESH = 1,
 
   REFRESH_TOKEN_EXPIRED = 2,
+
+  NORMAL = 3,
 }

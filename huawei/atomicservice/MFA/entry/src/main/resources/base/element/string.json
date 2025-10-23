@@ -37,6 +37,10 @@
       "value": "加载中..."
     },
     {
+      "name": "index_page_data_empty",
+      "value": "暂无数据"
+    },
+    {
       "name": "index_page_detail_name",
       "value": "详情"
     },

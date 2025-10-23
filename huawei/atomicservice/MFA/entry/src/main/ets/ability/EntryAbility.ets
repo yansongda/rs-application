@@ -1,7 +1,8 @@
 import { UIAbility } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { PersistenceV2, window } from '@kit.ArkUI';
 import { Domain } from '../Constant';
+import { Authorization } from '../models/Auth';
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -12,6 +13,8 @@ export default class EntryAbility extends UIAbility {
 
         return;
       }
+
+      PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() });
     });
   }
 

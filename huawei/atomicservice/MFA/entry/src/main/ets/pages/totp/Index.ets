@@ -1,9 +1,10 @@
 import { ItemsRuntime } from '../../models/Runtime';
-import { AlertDialogV2, AdvancedDialogV2Button, LoadingDialogV2 } from '@kit.ArkUI';
+import { AlertDialogV2, AdvancedDialogV2Button, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../../types/Item';
-import { Domain } from '../../Constant';
-import { closeDialog, openDialog } from '../../utils/dialog';
+import { AuthorizationState, Domain } from '../../Constant';
+import { closeDialog, openDialog } from '../../utils/Dialog';
+import { Authorization } from '../../models/Auth';
 
 @ComponentV2
 export struct Index {
@@ -11,11 +12,18 @@ export struct Index {
   pages: NavPathStack;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
+  @Local
+  private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
+
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
 
   aboutToAppear() {
-    openDialog(this.getUIContext(), () => { this.loadingData() }, (dialogId) => {
+    if (AuthorizationState.NORMAL !== this.authorization.state) {
+      return;
+    }
+
+    openDialog(this.getUIContext(), () => this.loadingData(), async (dialogId) => {
       // todo: 1、调接口查询所有数据
       let items: Array<IItem> = [];
       for (let index = 0; index < 100; index++) {
@@ -29,15 +37,39 @@ export struct Index {
           } as IItemConfig,
         } as IItem)
       }
-      this.itemsRuntime = new ItemsRuntime(items);
 
       setTimeout(() => {
+        this.itemsRuntime = new ItemsRuntime(items);
+
         closeDialog(this.getUIContext(), dialogId);
       }, 5000);
     })
   }
 
   build() {
+    if (this.itemsRuntime.ids.size <= 0) {
+      this.empty()
+    } else {
+      this.list()
+    }
+  }
+
+  @Builder
+  empty() {
+    Column() {
+      Text() {
+        SymbolSpan($r('sys.symbol.exclamationmark_circle'))
+      }
+      .fontSize(30)
+
+      Text($r('app.string.index_page_data_empty'))
+        .margin({ top: 10 })
+    }
+    .margin({ top: 50 })
+  }
+
+  @Builder
+  list() {
     List({ scroller: this.scroller }) {
       Repeat<string>(Array.from(this.itemsRuntime.ids.values()))
         .each((ri: RepeatItem<string>) => {
