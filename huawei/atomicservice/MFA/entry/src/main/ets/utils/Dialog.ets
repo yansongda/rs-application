@@ -2,7 +2,7 @@ import { UIContext } from "@ohos.arkui.UIContext";
 import { hilog } from "@kit.PerformanceAnalysisKit";
 import { Domain } from "../Constant";
 
-export default class Dialog {
+export class Dialog {
   static async open(uiContext: UIContext, builder: CustomBuilder): Promise<number | undefined> {
     try {
       return await uiContext.getPromptAction().openCustomDialog({ builder });

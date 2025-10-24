@@ -1,24 +1,24 @@
-import { bundleManager } from "@kit.AbilityKit";
+import { bundleManager } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { Domain } from '../Constant';
 
-export default class App {
+export class App {
   static async getClientId(): Promise<string> {
+    try {
+      const bundleInfo: bundleManager.BundleInfo = await bundleManager.getBundleInfoForSelf(
+        bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA
+      );
 
-  }
-}
-
-export const getClientId = async (): Promise<String> => {
-  try {
-    const info = (await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA));
-    const metadata: bundleManager.ModuleMetadata[] = info.appInfo.metadataArray;
-    info.name
-
-    if (metadata.length > 0) {
-      const clientIdObj = metadata.find(item => item. === "client_id");
-      return clientIdObj?.value ?? ""; // 返回client_id或空字符串
+      if (bundleInfo.appInfo.metadataArray) {
+        for (const item of bundleInfo.appInfo.metadataArray) {
+          hilog.info(0, 'utils/app', '%{public}o', item)
+        }
+      }
+    } catch (error) {
+      hilog.error(Domain.UTILS, 'utils/app', '获取 client_id 失败，code: %{public}s，message:  %{public}s', error.code,
+        error.message)
     }
-    return "";
-  } catch (error) {
-    console.error("获取client_id失败: " + error);
-    return "";
+
+    return 'undefined';
   }
 }

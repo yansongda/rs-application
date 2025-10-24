@@ -2,7 +2,7 @@ import { authentication } from '@kit.AccountKit';
 import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AuthorizationState, Domain } from '../Constant';
-import App from '../utils/App';
+import { App } from '../utils/App';
 import { Delay } from '../utils/Delay';
 
 @ObservedV2

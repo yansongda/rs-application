@@ -4,7 +4,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../../types/Item';
 import { AuthorizationState, Domain } from '../../Constant';
 import { Authorization } from '../../models/Auth';
-import Dialog from '../../utils/Dialog';
+import { Dialog } from '../../utils/Dialog';
 import { Delay } from '../../utils/Delay';
 
 @ComponentV2

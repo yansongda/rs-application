@@ -4,7 +4,7 @@ import { Index } from './totp/Index';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { Authorization } from '../models/Auth';
 import { AuthorizationState } from '../Constant';
-import Dialog from '../utils/Dialog';
+import { Dialog } from '../utils/Dialog';
 
 @Entry
 @ComponentV2
