@@ -4,7 +4,7 @@ import { Index } from './totp/Index';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { Authorization } from '../models/Auth';
 import { AuthorizationState } from '../Constant';
-import { closeDialog, openDialog } from '../utils/Dialog';
+import Dialog from '../utils/Dialog';
 
 @Entry
 @ComponentV2
@@ -12,9 +12,10 @@ struct Home {
   @Local
   private pages: NavPathStack = new NavPathStack();
   @Local
-  private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+  private authorization: Authorization =
+    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
-  async aboutToAppear(): Promise<void> {
+  async onPageShow(): Promise<void> {
     if (AuthorizationState.EMPTY_AUTHORIZATION === this.authorization.state) {
       await this.auth(() => this.authorization.login());
     }
@@ -25,7 +26,7 @@ struct Home {
   }
 
   build() {
-    Stack({ alignContent: Alignment.BottomEnd}) {
+    Stack({ alignContent: Alignment.BottomEnd }) {
       Navigation(this.pages) {
         Index({ pages: this.pages })
       }
@@ -41,7 +42,7 @@ struct Home {
               .fontSize($r('app.integer.home_page_add_button_font_size'))
               .fontColor([Color.White])
           }
-          .margin({right: 5})
+          .margin({ right: 5 })
 
           Text($r('app.string.index_page_add_name'))
             .fontSize($r('app.integer.home_page_add_button_font_size'))
@@ -49,8 +50,13 @@ struct Home {
       }
       .backgroundColor($r('app.color.main'))
       .fontColor(Color.White)
-      .padding({top: 10, bottom: 10, left: 10, right: 10})
-      .margin({bottom: 50, right: 50})
+      .padding({
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      })
+      .margin({ bottom: 50, right: 50 })
       .onClick(() => {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
           // todo: 添加
@@ -93,16 +99,10 @@ struct Home {
   }
 
   private async auth(callback: () => Promise<Authorization | undefined>): Promise<void> {
-    let authorization = await openDialog<Authorization>(this.getUIContext(), () => this.loginDialog(), async (loginDialogId) => {
-      let authorization = await callback();
-
-      closeDialog(this.getUIContext(), loginDialogId);
-
-      return authorization;
-    });
+    let authorization = await Dialog.execute(this.getUIContext(), () => this.loginDialog(), callback);
 
     if (!authorization) {
-      openDialog<undefined>(this.getUIContext(), () => this.loginConfirmDialog(() => this.auth(callback)));
+      Dialog.open(this.getUIContext(), () => this.loginConfirmDialog(() => this.auth(callback)));
     }
   }
 }

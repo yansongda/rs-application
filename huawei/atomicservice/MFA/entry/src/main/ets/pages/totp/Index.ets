@@ -1,52 +1,49 @@
 import { ItemsRuntime } from '../../models/Runtime';
-import { AlertDialogV2, AdvancedDialogV2Button, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
+import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../../types/Item';
-import { AuthorizationState, Domain } from '../../Constant';
-import { closeDialog, openDialog } from '../../utils/Dialog';
+import { Domain } from '../../Constant';
 import { Authorization } from '../../models/Auth';
+import Dialog from '../../utils/Dialog';
+import { Delay } from '../../utils/Delay';
 
 @ComponentV2
 export struct Index {
   @Param @Require
   pages: NavPathStack;
-
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
-
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
-
   private scroller: ListScroller = new ListScroller();
-
   private swipeActionId?: string;
 
-  aboutToAppear() {
-    if (AuthorizationState.NORMAL !== this.authorization.state) {
-      return;
-    }
+  async aboutToAppear(): Promise<void> {
+    const items =
+      await Dialog.execute(this.getUIContext(), () => this.loadingData(), async (): Promise<Array<IItem>> => {
+        // todo: 1、调接口查询所有数据
+        let items: Array<IItem> = [];
+        for (let index = 0; index < 100; index++) {
+          items.push({
+            id: index.toString(),
+            issuer: '闫嵩达大' + index,
+            username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + index + '@yansongda.cn',
+            code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
+            config: {
+              period: 30,
+            } as IItemConfig,
+          } as IItem)
+        }
+        await Delay.sleep(5000);
 
-    openDialog(this.getUIContext(), () => this.loadingData(), async (dialogId) => {
-      // todo: 1、调接口查询所有数据
-      let items: Array<IItem> = [];
-      for (let index = 0; index < 100; index++) {
-        items.push({
-          id: index.toString(),
-          issuer: '闫嵩达大'+index,
-          username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'+index+'@yansongda.cn',
-          code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
-          config: {
-            period: 30,
-          } as IItemConfig,
-        } as IItem)
-      }
+        return items;
+      });
 
-      setTimeout(() => {
-        this.itemsRuntime = new ItemsRuntime(items);
+    this.itemsRuntime = new ItemsRuntime(items);
+  }
 
-        closeDialog(this.getUIContext(), dialogId);
-      }, 5000);
-    })
+  onPageHide(): void {
+    this.itemsRuntime.clear();
   }
 
   build() {
@@ -70,7 +67,7 @@ export struct Index {
 
       // todo: 测试，待删除
       Text(this.authorization.state.toString())
-      Button("模拟认证数据").margin({top: 20}).onClick(() => {
+      Button("模拟认证数据").margin({ top: 20 }).onClick(() => {
         this.authorization.fack();
       })
     }
@@ -103,7 +100,7 @@ export struct Index {
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
                   }
-                  .margin({top: 5})
+                  .margin({ top: 5 })
                 }
                 .width('40%')
 
@@ -114,7 +111,7 @@ export struct Index {
                 .width('60%')
               }
               .height(98)
-              .padding({left: 8, right: 8})
+              .padding({ left: 8, right: 8 })
 
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress,
@@ -130,7 +127,9 @@ export struct Index {
           .backgroundColor($r('app.color.index_page_item_background'))
           .swipeAction({
             end: {
-              builder: () => { this.swipeAction(ri.item.valueOf()) },
+              builder: () => {
+                this.swipeAction(ri.item.valueOf())
+              },
             },
             edgeEffect: SwipeEdgeEffect.None,
           })
@@ -180,7 +179,7 @@ export struct Index {
       .onClick(() => {
         this.swipeActionId = id;
 
-        openDialog<void>(this.getUIContext(), () => this.deleteDialog());
+        Dialog.open(this.getUIContext(), () => this.deleteDialog());
       })
     }
   }
@@ -209,7 +208,7 @@ export struct Index {
           }
 
           // todo: 1、调接口删除数据
-          this.itemsRuntime.clear(this.swipeActionId);
+          this.itemsRuntime.delete(this.swipeActionId);
           this.swipeActionId = undefined;
         }
       }),

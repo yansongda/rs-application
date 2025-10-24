@@ -3,6 +3,7 @@ import { util } from '@kit.ArkTS';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AuthorizationState, Domain } from '../Constant';
+import { Delay } from '../utils/Delay';
 
 @ObservedV2
 export class Authorization {
@@ -42,14 +43,7 @@ export class Authorization {
     // if ('undefined' === typeof credential) {
     //   return Promise.resolve(undefined);
     // }
-
-    hilog.info(Domain.MODELS, 'models/auth', 'test')
-
-    await ((ms: number): Promise<void> => {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    })(5000);
-
-    hilog.info(Domain.MODELS, 'models/auth', 'test1')
+    await Delay.sleep(2000);
 
     return new Authorization();
   }
