@@ -28,6 +28,8 @@ export struct Index {
   }
 
   onPageHide(): void {
+    hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', 'page hide');
+
     this.itemsRuntime.clear();
   }
 

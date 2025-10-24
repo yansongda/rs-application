@@ -6,6 +6,7 @@ export class App {
   static async getClientId(): Promise<string> {
     try {
       const bundleInfo: bundleManager.BundleInfo = await bundleManager.getBundleInfoForSelf(
+        bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION |
         bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA
       );
 
