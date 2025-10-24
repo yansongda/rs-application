@@ -1,6 +1,23 @@
 import { bundleManager } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Domain } from '../Constant';
+
+export enum Domain {
+  ABILITY = 0,
+
+  UTILS = 1,
+
+  MODELS = 2,
+
+  PAGES_HOME = 3,
+
+  PAGES_TOTP_INDEX = 4,
+}
+
+export enum PageState {
+  HIDE = 0,
+
+  SHOW = 1,
+}
 
 export class App {
   static async getClientId(): Promise<string> {

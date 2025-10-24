@@ -2,9 +2,9 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scanBarcode } from '@kit.ScanKit';
 import { Index } from './totp/Index';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
-import { Authorization } from '../models/Auth';
-import { AuthorizationState } from '../Constant';
+import { Authorization, State } from '../models/Auth';
 import { Dialog } from '../utils/Dialog';
+import { PageState } from '../App';
 
 @Entry
 @ComponentV2
@@ -12,23 +12,31 @@ struct Home {
   @Local
   private pages: NavPathStack = new NavPathStack();
   @Local
+  private pageState: PageState = PageState.HIDE;
+  @Local
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
   async onPageShow(): Promise<void> {
-    if (AuthorizationState.EMPTY_AUTHORIZATION === this.authorization.state) {
+    this.pageState = PageState.SHOW;
+
+    if (State.EMPTY_AUTHORIZATION === this.authorization.state()) {
       await this.auth(() => this.authorization.login());
     }
 
-    if (AuthorizationState.NEED_REFRESH === this.authorization.state) {
+    if (State.NEED_REFRESH === this.authorization.state()) {
       await this.auth(() => this.authorization.refresh());
     }
+  }
+
+  onPageHide(): void {
+    this.pageState = PageState.HIDE;
   }
 
   build() {
     Stack({ alignContent: Alignment.BottomEnd }) {
       Navigation(this.pages) {
-        Index({ pages: this.pages })
+        Index({ pages: this.pages, pageState: this.pageState })
       }
       .title(this.title())
       .titleMode(NavigationTitleMode.Mini)

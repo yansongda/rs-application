@@ -1,47 +1,75 @@
 import { authentication } from '@kit.AccountKit';
 import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { AuthorizationState, Domain } from '../Constant';
-import { App } from '../utils/App';
+import { App, Domain } from '../App';
 import { Delay } from '../utils/Delay';
+
+export enum State {
+  EMPTY_AUTHORIZATION = 0,
+
+  NEED_REFRESH = 1,
+
+  REFRESH_TOKEN_EXPIRED = 2,
+
+  NORMAL = 3,
+}
 
 @ObservedV2
 export class Authorization {
   @Trace
   private _authorizedAt: Date | undefined;
+
+  public get authorizedAt(): Date | undefined {
+    return this._authorizedAt;
+  }
+
   @Trace
   private _accessToken: string | undefined;
+
+  public get accessToken(): string | undefined {
+    return this._accessToken;
+  }
+
   @Trace
   private _refreshToken: string | undefined;
+
+  public get refreshToken(): string | undefined {
+    return this._refreshToken;
+  }
+
   @Trace
   private _expiredAt: Date | undefined;
 
-  @Computed
-  get state(): AuthorizationState {
+  public get expiredAt(): Date | undefined {
+    return this._expiredAt;
+  }
+
+  state(): State {
     if (!this._accessToken || !this._refreshToken || !this._expiredAt) {
-      return AuthorizationState.EMPTY_AUTHORIZATION;
+      return State.EMPTY_AUTHORIZATION;
     }
 
     if ((this._expiredAt.getTime() + 300) < (new Date()).getTime()) {
-      return AuthorizationState.NEED_REFRESH;
+      return State.NEED_REFRESH;
     }
 
     if (this._authorizedAt && this._authorizedAt.getTime() + (86400 * 30) < (new Date).getTime()) {
-      return AuthorizationState.REFRESH_TOKEN_EXPIRED;
+      return State.REFRESH_TOKEN_EXPIRED;
     }
 
-    return AuthorizationState.NORMAL;
+    return State.NORMAL;
   }
 
   async login(): Promise<Authorization | undefined> {
     const credential = await this.loginWithHuaweiID();
     const clientId = await App.getClientId();
 
-    // todo: 1、解除注释；2、请求 access_token/login 接口
-    // if ('undefined' === typeof credential) {
-    //   return Promise.resolve(undefined);
-    // }
     await Delay.sleep(2000);
+
+    // 2、请求 access_token/login 接口
+    if ('undefined' === typeof credential) {
+      return;
+    }
 
     return new Authorization();
   }
@@ -52,6 +80,7 @@ export class Authorization {
     return undefined;
   }
 
+  // 待删除
   fack() {
     this._accessToken = 'test';
     this._refreshToken = 'test';

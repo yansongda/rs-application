@@ -2,15 +2,17 @@ import { ItemsRuntime } from '../../models/Runtime';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../../types/Item';
-import { AuthorizationState, Domain } from '../../Constant';
-import { Authorization } from '../../models/Auth';
+import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/Dialog';
 import { Delay } from '../../utils/Delay';
+import { Domain, PageState } from '../../App';
 
 @ComponentV2
 export struct Index {
   @Param @Require
   pages: NavPathStack;
+  @Param
+  pageState: PageState = PageState.HIDE;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
   @Local
@@ -18,19 +20,26 @@ export struct Index {
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
 
-  @Monitor("authorization.state")
-  onAuthorizationChange() {
+  @Monitor("authorization.accessToken")
+  onAuthorizationChange(): void {
     this.fetch();
   }
 
-  async aboutToAppear(): Promise<void> {
-    this.fetch();
-  }
+  @Monitor("pageState")
+  onPageStateChange(change: IMonitor): void {
+    if (PageState.HIDE === change.value()?.now) {
+      // todo: 待删除
+      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', 'page hide');
 
-  onPageHide(): void {
-    hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', 'page hide');
+      this.itemsRuntime.clear();
+    }
 
-    this.itemsRuntime.clear();
+    if (PageState.SHOW === change.value()?.now) {
+      // todo: 待删除
+      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', 'page show');
+
+      this.fetch();
+    }
   }
 
   build() {
@@ -53,7 +62,7 @@ export struct Index {
         .margin({ top: 10 })
 
       // todo: 测试，待删除
-      Text(this.authorization.state.toString())
+      Text(this.authorization.state().toString())
       Button("模拟认证数据").margin({ top: 20 }).onClick(() => {
         this.authorization.fack();
       })
@@ -203,7 +212,7 @@ export struct Index {
   }
 
   private async fetch() {
-    if (this.authorization.state !== AuthorizationState.NORMAL) {
+    if (this.authorization.state() !== State.NORMAL) {
       return;
     }
 

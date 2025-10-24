@@ -1,8 +1,8 @@
 import { UIAbility } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { PersistenceV2, window } from '@kit.ArkUI';
-import { Domain } from '../Constant';
 import { Authorization } from '../models/Auth';
+import { Domain } from '../App';
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
