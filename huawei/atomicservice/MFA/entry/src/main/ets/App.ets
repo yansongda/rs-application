@@ -29,7 +29,7 @@ export class App {
 
       if (bundleInfo.appInfo.metadataArray) {
         for (const item of bundleInfo.appInfo.metadataArray) {
-          hilog.info(0, 'utils/app', '%{public}o', item)
+          hilog.info(Domain.UTILS, 'utils/app', '%{public}o', item)
         }
       }
     } catch (error) {
