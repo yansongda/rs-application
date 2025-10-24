@@ -1,5 +1,11 @@
 import { bundleManager } from "@kit.AbilityKit";
 
+export default class App {
+  static async getClientId(): Promise<string> {
+
+  }
+}
+
 export const getClientId = async (): Promise<String> => {
   try {
     const info = (await bundleManager.getBundleInfoForSelf(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA));

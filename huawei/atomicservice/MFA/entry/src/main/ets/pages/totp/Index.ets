@@ -2,7 +2,7 @@ import { ItemsRuntime } from '../../models/Runtime';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { IItem, IItemConfig } from '../../types/Item';
-import { Domain } from '../../Constant';
+import { AuthorizationState, Domain } from '../../Constant';
 import { Authorization } from '../../models/Auth';
 import Dialog from '../../utils/Dialog';
 import { Delay } from '../../utils/Delay';
@@ -11,35 +11,20 @@ import { Delay } from '../../utils/Delay';
 export struct Index {
   @Param @Require
   pages: NavPathStack;
+  private scroller: ListScroller = new ListScroller();
+  private swipeActionId?: string;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
-  private scroller: ListScroller = new ListScroller();
-  private swipeActionId?: string;
+
+  @Monitor("authorization.state")
+  onAuthorizationChange() {
+    this.fetch();
+  }
 
   async aboutToAppear(): Promise<void> {
-    const items =
-      await Dialog.execute(this.getUIContext(), () => this.loadingData(), async (): Promise<Array<IItem>> => {
-        // todo: 1、调接口查询所有数据
-        let items: Array<IItem> = [];
-        for (let index = 0; index < 100; index++) {
-          items.push({
-            id: index.toString(),
-            issuer: '闫嵩达大' + index,
-            username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + index + '@yansongda.cn',
-            code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
-            config: {
-              period: 30,
-            } as IItemConfig,
-          } as IItem)
-        }
-        await Delay.sleep(5000);
-
-        return items;
-      });
-
-    this.itemsRuntime = new ItemsRuntime(items);
+    this.fetch();
   }
 
   onPageHide(): void {
@@ -213,5 +198,33 @@ export struct Index {
         }
       }),
     })
+  }
+
+  private async fetch() {
+    if (this.authorization.state !== AuthorizationState.NORMAL) {
+      return;
+    }
+
+    const items =
+      await Dialog.execute(this.getUIContext(), () => this.loadingData(), async (): Promise<Array<IItem>> => {
+        // todo: 1、调接口查询所有数据
+        let items: Array<IItem> = [];
+        for (let index = 0; index < 100; index++) {
+          items.push({
+            id: index.toString(),
+            issuer: '闫嵩达大' + index,
+            username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + index + '@yansongda.cn',
+            code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
+            config: {
+              period: 30,
+            } as IItemConfig,
+          } as IItem)
+        }
+        await Delay.sleep(5000);
+
+        return items;
+      });
+
+    this.itemsRuntime = new ItemsRuntime(items);
   }
 }
