@@ -5,7 +5,7 @@ import { IItem, IItemConfig } from '../../types/Item';
 import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/Dialog';
 import { Delay } from '../../utils/Delay';
-import { Domain, PageState } from '../../App';
+import { LogDomain, PageState } from '../../App';
 
 @ComponentV2
 export struct Index {
@@ -22,7 +22,7 @@ export struct Index {
 
   @Monitor("authorization.accessToken")
   onAuthorizationChange(): void {
-    hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', '监测到认证信息发生变化');
+    hilog.info(LogDomain.PAGES, 'totp/index', '监测到认证信息发生变化');
 
     this.fetch();
   }
@@ -30,13 +30,13 @@ export struct Index {
   @Monitor("pageState")
   onPageStateChange(change: IMonitor): void {
     if (PageState.HIDE === change.value()?.now) {
-      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', '页面隐藏');
+      hilog.info(LogDomain.PAGES, 'totp/index', '页面隐藏');
 
       this.itemsRuntime.clear();
     }
 
     if (PageState.SHOW === change.value()?.now) {
-      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', '页面显示');
+      hilog.info(LogDomain.PAGES, 'totp/index', '页面显示');
 
       this.fetch();
     }
@@ -60,12 +60,6 @@ export struct Index {
 
       Text($r('app.string.index_page_data_empty'))
         .margin({ top: 10 })
-
-      // todo: 测试，待删除
-      Text(this.authorization.state().toString())
-      Button("模拟认证数据").margin({ top: 20 }).onClick(() => {
-        this.authorization.fack();
-      })
     }
     .margin({ top: 50 })
   }
@@ -161,7 +155,7 @@ export struct Index {
         try {
           this.scroller.closeAllSwipeActions();
         } catch (error) {
-          hilog.error(Domain.PAGES_TOTP_INDEX, 'totp/index', '调用 `closeAllSwipeActions` 失败')
+          hilog.error(LogDomain.PAGES, 'totp/index', '调用 `closeAllSwipeActions` 失败')
         }
       })
 

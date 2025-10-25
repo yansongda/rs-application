@@ -1,4 +1,4 @@
-use crate::request::access_token::{LoginRequestParams, RefreshLoginRequestParams};
+use crate::request::access_token::{LoginRequestParams, LoginRefreshRequestParams};
 use application_database::account::third_user;
 use application_database::account::user;
 use application_database::account::{Platform, third_config};
@@ -30,8 +30,9 @@ pub async fn login(
     ))
 }
 
+// todo: 响应增加 refresh_token
 pub async fn login_refresh(
-    request: &RefreshLoginRequestParams,
+    request: &LoginRefreshRequestParams,
 ) -> Result<access_token::AccessToken> {
     let refresh_token = refresh_token::fetch(request.refresh_token.as_str())
         .await

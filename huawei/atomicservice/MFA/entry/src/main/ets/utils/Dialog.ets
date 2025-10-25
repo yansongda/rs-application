@@ -1,13 +1,13 @@
 import { UIContext } from '@ohos.arkui.UIContext';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Domain } from '../App';
+import { LogDomain } from '../App';
 
 export class Dialog {
   static async open(uiContext: UIContext, builder: CustomBuilder): Promise<number | undefined> {
     try {
       return await uiContext.getPromptAction().openCustomDialog({ builder, autoCancel: false });
     } catch (e) {
-      hilog.error(Domain.UTILS, 'utils/dialog', '调用 `openCustomDialog` 失败');
+      hilog.error(LogDomain.UTILS, 'utils/dialog', '调用 `openCustomDialog` 失败');
     }
 
     return undefined;

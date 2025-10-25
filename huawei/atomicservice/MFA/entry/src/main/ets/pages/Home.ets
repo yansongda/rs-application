@@ -4,7 +4,7 @@ import { Index } from './totp/Index';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { Authorization, State } from '../models/Auth';
 import { Dialog } from '../utils/Dialog';
-import { Domain, PageState } from '../App';
+import { LogDomain, PageState } from '../App';
 
 @Entry
 @ComponentV2
@@ -18,7 +18,7 @@ struct Home {
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
   async onPageShow(): Promise<void> {
-    hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/home', '页面显示');
+    hilog.info(LogDomain.PAGES, 'totp/home', '页面显示');
 
     this.pageState = PageState.SHOW;
 
@@ -32,7 +32,7 @@ struct Home {
   }
 
   onPageHide(): void {
-    hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/home', '页面隐藏');
+    hilog.info(LogDomain.PAGES, 'totp/home', '页面隐藏');
 
     this.pageState = PageState.HIDE;
   }
@@ -72,7 +72,7 @@ struct Home {
       .onClick(() => {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
           // todo: 添加
-          hilog.info(Domain.PAGES_HOME, 'totp/home', '扫码结果: %{public}s', result.originalValue)
+          hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', result.originalValue)
         });
       })
     }

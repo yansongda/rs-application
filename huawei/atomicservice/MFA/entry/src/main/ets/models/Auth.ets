@@ -1,9 +1,9 @@
 import { authentication } from '@kit.AccountKit';
 import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { App, Domain } from '../App';
-import { Delay } from '../utils/Delay';
+import { App, LogDomain } from '../App';
 import { dateformat } from '@developers/dateformat';
+import { AccessToken } from '../api/accessToken';
 
 export enum State {
   EMPTY_AUTHORIZATION = 0,
@@ -65,19 +65,28 @@ export class Authorization {
 
   async login(): Promise<Authorization | undefined> {
     const credential = await this.loginWithHuaweiID();
-    const clientId = await App.getClientId();
+    const clientId = App.getClientId();
 
-    hilog.info(Domain.MODELS, 'models/auth', '认证信息, credential: %{public}o, client_id: %{public}s', credential,
+    hilog.info(LogDomain.MODELS, 'models/auth', '认证信息, credential: %{public}s, client_id: %{public}s',
+      JSON.stringify(credential),
       clientId);
-
-    // todo: 2、请求 access_token/login 接口
-    await Delay.sleep(2000);
 
     if ('undefined' === typeof credential) {
       return;
     }
 
-    return new Authorization();
+    const response = await AccessToken.login(clientId, credential.authorizationCode!);
+
+    if ('undefined' === typeof response) {
+      return;
+    }
+
+    this._authorizedAt = new Date();
+    this._accessToken = response.access_token;
+    this._refreshToken = response.refresh_token;
+    this._expiredAt = dateformat.now().add(response.expired_in, 'second').toDate() as Date;
+
+    return this;
   }
 
   async refresh(refreshToken?: string): Promise<Authorization | undefined> {
@@ -85,19 +94,20 @@ export class Authorization {
       return;
     }
 
-    const clientId = await App.getClientId();
+    const clientId = App.getClientId();
 
-    // todo: 请求 access_token/login/refresh 接口
+    const response = await AccessToken.loginRefresh(clientId, refreshToken);
 
-    return undefined;
-  }
+    if ('undefined' === typeof response) {
+      return;
+    }
 
-  // todo: 待删除
-  fack() {
-    this._accessToken = 'test';
-    this._refreshToken = 'test';
     this._authorizedAt = new Date();
-    this._expiredAt = new Date((new Date()).getTime() + 3600 * 1000);
+    this._accessToken = response.access_token;
+    this._refreshToken = response.refresh_token;
+    this._expiredAt = dateformat.now().add(response.expired_in, 'second').toDate() as Date;
+
+    return;
   }
 
   private async loginWithHuaweiID(): Promise<undefined | authentication.LoginWithHuaweiIDCredential> {
@@ -112,13 +122,13 @@ export class Authorization {
         await (new authentication.AuthenticationController()).executeRequest(loginRequest);
     } catch (error) {
       // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
-      hilog.error(Domain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
+      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
 
       return;
     }
 
     if (loginWithHuaweiIDResponse.state && loginRequest.state !== loginWithHuaweiIDResponse.state) {
-      hilog.error(Domain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
+      hilog.error(LogDomain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
         loginWithHuaweiIDResponse.state, loginRequest.state);
 
       return;
