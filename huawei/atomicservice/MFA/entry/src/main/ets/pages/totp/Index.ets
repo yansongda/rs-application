@@ -22,21 +22,21 @@ export struct Index {
 
   @Monitor("authorization.accessToken")
   onAuthorizationChange(): void {
+    hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', '监测到认证信息发生变化');
+
     this.fetch();
   }
 
   @Monitor("pageState")
   onPageStateChange(change: IMonitor): void {
     if (PageState.HIDE === change.value()?.now) {
-      // todo: 待删除
-      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', 'page hide');
+      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', '页面隐藏');
 
       this.itemsRuntime.clear();
     }
 
     if (PageState.SHOW === change.value()?.now) {
-      // todo: 待删除
-      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', 'page show');
+      hilog.info(Domain.PAGES_TOTP_INDEX, 'totp/index', '页面显示');
 
       this.fetch();
     }

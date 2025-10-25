@@ -20,23 +20,37 @@ export enum PageState {
 }
 
 export class App {
-  static async getClientId(): Promise<string> {
+  static async getMetadata(name: string, module?: string): Promise<string | undefined> {
+    if (typeof module === 'undefined') {
+      module = 'entry';
+    }
+
     try {
       const bundleInfo: bundleManager.BundleInfo = await bundleManager.getBundleInfoForSelf(
         bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION |
         bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA
       );
 
-      if (bundleInfo.appInfo.metadataArray) {
-        for (const item of bundleInfo.appInfo.metadataArray) {
-          hilog.info(Domain.UTILS, 'utils/app', '%{public}o', item)
-        }
-      }
+      hilog.info(Domain.UTILS, 'utils/app', 'metadata 获取信息: %{public}o', bundleInfo.appInfo.metadataArray);
+
+      return bundleInfo.appInfo.metadataArray
+        .find(item => item.moduleName === module)?.metadata
+        .find(metadata => metadata.name === name)?.value;
     } catch (error) {
-      hilog.error(Domain.UTILS, 'utils/app', '获取 client_id 失败，code: %{public}s，message:  %{public}s', error.code,
+      hilog.error(Domain.UTILS, 'utils/app', '获取 metadata 失败，code: %{public}s，message:  %{public}s', error.code,
         error.message)
     }
 
-    return 'undefined';
+    return;
+  }
+
+  static async getClientId(): Promise<string> {
+    const clientId = await App.getMetadata('client_id');
+
+    if ('undefined' === typeof clientId) {
+      return 'undefined';
+    }
+
+    return clientId;
   }
 }

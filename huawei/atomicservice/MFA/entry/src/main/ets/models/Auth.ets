@@ -3,6 +3,7 @@ import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { App, Domain } from '../App';
 import { Delay } from '../utils/Delay';
+import { dateformat } from '@developers/dateformat';
 
 export enum State {
   EMPTY_AUTHORIZATION = 0,
@@ -49,11 +50,13 @@ export class Authorization {
       return State.EMPTY_AUTHORIZATION;
     }
 
-    if ((this._expiredAt.getTime() + 300) < (new Date()).getTime()) {
+    // 提前5分钟刷新 token
+    if (dateformat.create(this._expiredAt).isBefore(dateformat.now().add(5, 'minute'))) {
       return State.NEED_REFRESH;
     }
 
-    if (this._authorizedAt && this._authorizedAt.getTime() + (86400 * 30) < (new Date).getTime()) {
+    // refresh_token 有效期30天，提前1天刷新
+    if (this._authorizedAt && dateformat.create(this._authorizedAt).add(29, 'day').isBefore(dateformat.now())) {
       return State.REFRESH_TOKEN_EXPIRED;
     }
 
@@ -64,9 +67,12 @@ export class Authorization {
     const credential = await this.loginWithHuaweiID();
     const clientId = await App.getClientId();
 
+    hilog.info(Domain.MODELS, 'models/auth', '认证信息, credential: %{public}o, client_id: %{public}s', credential,
+      clientId);
+
+    // todo: 2、请求 access_token/login 接口
     await Delay.sleep(2000);
 
-    // 2、请求 access_token/login 接口
     if ('undefined' === typeof credential) {
       return;
     }
@@ -74,18 +80,24 @@ export class Authorization {
     return new Authorization();
   }
 
-  async refresh(): Promise<Authorization | undefined> {
+  async refresh(refreshToken?: string): Promise<Authorization | undefined> {
+    if ('undefined' === typeof refreshToken) {
+      return;
+    }
+
+    const clientId = await App.getClientId();
+
     // todo: 请求 access_token/login/refresh 接口
 
     return undefined;
   }
 
-  // 待删除
+  // todo: 待删除
   fack() {
     this._accessToken = 'test';
     this._refreshToken = 'test';
     this._authorizedAt = new Date();
-    this._expiredAt = new Date((new Date()).getTime() + 3600);
+    this._expiredAt = new Date((new Date()).getTime() + 3600 * 1000);
   }
 
   private async loginWithHuaweiID(): Promise<undefined | authentication.LoginWithHuaweiIDCredential> {
