@@ -55,7 +55,7 @@ export class App {
       bundleManager.BundleFlag.GET_BUNDLE_INFO_DEFAULT
     );
 
-    hilog.info(LogDomain.UTILS, 'utils/app', 'BundleInfo 获取信息: %{public}o', bundleInfo);
+    hilog.info(LogDomain.UTILS, 'utils/app', 'BundleInfo 获取信息: %{public}s', JSON.stringify(bundleInfo));
 
     return bundleInfo;
   }

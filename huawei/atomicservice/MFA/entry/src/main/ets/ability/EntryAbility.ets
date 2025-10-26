@@ -1,6 +1,6 @@
 import { UIAbility } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { PersistenceV2, window } from '@kit.ArkUI';
+import { AppStorageV2, PersistenceV2, UIContext, window } from '@kit.ArkUI';
 import { Authorization } from '../models/Auth';
 import { LogDomain } from '../App';
 
@@ -15,6 +15,12 @@ export default class EntryAbility extends UIAbility {
       }
 
       PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() });
+
+      try {
+        AppStorageV2.connect(UIContext, () => windowStage.getMainWindowSync().getUIContext());
+      } catch (error) {
+        hilog.error(LogDomain.ABILITY, 'ability/EntryAbility', '存储 UI 数据到应用运行状态中失败. Cause: %{public}s', JSON.stringify(err));
+      }
     });
   }
 

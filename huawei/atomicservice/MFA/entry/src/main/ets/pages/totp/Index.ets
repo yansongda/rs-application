@@ -169,7 +169,7 @@ export struct Index {
       .onClick(() => {
         this.swipeActionId = id;
 
-        Dialog.open(this.getUIContext(), () => this.deleteDialog());
+        Dialog.open(() => this.deleteDialog());
       })
     }
   }
@@ -211,7 +211,7 @@ export struct Index {
     }
 
     const items =
-      await Dialog.execute(this.getUIContext(), () => this.loadingData(), async (): Promise<Array<IItem>> => {
+      await Dialog.execute(() => this.loadingData(), async (): Promise<Array<IItem>> => {
         // todo: 1、调接口查询所有数据
         let items: Array<IItem> = [];
         for (let index = 0; index < 100; index++) {

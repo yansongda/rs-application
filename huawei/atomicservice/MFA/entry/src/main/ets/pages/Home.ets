@@ -73,6 +73,8 @@ struct Home {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
           // todo: 添加
           hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', result.originalValue)
+
+
         });
       })
     }
@@ -111,10 +113,10 @@ struct Home {
   }
 
   private async auth(callback: () => Promise<Authorization | undefined>): Promise<void> {
-    let authorization = await Dialog.execute(this.getUIContext(), () => this.loginDialog(), callback);
+    let authorization = await Dialog.execute(() => this.loginDialog(), callback);
 
     if (!authorization) {
-      Dialog.open(this.getUIContext(), () => this.loginConfirmDialog(() => this.auth(callback)));
+      Dialog.open(() => this.loginConfirmDialog(() => this.auth(callback)));
     }
   }
 }
