@@ -89,7 +89,7 @@ struct Home {
           hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', uri);
 
           await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.create(uri));
-          
+
           // todo: 成功与失败的处理
         });
       })
@@ -129,10 +129,10 @@ struct Home {
   }
 
   private async auth(callback: () => Promise<Authorization | undefined>): Promise<void> {
-    let authorization = await Dialog.execute(() => this.loadingDialog($r('app.string.home_page_login')), callback);
-
-    if (!authorization) {
-      Dialog.open(() => this.loginConfirmDialog(() => this.auth(callback)));
-    }
+    await Dialog.executeWithRetry(
+      () => this.loadingDialog($r('app.string.home_page_login')),
+      callback,
+      () => this.loginConfirmDialog(() => this.auth(callback))
+    );
   }
 }

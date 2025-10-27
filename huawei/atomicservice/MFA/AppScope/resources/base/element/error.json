@@ -1,8 +1,12 @@
 {
   "string": [
     {
-      "name": "error_internet_error",
+      "name": "error_http_request_failed",
       "value": "网络错误，请检查网络状态"
+    },
+    {
+      "name": "error_http_response_failed",
+      "value": "服务器响应错误，请重试或联系我们"
     }
   ]
 }

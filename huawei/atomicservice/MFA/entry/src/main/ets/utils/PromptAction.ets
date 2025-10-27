@@ -1,7 +1,7 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { LogDomain } from '../App';
 import { AppStorageV2, UIContext } from '@kit.ArkUI';
-import promptAction from '@ohos.promptAction'
+import promptAction from '@ohos.promptAction';
 
 class PromptAction {
   private static uiContext: UIContext | undefined;
@@ -17,7 +17,6 @@ class PromptAction {
 
 export class Dialog extends PromptAction {
   static async open(builder: CustomBuilder): Promise<number | undefined> {
-
     try {
       return await PromptAction.getUIContext().getPromptAction().openCustomDialog({ builder, autoCancel: false });
     } catch (e) {
@@ -49,6 +48,17 @@ export class Dialog extends PromptAction {
     Dialog.close(dialogId);
 
     return result;
+  }
+
+  static async executeWithRetry<T>(builder: CustomBuilder, callback: () => Promise<T>,
+    retryBuilder: CustomBuilder): Promise<T> {
+    let data = await Dialog.execute(builder, callback);
+
+    if (!data) {
+      Dialog.open(retryBuilder);
+    }
+
+    return data;
   }
 }
 

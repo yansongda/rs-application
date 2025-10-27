@@ -22,11 +22,12 @@ const http = axios.create();
 
 http.defaults.baseURL = url();
 http.defaults.timeout = 5000;
-// http.defaults.headers.common['Authorization'] = 'Bearer ' + authorization().accessToken;
 http.defaults.headers.common['User-Agent'] = 'yansongda/atomicservice/MFA-v' + App.getVersion() + ' <me@yansongda.cn>';
 http.defaults.headers.post['Content-Type'] = 'application/json';
 
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  config.headers['Authorization'] = authorization().accessToken;
+
   hilog.info(LogDomain.UTILS, 'utils/http',
     '发送 http 请求，url: %{public}s, method: %{public}s, headers: %{public}s, request body: %{public}s', config.url,
     config.method,
@@ -43,11 +44,10 @@ http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   try {
     message =
-      application.getApplicationContext().resourceManager.getStringSync($r('app.string.error_internet_error').id)
+      application.getApplicationContext().resourceManager.getStringSync($r('app.string.error_http_request_failed').id)
   } catch (e) {
   }
 
-  // todo: 提示
   return Promise.reject(new HttpError(message));
 });
 
@@ -60,13 +60,19 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   return response;
 }, (e: AxiosError) => {
   hilog.error(LogDomain.UTILS, 'utils/http',
-    '接收 http 请求失败，message: %{public}s, url: %{public}s, method: %{public}s, request body: %{public}s, response body: %{public}s',
-    e.message, e.config?.url, e.config?.method, JSON.stringify(e.config?.data), JSON.stringify(e.response?.data)
+    '接收 http 请求失败，code: %{public}s, message: %{public}s, url: %{public}s, method: %{public}s, request body: %{public}s, response body: %{public}s',
+    e.code, e.message, e.config?.url, e.config?.method, JSON.stringify(e.config?.data), JSON.stringify(e.response?.data)
   );
 
-  // todo：1、请求异常；2、响应结构不对
+  let message = '服务器响应错误，请重试或联系我们';
 
-  return Promise.reject(e);
+  try {
+    message =
+      application.getApplicationContext().resourceManager.getStringSync($r('app.string.error_http_response_failed').id)
+  } catch (e) {
+  }
+
+  return Promise.reject(new HttpError(message));
 });
 
 export interface Response<T> {
