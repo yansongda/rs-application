@@ -1,10 +1,18 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scanBarcode } from '@kit.ScanKit';
 import { Index } from './totp/Index';
-import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
+import {
+  AdvancedDialogV2Button,
+  AlertDialogV2,
+  AppStorageV2,
+  LoadingDialogV2,
+  PersistenceV2,
+  UIContext
+} from '@kit.ArkUI';
 import { Authorization, State } from '../models/Auth';
-import { Dialog } from '../utils/Dialog';
+import { Dialog } from '../utils/PromptAction';
 import { LogDomain, PageState } from '../App';
+import { Totp } from '../api/totp';
 
 @Entry
 @ComponentV2
@@ -16,6 +24,11 @@ struct Home {
   @Local
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+
+  // todo: 待删除
+  aboutToAppear(): void {
+    AppStorageV2.connect(UIContext, () => this.getUIContext());
+  }
 
   async onPageShow(): Promise<void> {
     hilog.info(LogDomain.PAGES, 'totp/home', '页面显示');
@@ -70,11 +83,14 @@ struct Home {
       })
       .margin({ bottom: 50, right: 50 })
       .onClick(() => {
-        scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then((result) => {
-          // todo: 添加
-          hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', result.originalValue)
+        scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
+          let uri = result.originalValue;
 
+          hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', uri);
 
+          await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.create(uri));
+          
+          // todo: 成功与失败的处理
         });
       })
     }
@@ -93,9 +109,9 @@ struct Home {
   }
 
   @Builder
-  loginDialog() {
+  loadingDialog(content: ResourceStr) {
     LoadingDialogV2({
-      content: $r('app.string.home_page_login'),
+      content,
     })
   }
 
@@ -113,7 +129,7 @@ struct Home {
   }
 
   private async auth(callback: () => Promise<Authorization | undefined>): Promise<void> {
-    let authorization = await Dialog.execute(() => this.loginDialog(), callback);
+    let authorization = await Dialog.execute(() => this.loadingDialog($r('app.string.home_page_login')), callback);
 
     if (!authorization) {
       Dialog.open(() => this.loginConfirmDialog(() => this.auth(callback)));

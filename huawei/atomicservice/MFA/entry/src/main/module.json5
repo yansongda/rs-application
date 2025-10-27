@@ -16,7 +16,7 @@
       {
         "name": "EntryAbility",
         "srcEntry": "./ets/ability/EntryAbility.ets",
-        "description": "$string:entry_ability_desc",
+        "description": "$string:module_entry_ability_desc",
         "icon": "$media:icon",
         "label": "$string:entry_ability_label",
         "startWindowIcon": "$media:start_icon",
@@ -32,6 +32,11 @@
             ]
           }
         ]
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET"
       }
     ],
     "metadata": [

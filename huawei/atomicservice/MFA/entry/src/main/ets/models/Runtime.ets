@@ -1,7 +1,9 @@
 import { HashMap } from '@kit.ArkTS';
+import { Totp } from '../api/totp';
 import { IItem, IItemConfig } from '../types/Item';
 
 export interface IItemRuntime {
+  id: string;
   code: string | undefined;
   progress: number | undefined;
   issuer: string;
@@ -13,79 +15,8 @@ export interface IItemRuntime {
 
 @ObservedV2
 export class ItemRuntime {
-  @Trace
-  private _code: string | undefined;
-
-  public set code(value: string | undefined) {
-    this._code = value;
-  }
-
-  public get code(): string | undefined {
-    return this._code;
-  }
-
-  @Trace
-  private _progress: number | undefined;
-
-  public set progress(value: number | undefined) {
-    this._progress = value;
-  }
-
-  public get progress(): number | undefined {
-    return this._progress;
-  }
-
-  private _issuer: string;
-
-  public set issuer(value: string) {
-    this._issuer = value;
-  }
-
-  public get issuer(): string {
-    return this._issuer;
-  }
-
-  private _username: string;
-
-  public set username(value: string) {
-    this._username = value;
-  }
-
-  public get username(): string {
-    return this._username;
-  }
-
-  private _config: IItemConfig;
-
-  public set config(value: IItemConfig) {
-    this._config = value;
-  }
-
-  public get config(): IItemConfig {
-    return this._config;
-  }
-
-  private _timeoutId: number | undefined;
-
-  public set timeoutId(value: number | undefined) {
-    this._timeoutId = value;
-  }
-
-  public get timeoutId(): number | undefined {
-    return this._timeoutId;
-  }
-
-  private _intervalId: number | undefined;
-
-  public set intervalId(value: number | undefined) {
-    this._intervalId = value;
-  }
-
-  public get intervalId(): number | undefined {
-    return this._intervalId;
-  }
-
   constructor(runtime: IItemRuntime) {
+    this._id = runtime.id;
     this._code = runtime.code;
     this._progress = runtime.progress;
     this._issuer = runtime.issuer;
@@ -93,6 +24,88 @@ export class ItemRuntime {
     this._config = runtime.config;
     this._timeoutId = runtime.timeoutId;
     this._intervalId = runtime.intervalId;
+  }
+
+  private _id: string;
+
+  public get id(): string {
+    return this._id;
+  }
+
+  public set id(value: string) {
+    this._id = value;
+  }
+
+  @Trace
+  private _code: string | undefined;
+
+  public get code(): string | undefined {
+    return this._code;
+  }
+
+  public set code(value: string | undefined) {
+    this._code = value;
+  }
+
+  @Trace
+  private _progress: number | undefined;
+
+  public get progress(): number | undefined {
+    return this._progress;
+  }
+
+  public set progress(value: number | undefined) {
+    this._progress = value;
+  }
+
+  private _issuer: string;
+
+  public get issuer(): string {
+    return this._issuer;
+  }
+
+  public set issuer(value: string) {
+    this._issuer = value;
+  }
+
+  private _username: string;
+
+  public get username(): string {
+    return this._username;
+  }
+
+  public set username(value: string) {
+    this._username = value;
+  }
+
+  private _config: IItemConfig;
+
+  public get config(): IItemConfig {
+    return this._config;
+  }
+
+  public set config(value: IItemConfig) {
+    this._config = value;
+  }
+
+  private _timeoutId: number | undefined;
+
+  public get timeoutId(): number | undefined {
+    return this._timeoutId;
+  }
+
+  public set timeoutId(value: number | undefined) {
+    this._timeoutId = value;
+  }
+
+  private _intervalId: number | undefined;
+
+  public get intervalId(): number | undefined {
+    return this._intervalId;
+  }
+
+  public set intervalId(value: number | undefined) {
+    this._intervalId = value;
   }
 
   start() {
@@ -131,19 +144,17 @@ export class ItemRuntime {
     this._intervalId = undefined;
   }
 
-  freshCode() {
-    // TODO: 调用接口更新 code
-    this._code = Math.floor(Math.random() * 999999).toString().padStart(6, '0');
+  async freshCode() {
+    const detail = await Totp.detail(this._id);
+    this._code = detail.code;
   }
 }
 
 @ObservedV2
 export class ItemsRuntime {
-  @Trace
-  private _ids: Set<string> = new Set();
   private _runtimes: HashMap<string, ItemRuntime> = new HashMap();
 
-  constructor(items: undefined | Array<IItem> = undefined) {
+  constructor(items: undefined | Array<IItem> | Iterable<IItem> = undefined) {
     if ('undefined' === typeof items) {
       return;
     }
@@ -153,10 +164,13 @@ export class ItemsRuntime {
     } catch (error) {
     }
 
-    items.forEach((item) => {
+    for (const item of items) {
       this.init(item.id, item);
-    })
+    }
   }
+
+  @Trace
+  private _ids: Set<string> = new Set();
 
   get ids(): Set<string> {
     return this._ids;
@@ -204,6 +218,7 @@ export class ItemsRuntime {
     this.stop(id);
 
     const runtime = new ItemRuntime({
+      id: item.id,
       code: item.code,
       progress: item.config.period,
       issuer: item.issuer,

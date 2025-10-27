@@ -3,6 +3,7 @@ import { App, AppEnv, HttpDomain, LogDomain } from '../App';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization } from '../models/Auth';
 import { PersistenceV2 } from '@kit.ArkUI';
+import { application } from '@kit.AbilityKit';
 
 const authorization =
   (): Authorization => PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!
@@ -19,12 +20,13 @@ const url = (): string => {
 
 const http = axios.create();
 
-axios.defaults.baseURL = url();
-axios.defaults.headers.common['Authorization'] = 'Bearer ' + authorization().accessToken;
-axios.defaults.headers.common['User-Agent'] = 'yansongda/HarmonyOS <me@yansongda.cn>';
-axios.defaults.headers.post['Content-Type'] = 'application/json';
+http.defaults.baseURL = url();
+http.defaults.timeout = 5000;
+// http.defaults.headers.common['Authorization'] = 'Bearer ' + authorization().accessToken;
+http.defaults.headers.common['User-Agent'] = 'yansongda/atomicservice/MFA-v' + App.getVersion() + ' <me@yansongda.cn>';
+http.defaults.headers.post['Content-Type'] = 'application/json';
 
-axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   hilog.info(LogDomain.UTILS, 'utils/http',
     '发送 http 请求，url: %{public}s, method: %{public}s, headers: %{public}s, request body: %{public}s', config.url,
     config.method,
@@ -37,11 +39,19 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     e.message,
     e.config?.url, e.config?.method, JSON.stringify(e.config?.headers), JSON.stringify(e.config?.data));
 
-  return Promise.reject(e);
+  let message = '网络错误，请检查网络状态';
+
+  try {
+    message =
+      application.getApplicationContext().resourceManager.getStringSync($r('app.string.error_internet_error').id)
+  } catch (e) {
+  }
+
+  // todo: 提示
+  return Promise.reject(new HttpError(message));
 });
 
-// todo：1、请求异常；2、响应结构不对
-axios.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
+http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   hilog.info(LogDomain.UTILS, 'utils/http',
     '接收 http 请求响应，url: %{public}s, method: %{public}s, response body: %{public}s, time: %{public}s',
     response.config.url,
@@ -50,9 +60,11 @@ axios.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   return response;
 }, (e: AxiosError) => {
   hilog.error(LogDomain.UTILS, 'utils/http',
-    '接收 http 请求失败，message: %{public}s, url: %{public}s, method: %{public}s, request body: %{public}s', e.message,
-    e.config?.url,
-    e.config?.method, JSON.stringify(e.config?.data));
+    '接收 http 请求失败，message: %{public}s, url: %{public}s, method: %{public}s, request body: %{public}s, response body: %{public}s',
+    e.message, e.config?.url, e.config?.method, JSON.stringify(e.config?.data), JSON.stringify(e.response?.data)
+  );
+
+  // todo：1、请求异常；2、响应结构不对
 
   return Promise.reject(e);
 });

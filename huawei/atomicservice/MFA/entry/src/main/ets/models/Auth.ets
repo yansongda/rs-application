@@ -71,11 +71,12 @@ export class Authorization {
       JSON.stringify(credential),
       clientId);
 
-    if ('undefined' === typeof credential) {
-      return;
-    }
+    // todo: 去掉注释
+    // if ('undefined' === typeof credential) {
+    //   return;
+    // }
 
-    const response = await AccessToken.login(clientId, credential.authorizationCode!);
+    const response = await AccessToken.login(clientId, credential?.authorizationCode!);
 
     if ('undefined' === typeof response) {
       return;

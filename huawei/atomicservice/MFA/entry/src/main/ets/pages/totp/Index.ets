@@ -1,11 +1,10 @@
 import { ItemsRuntime } from '../../models/Runtime';
 import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { IItem, IItemConfig } from '../../types/Item';
 import { Authorization, State } from '../../models/Auth';
-import { Dialog } from '../../utils/Dialog';
-import { Delay } from '../../utils/Delay';
+import { Dialog } from '../../utils/PromptAction';
 import { LogDomain, PageState } from '../../App';
+import { Totp } from '../../api/totp';
 
 @ComponentV2
 export struct Index {
@@ -175,9 +174,9 @@ export struct Index {
   }
 
   @Builder
-  loadingData() {
+  loading() {
     LoadingDialogV2({
-      content: $r('app.string.index_page_data_loading'),
+      content: $r('app.string.loading'),
     })
   }
 
@@ -192,12 +191,13 @@ export struct Index {
       secondaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.index_page_delete_name'),
         role: ButtonRole.ERROR,
-        action: () => {
+        action: async () => {
           if ('undefined' == typeof this.swipeActionId) {
             return;
           }
 
-          // todo: 1、调接口删除数据
+          await Totp.detail(this.swipeActionId);
+
           this.itemsRuntime.delete(this.swipeActionId);
           this.swipeActionId = undefined;
         }
@@ -210,26 +210,8 @@ export struct Index {
       return;
     }
 
-    const items =
-      await Dialog.execute(() => this.loadingData(), async (): Promise<Array<IItem>> => {
-        // todo: 1、调接口查询所有数据
-        let items: Array<IItem> = [];
-        for (let index = 0; index < 100; index++) {
-          items.push({
-            id: index.toString(),
-            issuer: '闫嵩达大' + index,
-            username: 'meaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' + index + '@yansongda.cn',
-            code: Math.floor(Math.random() * 999999).toString().padStart(6, '0'),
-            config: {
-              period: 30,
-            } as IItemConfig,
-          } as IItem)
-        }
-        await Delay.sleep(5000);
+    const items = await Dialog.execute(() => this.loading(), () => Totp.all());
 
-        return items;
-      });
-
-    this.itemsRuntime = new ItemsRuntime(items);
+    this.itemsRuntime = new ItemsRuntime(items.values());
   }
 }

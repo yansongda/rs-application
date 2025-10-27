@@ -3,6 +3,10 @@
     {
       "name": "app_name",
       "value": "MFA"
+    },
+    {
+      "name": "loading",
+      "value": "加载中..."
     }
   ]
 }

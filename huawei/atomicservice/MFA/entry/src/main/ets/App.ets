@@ -31,6 +31,7 @@ export enum PageState {
 
 export class App {
   private static clientId: string | undefined;
+  private static version: string | undefined;
   private static env: AppEnv | undefined;
 
   static getMetadata(name: string, module?: string): string | undefined {
@@ -43,7 +44,8 @@ export class App {
       bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_METADATA
     );
 
-    hilog.info(LogDomain.UTILS, 'utils/app', 'metadata 获取信息: %{public}o', bundleInfo.appInfo.metadataArray);
+    hilog.info(LogDomain.UTILS, 'utils/app', 'metadata 获取信息: %{public}s',
+      JSON.stringify(bundleInfo.appInfo.metadataArray));
 
     return bundleInfo.appInfo.metadataArray
       .find(item => item.moduleName === module)?.metadata
@@ -76,16 +78,26 @@ export class App {
     return clientId;
   }
 
+  static getVersion(): string {
+    if ('undefined' !== typeof App.version) {
+      return App.version;
+    }
+
+    const bundleInfo = App.getBundleInfo();
+
+    App.version = bundleInfo.versionName;
+
+    return App.version;
+  }
+
   static getEnv(): AppEnv {
     if ('undefined' !== typeof App.env) {
       return App.env;
     }
 
-    const bundleInfo = App.getBundleInfo();
-
     App.env = AppEnv.PROD;
 
-    if (bundleInfo.versionName.toLowerCase().includes('-beta')) {
+    if (App.getBundleInfo().versionName.length === 0 || App.getMetadata('env') === 'test') {
       App.env = AppEnv.TEST;
     }
 

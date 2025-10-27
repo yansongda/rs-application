@@ -1,0 +1,16 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "多因子认证（MFA）服务: TOTP 算法"
+    },
+    {
+      "name": "module_entry_ability_desc",
+      "value": "多因子认证（MFA）服务: TOTP 算法"
+    },
+    {
+      "name": "entry_ability_label",
+      "value": "MFA"
+    }
+  ]
+}

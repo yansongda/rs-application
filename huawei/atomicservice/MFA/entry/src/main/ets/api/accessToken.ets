@@ -27,16 +27,19 @@ export interface AccessTokenLoginRefreshResponse {
 
 export class AccessToken {
   static async login(clientId: string, authorizationCode: string): Promise<AccessTokenLoginResponse | undefined> {
-    const response: AxiosResponse<Response<AccessTokenLoginResponse>> =
-      await http.post<AccessTokenLoginResponse, AxiosResponse<Response<AccessTokenLoginResponse>>, AccessTokenLoginRequest>('api/v1/access-token/login',
-        {
-          platform: "HUAWEI",
-          third_id: clientId,
-          code: authorizationCode
-        })
+    try {
+      const response: AxiosResponse<Response<AccessTokenLoginResponse>> =
+        await http.post<AccessTokenLoginResponse, AxiosResponse<Response<AccessTokenLoginResponse>>, AccessTokenLoginRequest>('api/v1/access-token/login',
+          {
+            platform: "HUAWEI",
+            third_id: clientId,
+            code: authorizationCode
+          })
 
-    if (response.data?.data?.access_token) {
-      return response.data.data;
+      if (response.data?.data?.access_token) {
+        return response.data.data;
+      }
+    } catch (e) {
     }
 
     return;
@@ -44,16 +47,19 @@ export class AccessToken {
 
   static async loginRefresh(clientId: string,
     refreshToken: string): Promise<AccessTokenLoginRefreshResponse | undefined> {
-    const response: AxiosResponse<Response<AccessTokenLoginRefreshResponse>> =
-      await http.post<AccessTokenLoginRefreshResponse, AxiosResponse<Response<AccessTokenLoginRefreshResponse>>, AccessTokenLoginRefreshRequest>('api/v1/access-token/login/refresh',
-        {
-          platform: "HUAWEI",
-          third_id: clientId,
-          refresh_token: refreshToken
-        })
+    try {
+      const response: AxiosResponse<Response<AccessTokenLoginRefreshResponse>> =
+        await http.post<AccessTokenLoginRefreshResponse, AxiosResponse<Response<AccessTokenLoginRefreshResponse>>, AccessTokenLoginRefreshRequest>('api/v1/access-token/login/refresh',
+          {
+            platform: "HUAWEI",
+            third_id: clientId,
+            refresh_token: refreshToken
+          })
 
-    if (response.data?.data?.access_token) {
-      return response.data.data;
+      if (response.data?.data?.access_token) {
+        return response.data.data;
+      }
+    } catch (e) {
     }
 
     return;
