@@ -1,24 +1,25 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { LogDomain } from '../App';
 import { AppStorageV2, UIContext } from '@kit.ArkUI';
+import { PromptAction as OhosPromptAction } from '@ohos.arkui.UIContext';
 import promptAction from '@ohos.promptAction';
 
 class PromptAction {
-  private static uiContext: UIContext | undefined;
+  private static _action: OhosPromptAction | undefined;
 
-  protected static getUIContext(): UIContext {
-    if ('undefined' === typeof PromptAction.uiContext) {
-      PromptAction.uiContext = AppStorageV2.connect(UIContext)!
+  protected static get action(): OhosPromptAction {
+    if ('undefined' === typeof PromptAction._action) {
+      PromptAction._action = AppStorageV2.connect(UIContext)!.getPromptAction();
     }
 
-    return PromptAction.uiContext;
+    return PromptAction._action;
   }
 }
 
 export class Dialog extends PromptAction {
   static async open(builder: CustomBuilder): Promise<number | undefined> {
     try {
-      return await PromptAction.getUIContext().getPromptAction().openCustomDialog({ builder, autoCancel: false });
+      return await PromptAction.action.openCustomDialog({ builder, autoCancel: false });
     } catch (e) {
       hilog.error(LogDomain.UTILS, 'utils/dialog', '调用 `openCustomDialog` 失败，调用链路: %{public}s',
         JSON.stringify(e));
@@ -33,39 +34,43 @@ export class Dialog extends PromptAction {
     }
 
     try {
-      PromptAction.getUIContext().getPromptAction().closeCustomDialog(dialogId);
+      PromptAction.action.closeCustomDialog(dialogId);
     } catch (e) {
       hilog.error(LogDomain.UTILS, 'utils/dialog', '调用 `closeCustomDialog` 失败，调用链路: %{public}s',
         JSON.stringify(e));
     }
   }
 
-  static async execute<T>(builder: CustomBuilder, callback: () => Promise<T>): Promise<T> {
+  static async execute<T>(builder: CustomBuilder, callback: () => Promise<T>,
+    retryBuilder?: CustomBuilder): Promise<T> {
     const dialogId = await Dialog.open(builder);
 
-    const result = await callback();
+    let error: undefined | Error = undefined;
+
+    try {
+      const result = await callback();
+
+      Dialog.close(dialogId);
+
+      return result;
+    } catch (e) {
+      error = e;
+    }
 
     Dialog.close(dialogId);
 
-    return result;
-  }
-
-  static async executeWithRetry<T>(builder: CustomBuilder, callback: () => Promise<T>,
-    retryBuilder: CustomBuilder): Promise<T> {
-    let data = await Dialog.execute(builder, callback);
-
-    if (!data) {
+    if (typeof retryBuilder !== 'undefined') {
       Dialog.open(retryBuilder);
     }
 
-    return data;
+    return Promise.reject(error);
   }
 }
 
 export class Toast extends PromptAction {
   static show(options: promptAction.ShowToastOptions): void {
     try {
-      PromptAction.getUIContext().getPromptAction().showToast(options);
+      PromptAction.action.showToast(options);
     } catch (error) {
     }
   }

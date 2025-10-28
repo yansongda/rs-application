@@ -4,7 +4,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
 import { LogDomain, PageState } from '../../App';
-import { Totp } from '../../api/totp';
+import { Totp } from '../../api/Totp';
+import { IItem } from '../../types/Item';
 
 @ComponentV2
 export struct Index {
@@ -12,6 +13,8 @@ export struct Index {
   pages: NavPathStack;
   @Param
   pageState: PageState = PageState.HIDE;
+  @Param
+  addedData: IItem | undefined = undefined;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
   @Local
@@ -19,14 +22,14 @@ export struct Index {
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
 
-  @Monitor("authorization.accessToken")
+  @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
     hilog.info(LogDomain.PAGES, 'totp/index', '监测到认证信息发生变化');
 
     this.fetch();
   }
 
-  @Monitor("pageState")
+  @Monitor('pageState')
   onPageStateChange(change: IMonitor): void {
     if (PageState.HIDE === change.value()?.now) {
       hilog.info(LogDomain.PAGES, 'totp/index', '页面隐藏');
@@ -39,6 +42,17 @@ export struct Index {
 
       this.fetch();
     }
+  }
+
+  @Monitor('addedData')
+  onAdded(change: IMonitor): void {
+    const data: IItem | undefined = change.value()?.now as IItem | undefined;
+
+    if ('undefined' === typeof data) {
+      return;
+    }
+
+    this.itemsRuntime.add(data);
   }
 
   build() {
@@ -196,21 +210,54 @@ export struct Index {
             return;
           }
 
-          await Totp.detail(this.swipeActionId);
+          try {
+            await Totp.delete(this.swipeActionId);
 
-          this.itemsRuntime.delete(this.swipeActionId);
-          this.swipeActionId = undefined;
+            this.itemsRuntime.delete(this.swipeActionId);
+            this.swipeActionId = undefined;
+          } catch (e) {
+            this.deleteFailedDialog(e.message);
+          }
         }
       }),
     })
   }
 
-  private async fetch() {
+  @Builder
+  deleteFailedDialog(content: string) {
+    AlertDialogV2({
+      primaryTitle: $r('app.string.index_page_delete_failed_title'),
+      content,
+      primaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.ok'),
+        role: ButtonRole.ERROR,
+      }),
+    })
+  }
+
+  @Builder
+  fetchFailedDialog(action: () => void) {
+    AlertDialogV2({
+      primaryTitle: $r('app.string.index_page_fetch_failed_title'),
+      content: $r('app.string.index_page_delete_failed_content'),
+      primaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.retry'),
+        role: ButtonRole.ERROR,
+        action,
+      }),
+      secondaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.cancel'),
+      }),
+    })
+  }
+
+  private async fetch(): Promise<void> {
     if (this.authorization.state() !== State.NORMAL) {
       return;
     }
 
-    const items = await Dialog.execute(() => this.loading(), () => Totp.all());
+    const items =
+      await Dialog.execute(() => this.loading(), () => Totp.all(), () => this.fetchFailedDialog(() => this.fetch()));
 
     this.itemsRuntime = new ItemsRuntime(items.values());
   }

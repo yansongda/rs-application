@@ -13,6 +13,26 @@
       "value": "MFA"
     },
     {
+      "name": "home_page_login",
+      "value": "正在登录..."
+    },
+    {
+      "name": "home_page_login_failed_title",
+      "value": "登录失败"
+    },
+    {
+      "name": "home_page_login_failed_content",
+      "value": "是否重试登录"
+    },
+    {
+      "name": "home_page_add_name",
+      "value": "新增"
+    },
+    {
+      "name": "home_page_add_failed_title",
+      "value": "添加失败"
+    },
+    {
       "name": "index_page_name",
       "value": "TOTP"
     },
@@ -41,24 +61,16 @@
       "value": "删除后将无法恢复，请谨慎操作"
     },
     {
-      "name": "index_page_add_name",
-      "value": "新增"
+      "name": "index_page_delete_failed_title",
+      "value": "删除失败"
     },
     {
-      "name": "home_page_login",
-      "value": "正在登录..."
+      "name": "index_page_fetch_failed_title",
+      "value": "加载失败"
     },
     {
-      "name": "home_page_login_failed_title",
-      "value": "登录失败"
-    },
-    {
-      "name": "home_page_login_failed_content",
-      "value": "是否重试登录"
-    },
-    {
-      "name": "home_page_login_failed_retry",
-      "value": "重试"
+      "name": "index_page_delete_failed_content",
+      "value": "是否重试加载数据"
     },
     {
       "name": "detail_page_name",
@@ -83,6 +95,10 @@
     {
       "name": "detail_page_block_item_content_width",
       "value": "80%"
+    },
+    {
+      "name": "models_runtime_refresh_code_failed",
+      "value": "更新验证码失败，请重新加载"
     }
   ]
 }

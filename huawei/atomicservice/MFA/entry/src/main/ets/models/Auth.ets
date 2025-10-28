@@ -3,7 +3,7 @@ import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { App, LogDomain } from '../App';
 import { dateformat } from '@developers/dateformat';
-import { AccessToken } from '../api/accessToken';
+import { AccessToken } from '../api/AccessToken';
 
 export enum State {
   EMPTY_AUTHORIZATION = 0,
@@ -71,10 +71,9 @@ export class Authorization {
       JSON.stringify(credential),
       clientId);
 
-    // todo: 去掉注释
-    // if ('undefined' === typeof credential) {
-    //   return;
-    // }
+    if ('undefined' === typeof credential) {
+      return;
+    }
 
     const response = await AccessToken.login(clientId, credential?.authorizationCode!);
 

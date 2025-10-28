@@ -1,6 +1,7 @@
 import { HashMap } from '@kit.ArkTS';
-import { Totp } from '../api/totp';
+import { Totp } from '../api/Totp';
 import { IItem, IItemConfig } from '../types/Item';
+import { Toast } from '../utils/PromptAction';
 
 export interface IItemRuntime {
   id: string;
@@ -145,8 +146,17 @@ export class ItemRuntime {
   }
 
   async freshCode() {
-    const detail = await Totp.detail(this._id);
-    this._code = detail.code;
+    try {
+      const detail = await Totp.detail(this._id);
+      this._code = detail.code;
+    } catch (e) {
+      this._code = 'NaN';
+
+      Toast.show({
+        message: $r('app.string.models_runtime_refresh_code_failed'),
+        duration: 3000,
+      })
+    }
   }
 }
 
@@ -165,7 +175,7 @@ export class ItemsRuntime {
     }
 
     for (const item of items) {
-      this.init(item.id, item);
+      this.add(item);
     }
   }
 
@@ -214,8 +224,8 @@ export class ItemsRuntime {
     this._ids.forEach((id: string): void => this.delete(id));
   }
 
-  private init(id: string, item: IItem): ItemRuntime {
-    this.stop(id);
+  add(item: IItem): ItemRuntime {
+    this.stop(item.id);
 
     const runtime = new ItemRuntime({
       id: item.id,
@@ -227,8 +237,8 @@ export class ItemsRuntime {
     } as IItemRuntime);
 
     try {
-      this._runtimes.set(id, runtime);
-      this._ids.add(id);
+      this._runtimes.set(item.id, runtime);
+      this._ids.add(item.id);
     } catch (error) {
     }
 

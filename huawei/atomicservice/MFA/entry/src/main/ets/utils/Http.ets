@@ -51,6 +51,7 @@ http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return Promise.reject(new HttpError(message));
 });
 
+// todo：token 过期自动续签处理
 http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   hilog.info(LogDomain.UTILS, 'utils/http',
     '接收 http 请求响应，url: %{public}s, method: %{public}s, response body: %{public}s, time: %{public}s',

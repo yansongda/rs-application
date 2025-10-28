@@ -1,5 +1,5 @@
 import { AxiosResponse } from '@ohos/axios';
-import http, { Response } from '../utils/Http';
+import http, { HttpError, Response } from '../utils/Http';
 
 export interface AccessTokenLoginRequest {
   platform: string;
@@ -26,7 +26,7 @@ export interface AccessTokenLoginRefreshResponse {
 }
 
 export class AccessToken {
-  static async login(clientId: string, authorizationCode: string): Promise<AccessTokenLoginResponse | undefined> {
+  static async login(clientId: string, authorizationCode: string): Promise<AccessTokenLoginResponse> {
     const response: AxiosResponse<Response<AccessTokenLoginResponse>> =
       await http.post<AccessTokenLoginResponse, AxiosResponse<Response<AccessTokenLoginResponse>>, AccessTokenLoginRequest>('api/v1/access-token/login',
         {
@@ -35,15 +35,15 @@ export class AccessToken {
           code: authorizationCode
         });
 
-    if (response.data?.data?.access_token) {
+    if (0 === response.data?.code && response.data?.data?.access_token) {
       return response.data.data;
     }
 
-    return;
+    return Promise.reject(new HttpError(response.data.message));
   }
 
   static async loginRefresh(clientId: string,
-    refreshToken: string): Promise<AccessTokenLoginRefreshResponse | undefined> {
+    refreshToken: string): Promise<AccessTokenLoginRefreshResponse> {
     const response: AxiosResponse<Response<AccessTokenLoginRefreshResponse>> =
       await http.post<AccessTokenLoginRefreshResponse, AxiosResponse<Response<AccessTokenLoginRefreshResponse>>, AccessTokenLoginRefreshRequest>('api/v1/access-token/login/refresh',
         {
@@ -52,10 +52,10 @@ export class AccessToken {
           refresh_token: refreshToken
         });
 
-    if (response.data?.data?.access_token) {
+    if (0 === response.data?.code && response.data?.data?.access_token) {
       return response.data.data;
     }
 
-    return;
+    return Promise.reject(new HttpError(response.data.message));
   }
 }

@@ -7,6 +7,26 @@
     {
       "name": "loading",
       "value": "加载中..."
+    },
+    {
+      "name": "handling",
+      "value": "处理中..."
+    },
+    {
+      "name": "retry",
+      "value": "重试"
+    },
+    {
+      "name": "ok",
+      "value": "确认"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "operation_failed_title",
+      "value": "操作失败"
     }
   ]
 }
