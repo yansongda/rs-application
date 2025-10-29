@@ -216,7 +216,7 @@ export struct Index {
             this.itemsRuntime.delete(this.swipeActionId);
             this.swipeActionId = undefined;
           } catch (e) {
-            this.deleteFailedDialog(e.message);
+            await Dialog.open(() => this.deleteFailedDialog(e.message));
           }
         }
       }),

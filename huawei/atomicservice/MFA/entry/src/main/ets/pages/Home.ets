@@ -85,7 +85,7 @@ struct Home {
             this.addedData =
               await Dialog.execute(() => this.loadingDialog($r('app.string.handling')), () => Totp.create(uri));
           } catch (e) {
-            this.addFailedDialog(e.message);
+            await Dialog.open(() => this.addFailedDialog(e.message));
           }
         });
       })
