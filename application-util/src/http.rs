@@ -89,6 +89,8 @@ where
         Error::ThirdHttpResponse(None)
     })?;
 
+    info!("请求第三方服务接口原始结果 {:?}", &body);
+
     let result = HttpResponse {
         status,
         headers,

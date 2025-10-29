@@ -9,7 +9,7 @@ const authorization =
   (): Authorization => PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!
 
 const url = (): string => {
-  const env = App.getEnv();
+  const env = App.env;
 
   if (AppEnv.TEST === env) {
     return HttpDomain.TEST;
@@ -22,7 +22,8 @@ const http = axios.create();
 
 http.defaults.baseURL = url();
 http.defaults.timeout = 5000;
-http.defaults.headers.common['User-Agent'] = 'yansongda/atomicservice/MFA-v' + App.getVersion() + ' <me@yansongda.cn>';
+http.defaults.headers.common['Author'] = 'yansongda <me@yansongda.cn>';
+http.defaults.headers.common['User-Agent'] = 'yansongda/atomicservice/MFA-v' + App.version + '-' + App.env;
 http.defaults.headers.post['Content-Type'] = 'application/json';
 
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {

@@ -18,9 +18,9 @@ export enum HttpDomain {
 }
 
 export enum AppEnv {
-  TEST,
+  TEST = 'test',
 
-  PROD,
+  PROD = 'prod',
 }
 
 export enum PageState {
@@ -31,8 +31,35 @@ export enum PageState {
 
 export class App {
   private static clientId: string | undefined;
-  private static version: string | undefined;
-  private static env: AppEnv | undefined;
+  private static _version: string | undefined;
+
+  static get version(): string {
+    if ('undefined' !== typeof App._version) {
+      return App._version;
+    }
+
+    const bundleInfo = App.getBundleInfo();
+
+    App._version = bundleInfo.versionName;
+
+    return App._version;
+  }
+
+  private static _env: AppEnv | undefined;
+
+  static get env(): AppEnv {
+    if ('undefined' !== typeof App._env) {
+      return App._env;
+    }
+
+    App._env = AppEnv.PROD;
+
+    if (App.getBundleInfo().versionName.length === 0 || App.getMetadata('env') === 'test') {
+      App._env = AppEnv.TEST;
+    }
+
+    return App._env;
+  }
 
   static getMetadata(name: string, module?: string): string | undefined {
     if (typeof module === 'undefined') {
@@ -76,31 +103,5 @@ export class App {
     App.clientId = clientId
 
     return clientId;
-  }
-
-  static getVersion(): string {
-    if ('undefined' !== typeof App.version) {
-      return App.version;
-    }
-
-    const bundleInfo = App.getBundleInfo();
-
-    App.version = bundleInfo.versionName;
-
-    return App.version;
-  }
-
-  static getEnv(): AppEnv {
-    if ('undefined' !== typeof App.env) {
-      return App.env;
-    }
-
-    App.env = AppEnv.PROD;
-
-    if (App.getBundleInfo().versionName.length === 0 || App.getMetadata('env') === 'test') {
-      App.env = AppEnv.TEST;
-    }
-
-    return App.env;
   }
 }
