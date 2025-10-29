@@ -27,7 +27,7 @@ pub struct AccessToken {
 impl AccessToken {
     pub fn is_expired(&self) -> bool {
         if let Some(expired_at) = self.expired_at {
-            return Local::now() < expired_at;
+            return Local::now() > expired_at;
         }
 
         false
