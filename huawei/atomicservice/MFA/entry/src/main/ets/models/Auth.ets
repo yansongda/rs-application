@@ -63,7 +63,7 @@ export class Authorization {
     return State.NORMAL;
   }
 
-  async login(): Promise<Authorization | undefined> {
+  async login(): Promise<Authorization> {
     const credential = await this.loginWithHuaweiID();
     const clientId = App.getClientId();
 
@@ -72,14 +72,12 @@ export class Authorization {
       clientId);
 
     if ('undefined' === typeof credential) {
-      return;
+      hilog.error(LogDomain.MODELS, 'models/auth', '获取到的认证信息为空');
+
+      return Promise.reject();
     }
 
     const response = await AccessToken.login(clientId, credential?.authorizationCode!);
-
-    if ('undefined' === typeof response) {
-      return;
-    }
 
     this._authorizedAt = new Date();
     this._accessToken = response.access_token;
@@ -89,28 +87,26 @@ export class Authorization {
     return this;
   }
 
-  async refresh(refreshToken?: string): Promise<Authorization | undefined> {
+  async refresh(refreshToken?: string): Promise<Authorization> {
     if ('undefined' === typeof refreshToken) {
-      return;
+      hilog.error(LogDomain.MODELS, 'models/auth', '传递的 refresh_token 参数错误');
+
+      Promise.reject();
     }
 
     const clientId = App.getClientId();
 
-    const response = await AccessToken.loginRefresh(clientId, refreshToken);
-
-    if ('undefined' === typeof response) {
-      return;
-    }
+    const response = await AccessToken.loginRefresh(clientId, refreshToken!);
 
     this._authorizedAt = new Date();
     this._accessToken = response.access_token;
     this._refreshToken = response.refresh_token;
     this._expiredAt = dateformat.now().add(response.expired_in, 'second').toDate() as Date;
 
-    return;
+    return this;
   }
 
-  private async loginWithHuaweiID(): Promise<undefined | authentication.LoginWithHuaweiIDCredential> {
+  private async loginWithHuaweiID(): Promise<authentication.LoginWithHuaweiIDCredential> {
     const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
     loginRequest.forceLogin = false;
     loginRequest.state = util.generateRandomUUID();
@@ -124,14 +120,14 @@ export class Authorization {
       // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
       hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
 
-      return;
+      return Promise.reject();
     }
 
     if (loginWithHuaweiIDResponse.state && loginRequest.state !== loginWithHuaweiIDResponse.state) {
       hilog.error(LogDomain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
         loginWithHuaweiIDResponse.state, loginRequest.state);
 
-      return;
+      return Promise.reject();
     }
 
     return loginWithHuaweiIDResponse.data!;

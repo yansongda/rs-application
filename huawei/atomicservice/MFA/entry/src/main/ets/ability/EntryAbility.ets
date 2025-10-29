@@ -18,8 +18,10 @@ export default class EntryAbility extends UIAbility {
 
       try {
         AppStorageV2.connect(UIContext, () => windowStage.getMainWindowSync().getUIContext());
+        AppStorageV2.connect(NavPathStack, () => new NavPathStack());
       } catch (error) {
-        hilog.error(LogDomain.ABILITY, 'ability/EntryAbility', '存储 UI 数据到应用运行状态中失败. Cause: %{public}s', JSON.stringify(err));
+        hilog.error(LogDomain.ABILITY, 'ability/EntryAbility', '存储基础应用运行数据失败. Cause: %{public}s',
+          JSON.stringify(err));
       }
     });
   }

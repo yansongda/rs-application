@@ -1,15 +1,13 @@
-import { ItemRuntime } from "../../models/Runtime";
+import { ItemRuntime } from '../../models/Runtime';
 
 @Builder
 export function builder() {
   Detail()
 }
 
-@Preview
 @ComponentV2
 struct Detail {
   private runtime: ItemRuntime | undefined = undefined;
-  pages: NavPathStack | undefined = undefined;
 
   build() {
     NavDestination() {
@@ -35,11 +33,14 @@ struct Detail {
             .fontColor(Color.Grey)
             .textAlign(TextAlign.Start)
             .width('100%')
-            .margin({ left: $r('app.integer.detail_page_block_title_margin_left'), bottom: $r('app.integer.detail_page_block_title_margin_bottom') })
+            .margin({
+              left: $r('app.integer.detail_page_block_title_margin_left'),
+              bottom: $r('app.integer.detail_page_block_title_margin_bottom')
+            })
 
           List({ space: 10 }) {
-            ListItemGroup({ style: ListItemGroupStyle.CARD}) {
-              ListItem({ style: ListItemStyle.CARD}) {
+            ListItemGroup({ style: ListItemGroupStyle.CARD }) {
+              ListItem({ style: ListItemStyle.CARD }) {
                 Row() {
                   Text($r('app.string.detail_page_issuer'))
                     .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
@@ -63,7 +64,7 @@ struct Detail {
                 }
               }
 
-              ListItem({ style: ListItemStyle.CARD}) {
+              ListItem({ style: ListItemStyle.CARD }) {
                 Row() {
                   Text($r('app.string.detail_page_username'))
                     .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
@@ -99,11 +100,9 @@ struct Detail {
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title($r('app.string.detail_page_name'))
     .onReady((context: NavDestinationContext) => {
-      this.pages = context.pathStack;
       this.runtime = context.pathInfo.param as ItemRuntime;
     })
     .onWillHide(() => {
-      this.pages = undefined;
       this.runtime = undefined;
     })
   }

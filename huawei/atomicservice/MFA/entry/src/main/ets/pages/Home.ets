@@ -2,51 +2,47 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { scanBarcode } from '@kit.ScanKit';
 import { Index } from './totp/Index';
 import {
-  AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2
+  AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2
 } from '@kit.ArkUI';
 import { Authorization, State } from '../models/Auth';
 import { Dialog } from '../utils/PromptAction';
-import { LogDomain, PageState } from '../App';
+import { LogDomain } from '../App';
 import { Totp } from '../api/Totp';
 import { IItem } from '../types/Item';
 
 @Entry
 @ComponentV2
 struct Home {
+  @Provider()
+  addedData: IItem | undefined = undefined;
   @Local
-  private addedData: IItem | undefined = undefined;
-  @Local
-  private pages: NavPathStack = new NavPathStack();
-  @Local
-  private pageState: PageState = PageState.HIDE;
-  @Local
+  private isShow: boolean = false;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
-  async onPageShow(): Promise<void> {
+  aboutToAppear(): void {
+    if (State.NORMAL !== this.authorization.state()) {
+      this.pages.pushPathByName('login', null);
+    }
+  }
+
+  onPageShow(): void {
     hilog.info(LogDomain.PAGES, 'totp/home', '页面显示');
 
-    this.pageState = PageState.SHOW;
-
-    if (State.EMPTY_AUTHORIZATION === this.authorization.state()) {
-      await this.retryAuth(() => this.authorization.login());
-    }
-
-    if (State.NEED_REFRESH === this.authorization.state()) {
-      await this.retryAuth(() => this.authorization.refresh(this.authorization.refreshToken));
-    }
+    this.isShow = true;
   }
 
   onPageHide(): void {
     hilog.info(LogDomain.PAGES, 'totp/home', '页面隐藏');
 
-    this.pageState = PageState.HIDE;
+    this.isShow = false;
   }
 
   build() {
     Stack({ alignContent: Alignment.BottomEnd }) {
       Navigation(this.pages) {
-        Index({ pages: this.pages, pageState: this.pageState, addedData: this.addedData })
+        Index({ isShow: this.isShow })
       }
       .title(this.title())
       .titleMode(NavigationTitleMode.Mini)
@@ -83,7 +79,7 @@ struct Home {
 
           try {
             this.addedData =
-              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')), () => Totp.create(uri));
+              await Dialog.execute(() => this.loadingDialog(), () => Totp.create(uri));
           } catch (e) {
             await Dialog.open(() => this.addFailedDialog(e.message));
           }
@@ -105,22 +101,9 @@ struct Home {
   }
 
   @Builder
-  loadingDialog(content: ResourceStr) {
+  loadingDialog() {
     LoadingDialogV2({
-      content,
-    })
-  }
-
-  @Builder
-  loginConfirmDialog(action: () => void) {
-    AlertDialogV2({
-      primaryTitle: $r('app.string.home_page_login_failed_title'),
-      content: $r('app.string.home_page_login_failed_content'),
-      primaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.retry'),
-        role: ButtonRole.ERROR,
-        action
-      }),
+      content: $r('app.string.handling'),
     })
   }
 
@@ -134,13 +117,5 @@ struct Home {
         role: ButtonRole.ERROR,
       }),
     })
-  }
-
-  private async retryAuth(callback: () => Promise<Authorization | undefined>): Promise<void> {
-    await Dialog.execute(
-      () => this.loadingDialog($r('app.string.home_page_login')),
-      callback,
-      () => this.loginConfirmDialog(() => this.retryAuth(callback))
-    );
   }
 }

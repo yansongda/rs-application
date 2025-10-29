@@ -1,26 +1,25 @@
 import { ItemsRuntime } from '../../models/Runtime';
-import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
+import { AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
-import { LogDomain, PageState } from '../../App';
+import { LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
 import { IItem } from '../../types/Item';
 
 @ComponentV2
 export struct Index {
-  @Param @Require
-  pages: NavPathStack;
   @Param
-  pageState: PageState = PageState.HIDE;
-  @Param
+  isShow: boolean = false;
+  @Consumer()
   addedData: IItem | undefined = undefined;
-  private scroller: ListScroller = new ListScroller();
-  private swipeActionId?: string;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   @Local
   private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
+  private scroller: ListScroller = new ListScroller();
+  private swipeActionId?: string;
 
   @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
@@ -29,15 +28,15 @@ export struct Index {
     this.fetch();
   }
 
-  @Monitor('pageState')
+  @Monitor('isShow')
   onPageStateChange(change: IMonitor): void {
-    if (PageState.HIDE === change.value()?.now) {
+    if (false === change.value()?.now) {
       hilog.info(LogDomain.PAGES, 'totp/index', '页面隐藏');
 
       this.itemsRuntime.clear();
     }
 
-    if (PageState.SHOW === change.value()?.now) {
+    if (true === change.value()?.now) {
       hilog.info(LogDomain.PAGES, 'totp/index', '页面显示');
 
       this.fetch();

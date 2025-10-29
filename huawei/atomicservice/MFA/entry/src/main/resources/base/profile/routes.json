@@ -1,6 +1,11 @@
 {
   "routerMap": [
     {
+      "name": "login",
+      "pageSourceFile": "src/main/ets/pages/Login.ets",
+      "buildFunction": "builder"
+    },
+    {
       "name": "totp/detail",
       "pageSourceFile": "src/main/ets/pages/totp/Detail.ets",
       "buildFunction": "builder"

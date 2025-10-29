@@ -23,12 +23,6 @@ export enum AppEnv {
   PROD = 'prod',
 }
 
-export enum PageState {
-  HIDE = 0,
-
-  SHOW = 1,
-}
-
 export class App {
   private static clientId: string | undefined;
   private static _version: string | undefined;
