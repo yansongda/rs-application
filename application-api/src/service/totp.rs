@@ -19,14 +19,17 @@ pub async fn detail(access_token: access_token::AccessToken, id: u64) -> Result<
     Ok(totp.into())
 }
 
-pub async fn create(access_token: access_token::AccessToken, uri: String) -> Result<()> {
+pub async fn create(
+    access_token: access_token::AccessToken,
+    uri: String,
+) -> Result<DetailResponse> {
     let totp = TOTP::from_url_unchecked(uri.as_str()).map_err(|e| {
         error!("TOTP 链接解析失败: {}", e);
 
         Error::ParamsTotpParseFailed(None)
     })?;
 
-    totp::insert(totp::CreatedTotp {
+    Ok(totp::insert(totp::CreatedTotp {
         user_id: access_token.user_id,
         username: totp.account_name,
         issuer: totp.issuer,
@@ -35,9 +38,8 @@ pub async fn create(access_token: access_token::AccessToken, uri: String) -> Res
             secret: Secret::Raw(totp.secret).to_encoded().to_string(),
         },
     })
-    .await?;
-
-    Ok(())
+    .await?
+    .into())
 }
 
 pub async fn edit_issuer(

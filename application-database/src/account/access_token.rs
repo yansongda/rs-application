@@ -180,12 +180,15 @@ pub async fn insert(
     user_id: u64,
     data: AccessTokenData,
 ) -> Result<AccessToken> {
-    let sql = "insert into account.access_token (user_id, access_token, data, platform, third_id) values (?, ?, ?, ?, ?)";
+    let sql = "insert into account.access_token (user_id, access_token, data, platform, third_id, expired_at) values (?, ?, ?, ?, ?, ?)";
     let access_token = Uuid::now_v7().to_string();
-    let mut expired_at = Some(
-        Local::now() + chrono::Duration::seconds(G_CONFIG.access_token.refresh_expired_in as i64),
-    );
     let started_at = Instant::now();
+    let mut expired_at = Some(G_CONFIG.access_token.get_expired_at());
+
+    // todo: 微信的 access_token 永不过期，后续需要处理
+    if Platform::Wechat == *platform {
+        expired_at = None;
+    }
 
     let result = sqlx::query(sql)
         .bind(user_id)
@@ -193,6 +196,7 @@ pub async fn insert(
         .bind(Json(&data))
         .bind(platform)
         .bind(third_id)
+        .bind(expired_at)
         .execute(Pool::mysql("account")?)
         .await
         .map_err(|e| {
@@ -204,11 +208,6 @@ pub async fn insert(
     let elapsed = started_at.elapsed().as_secs_f32();
 
     info!(elapsed, sql, user_id, access_token, ?data);
-
-    // todo: 微信的 access_token 永不过期，后续需要处理
-    if Platform::Wechat == *platform {
-        expired_at = None;
-    }
 
     Ok(AccessToken {
         id: result?.last_insert_id(),
@@ -224,13 +223,21 @@ pub async fn insert(
 }
 
 pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
-    let sql = "update account.access_token set access_token = ?, data = ? where id = ?";
+    let sql =
+        "update account.access_token set access_token = ?, data = ?, expired_at = ? where id = ?";
     let started_at = Instant::now();
     let access_token_value = Uuid::now_v7().to_string();
+    let mut expired_at = Some(G_CONFIG.access_token.get_expired_at());
+
+    // todo: 微信的 access_token 永不过期，后续需要处理
+    if Platform::Wechat == access_token.platform {
+        expired_at = None;
+    }
 
     let _ = sqlx::query(sql)
         .bind(&access_token_value)
         .bind(Json(&data))
+        .bind(expired_at)
         .bind(access_token.id)
         .execute(Pool::mysql("account")?)
         .await
@@ -246,6 +253,7 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
 
     access_token.access_token = access_token_value;
     access_token.data = Json(data);
+    access_token.expired_at = expired_at;
     access_token.updated_at = Local::now();
 
     Ok(access_token)

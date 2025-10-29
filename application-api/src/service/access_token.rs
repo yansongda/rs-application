@@ -1,4 +1,4 @@
-use crate::request::access_token::{LoginRequestParams, LoginRefreshRequestParams};
+use crate::request::access_token::{LoginRefreshRequestParams, LoginRequestParams};
 use application_database::account::third_user;
 use application_database::account::user;
 use application_database::account::{Platform, third_config};
@@ -30,10 +30,9 @@ pub async fn login(
     ))
 }
 
-// todo: 响应增加 refresh_token
 pub async fn login_refresh(
     request: &LoginRefreshRequestParams,
-) -> Result<access_token::AccessToken> {
+) -> Result<(refresh_token::RefreshToken, access_token::AccessToken)> {
     let refresh_token = refresh_token::fetch(request.refresh_token.as_str())
         .await
         .map_err(|_| Error::AuthorizationRefreshTokenInvalid(None))?;
@@ -50,7 +49,10 @@ pub async fn login_refresh(
 
     let data = access_token.data.0.clone();
 
-    access_token::update(access_token, data).await
+    Ok((
+        refresh_token::update_or_insert(access_token.id).await?,
+        access_token::update(access_token, data).await?,
+    ))
 }
 
 async fn login_wechat(

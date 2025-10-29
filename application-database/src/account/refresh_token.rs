@@ -123,8 +123,7 @@ pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
 pub async fn update(mut refresh_token: RefreshToken) -> Result<RefreshToken> {
     let sql = "update account.refresh_token set refresh_token = ?, expired_at = ? where id = ?";
     let refresh_token_value = Uuid::now_v7().to_string();
-    let expired_at =
-        Local::now() + chrono::Duration::seconds(G_CONFIG.access_token.refresh_expired_in as i64);
+    let expired_at = G_CONFIG.access_token.get_refresh_expired_at();
     let started_at = Instant::now();
 
     let _ = sqlx::query(sql)

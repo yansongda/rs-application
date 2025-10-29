@@ -26,16 +26,15 @@ pub async fn detail(
     ))
 }
 
-// todo: 增加被增加的数据的详情响应
 pub async fn create(
     Extension(access_token): Extension<AccessToken>,
     Json(request): Json<CreateRequest>,
-) -> Resp<()> {
+) -> Resp<DetailResponse> {
     let uri = request.validate()?;
 
-    service::totp::create(access_token, uri).await?;
-
-    Ok(Response::success(()))
+    Ok(Response::success(
+        service::totp::create(access_token, uri).await?,
+    ))
 }
 
 pub async fn edit_issuer(

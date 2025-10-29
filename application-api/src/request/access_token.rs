@@ -1,6 +1,5 @@
 use crate::request::Validator;
 use application_database::account::Platform;
-use application_database::account::access_token::AccessToken;
 use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
@@ -93,13 +92,5 @@ impl Validator for LoginRefreshRequest {
 pub struct LoginRefreshResponse {
     pub access_token: String,
     pub expired_in: u32,
-}
-
-impl From<AccessToken> for LoginRefreshResponse {
-    fn from(token: AccessToken) -> Self {
-        LoginRefreshResponse {
-            access_token: token.access_token.to_owned(),
-            expired_in: token.get_expired_in(),
-        }
-    }
+    pub refresh_token: String,
 }

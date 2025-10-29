@@ -38,7 +38,7 @@ pub async fn token(code: &str, app_id: &str, client_secret: &str) -> Result<Toke
             Url::parse("https://oauth-login.cloud.huawei.com/oauth2/v3/token").unwrap(),
         ),
     )
-        .form(&form);
+    .form(&form);
 
     let response = http::request::<TokenResponse, TokenResponseError>(builder.build().unwrap())
         .await
