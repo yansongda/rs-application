@@ -2,7 +2,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { LogDomain } from '../App';
 import { Authorization, State } from '../models/Auth';
 import {
-  AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2
+  AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2
 } from '@kit.ArkUI';
 import { Dialog } from '../utils/PromptAction';
 
@@ -13,6 +13,7 @@ export function builder() {
 
 @Component
 struct Login {
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
@@ -31,16 +32,18 @@ struct Login {
   }
 
   build() {
-    Column() {
-      Image($r('app.media.start_icon')).width('30%');
-      Text(this.authorization.state().toString());
-      Text($r('app.string.login_page_login')).fontSize(20).margin({ top: 20 });
+    NavDestination() {
+      Column() {
+        Image($r('app.media.start_icon')).width('30%');
+        Text(this.authorization.state().toString());
+        Text($r('app.string.login_page_login')).fontSize(20).margin({ top: 20 });
+      }
+      .width('100%')
+      .height('100%')
+      .margin({ top: 50 })
     }
-    .width('100%')
-    .height('100%')
-    .alignItems(HorizontalAlign.Center)
-    .align(Alignment.Center)
-    .justifyContent(FlexAlign.Center)
+    .backgroundColor($r('sys.color.comp_background_focus'))
+    .hideTitleBar(true);
   }
 
   @Builder
@@ -69,5 +72,7 @@ struct Login {
       callback,
       () => this.loginConfirmDialog(() => this.retryAuth(callback))
     );
+
+    this.pages.pop();
   }
 }

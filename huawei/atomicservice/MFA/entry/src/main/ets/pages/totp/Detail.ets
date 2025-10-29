@@ -104,6 +104,6 @@ struct Detail {
     })
     .onWillHide(() => {
       this.runtime = undefined;
-    })
+    });
   }
 }

@@ -5,14 +5,13 @@ import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
 import { LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
-import { IItem } from '../../types/Item';
+import { scanBarcode } from '@kit.ScanKit';
 
+@Preview
 @ComponentV2
 export struct Index {
   @Param
   isShow: boolean = false;
-  @Consumer()
-  addedData: IItem | undefined = undefined;
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
@@ -43,23 +42,57 @@ export struct Index {
     }
   }
 
-  @Monitor('addedData')
-  onAdded(change: IMonitor): void {
-    const data: IItem | undefined = change.value()?.now as IItem | undefined;
-
-    if ('undefined' === typeof data) {
-      return;
-    }
-
-    this.itemsRuntime.add(data);
-  }
-
   build() {
-    if (this.itemsRuntime.ids.size <= 0) {
-      this.empty()
-    } else {
-      this.list()
+    Stack({ alignContent: Alignment.BottomEnd }) {
+      if (this.itemsRuntime.ids.size <= 0) {
+        this.empty()
+      } else {
+        this.main()
+      }
+
+      Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
+        Row() {
+          Text() {
+            SymbolSpan($r('sys.symbol.line_viewfinder'))
+              .fontSize($r('app.integer.index_page_add_button_font_size'))
+              .fontColor([Color.White])
+          }
+          .margin({ right: 5 })
+
+          Text($r('app.string.index_page_add_name'))
+            .fontSize($r('app.integer.index_page_add_button_font_size'))
+        }
+      }
+      .backgroundColor($r('app.color.main'))
+      .fontColor(Color.White)
+      .padding({
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10
+      })
+      .margin({ bottom: 50, right: 50 })
+      .onClick(() => {
+        scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
+          let uri = result.originalValue;
+
+          hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', uri);
+
+          try {
+            const data =
+              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')), () => Totp.create(uri));
+
+            this.itemsRuntime.add(data);
+          } catch (e) {
+            await Dialog.open(() => this.addFailedDialog(e.message));
+          }
+        });
+      })
     }
+    .width('100%')
+    .height('100%')
+    .backgroundColor($r('sys.color.comp_background_focus'))
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 
   @Builder
@@ -74,10 +107,12 @@ export struct Index {
         .margin({ top: 10 })
     }
     .margin({ top: 50 })
+    .width('100%')
+    .height('100%')
   }
 
   @Builder
-  list() {
+  main() {
     List({ scroller: this.scroller }) {
       Repeat<string>(Array.from(this.itemsRuntime.ids.values()))
         .each((ri: RepeatItem<string>) => {
@@ -147,8 +182,8 @@ export struct Index {
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
   }
 
   @Builder
@@ -187,9 +222,21 @@ export struct Index {
   }
 
   @Builder
-  loading() {
+  loadingDialog(content: Resource) {
     LoadingDialogV2({
-      content: $r('app.string.loading'),
+      content,
+    })
+  }
+
+  @Builder
+  addFailedDialog(content: string) {
+    AlertDialogV2({
+      primaryTitle: $r('app.string.index_page_add_failed_title'),
+      content,
+      primaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.ok'),
+        role: ButtonRole.ERROR,
+      }),
     })
   }
 
@@ -256,7 +303,8 @@ export struct Index {
     }
 
     const items =
-      await Dialog.execute(() => this.loading(), () => Totp.all(), () => this.fetchFailedDialog(() => this.fetch()));
+      await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.all(),
+        () => this.fetchFailedDialog(() => this.fetch()));
 
     this.itemsRuntime = new ItemsRuntime(items.values());
   }

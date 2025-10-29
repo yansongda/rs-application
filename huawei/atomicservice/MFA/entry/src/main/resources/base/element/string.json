@@ -25,11 +25,11 @@
       "value": "是否重试登录"
     },
     {
-      "name": "home_page_add_name",
+      "name": "index_page_add_name",
       "value": "新增"
     },
     {
-      "name": "home_page_add_failed_title",
+      "name": "index_page_add_failed_title",
       "value": "添加失败"
     },
     {
