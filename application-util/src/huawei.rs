@@ -51,7 +51,7 @@ pub async fn token(code: &str, app_id: &str, client_secret: &str) -> Result<Toke
 #[derive(Debug, Clone, Deserialize)]
 pub struct TokenInfoResponse {
     pub client_id: String,
-    pub expires_in: i64,
+    pub expire_in: i64,
     pub union_id: String,
     pub project_id: String,
     #[serde(rename = "type")]

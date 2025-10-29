@@ -89,7 +89,7 @@ where
         Error::ThirdHttpResponse(None)
     })?;
 
-    info!("请求第三方服务接口原始结果 {:?}", &body);
+    info!("请求第三方服务接口结果： headers: {:?}, body: {:?}", &headers, &body);
 
     let result = HttpResponse {
         status,
@@ -99,8 +99,6 @@ where
         inner: serde_json::from_str::<ResponseVariant<S, E>>(&body)
             .map_err(|_| Error::ThirdHttpResponseParse(None))?,
     };
-
-    info!("请求第三方服务接口结果 {:?}", result);
 
     if !result.inner.is_success() {
         return Err(Error::ThirdHttpResponseResult(None));
