@@ -22,7 +22,7 @@ pub struct RefreshToken {
 
 impl RefreshToken {
     pub fn is_expired(&self) -> bool {
-        Local::now() < self.expired_at
+        Local::now() > self.expired_at
     }
 
     pub async fn access_token(&self) -> Result<AccessToken> {
