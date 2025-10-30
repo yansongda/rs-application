@@ -2,11 +2,11 @@ import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from '@o
 import { App, AppEnv, HttpDomain, LogDomain } from '../App';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization } from '../models/Auth';
-import { PersistenceV2 } from '@kit.ArkUI';
+import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
 import { application } from '@kit.AbilityKit';
 
-const authorization =
-  (): Authorization => PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!
+const authorization = (): Authorization => PersistenceV2.globalConnect({ type: Authorization })!;
+const pages = (): NavPathStack => AppStorageV2.connect(NavPathStack)!;
 
 const url = (): string => {
   const env = App.env;
@@ -52,13 +52,23 @@ http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return Promise.reject(new HttpError(message));
 });
 
-// todo：token 过期自动续签处理 1000，1001，1002，1004
-// todo: refresh_token 过期 1005，1006
 http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   hilog.info(LogDomain.UTILS, 'utils/http',
     '接收 http 请求响应，url: %{public}s, method: %{public}s, response body: %{public}s, time: %{public}s',
     response.config.url,
     response.config.method, JSON.stringify(response.data), JSON.stringify(response.performanceTiming));
+
+  const responseCode: number = response.data.code ?? '-1';
+
+  // token 过期
+  if ([1000, 1001, 1002, 1004].includes(responseCode)) {
+    pages().pushPathByName('login', null);
+  }
+
+  // refresh_token 过期
+  if ([1005, 1006].includes(responseCode)) {
+    pages().pushPathByName('login', null);
+  }
 
   return response;
 }, (e: AxiosError) => {

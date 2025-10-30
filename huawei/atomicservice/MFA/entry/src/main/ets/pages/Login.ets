@@ -35,7 +35,6 @@ struct Login {
     NavDestination() {
       Column() {
         Image($r('app.media.start_icon')).width('30%');
-        Text(this.authorization.state().toString());
         Text($r('app.string.login_page_login')).fontSize(20).margin({ top: 20 });
       }
       .width('100%')
