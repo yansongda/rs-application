@@ -107,7 +107,7 @@ pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, access_token_id, expired_at);
+    info!(elapsed, sql, access_token_id, "{:?}", &expired_at);
 
     Ok(RefreshToken {
         id: result?.last_insert_id(),
@@ -139,7 +139,7 @@ pub async fn update(mut refresh_token: RefreshToken) -> Result<RefreshToken> {
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
-    info!(elapsed, sql, refresh_token.id, expired_at);
+    info!(elapsed, sql, refresh_token.id, "{:?}", &expired_at);
 
     refresh_token.refresh_token = refresh_token_value;
     refresh_token.expired_at = expired_at;
