@@ -23,6 +23,7 @@ export enum AppEnv {
   PROD = 'prod',
 }
 
+@ObservedV2
 export class App {
   private static _clientId: string | undefined;
 
@@ -72,6 +73,7 @@ export class App {
     return App._env;
   }
 
+  @Trace
   private static _isShowLoginPage = false;
 
   static get isShowLoginPage(): boolean {
@@ -80,6 +82,17 @@ export class App {
 
   static set isShowLoginPage(isShowLoginPage: boolean) {
     App._isShowLoginPage = isShowLoginPage;
+  }
+
+  @Trace
+  private static _isShowTotpIndexPage = false;
+
+  public get isShowTotpIndexPage() {
+    return App._isShowTotpIndexPage;
+  }
+
+  public set isShowTotpIndexPage(value: boolean) {
+    App._isShowTotpIndexPage = value;
   }
 
   static getMetadata(name: string, module?: string): string | undefined {

@@ -22,9 +22,8 @@ export function builder() {
 
 @Component
 struct Login {
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
-  private authorization: Authorization =
-    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
+  private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
 
   build() {
     NavDestination() {

@@ -9,9 +9,9 @@ import { LogDomain } from '../App';
 struct Home {
   @Local
   private isShow: boolean = false;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
   private authorization: Authorization =
-    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+    PersistenceV2.globalConnect({ type: Authorization })!;
 
   aboutToAppear(): void {
     if (State.NORMAL !== this.authorization.state()) {

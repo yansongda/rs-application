@@ -12,7 +12,7 @@ import { scanBarcode } from '@kit.ScanKit';
 export struct Index {
   @Param
   isShow: boolean = false;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   @Local
