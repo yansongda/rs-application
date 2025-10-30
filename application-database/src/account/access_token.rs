@@ -137,12 +137,13 @@ pub async fn fetch_by_id(id: u64) -> Result<AccessToken> {
     Err(Error::ParamsAccessTokenNotFound(None))
 }
 
-pub async fn fetch_by_user_id(user_id: u64) -> Result<AccessToken> {
-    let sql = "select * from account.access_token where user_id = ? limit 1";
+pub async fn fetch_by_user_id(platform: &Platform, user_id: u64) -> Result<AccessToken> {
+    let sql = "select * from account.access_token where user_id = ? and platform = ? limit 1";
     let started_at = Instant::now();
 
     let result: Option<AccessToken> = sqlx::query_as(sql)
         .bind(user_id)
+        .bind(platform)
         .fetch_optional(Pool::mysql("account")?)
         .await
         .map_err(|e| {
@@ -168,7 +169,7 @@ pub async fn update_or_insert(
     user_id: u64,
     data: AccessTokenData,
 ) -> Result<AccessToken> {
-    match fetch_by_user_id(user_id).await {
+    match fetch_by_user_id(platform, user_id).await {
         Ok(access_token) => update(access_token, data).await,
         Err(_) => insert(platform, third_id, user_id, data).await,
     }
