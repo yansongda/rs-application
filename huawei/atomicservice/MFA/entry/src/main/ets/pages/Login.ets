@@ -1,10 +1,19 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { LogDomain } from '../App';
+import { App, LogDomain } from '../App';
 import { Authorization, State } from '../models/Auth';
 import {
   AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2
 } from '@kit.ArkUI';
 import { Dialog } from '../utils/PromptAction';
+
+export interface LoginPageParams {
+  forceAuthorizationState: State;
+}
+
+enum AuthType {
+  LOGIN,
+  LOGIN_REFRESH,
+}
 
 @Builder
 export function builder() {
@@ -17,20 +26,6 @@ struct Login {
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
-  async aboutToAppear(): Promise<void> {
-    hilog.info(LogDomain.PAGES, 'login', 'aboutToAppear');
-
-    const authorizationState = this.authorization.state();
-
-    if (State.EMPTY_AUTHORIZATION === authorizationState || State.REFRESH_TOKEN_EXPIRED === authorizationState) {
-      await this.retryAuth(() => this.authorization.login());
-    }
-
-    if (State.NEED_REFRESH === authorizationState) {
-      await this.retryAuth(() => this.authorization.refresh(this.authorization.refreshToken));
-    }
-  }
-
   build() {
     NavDestination() {
       Column() {
@@ -42,7 +37,24 @@ struct Login {
       .margin({ top: 50 })
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
-    .hideTitleBar(true);
+    .hideTitleBar(true)
+    .onReady(async (context: NavDestinationContext) => {
+      App.isShowLoginPage = true;
+
+      const loginState = [State.EMPTY_AUTHORIZATION, State.REFRESH_TOKEN_EXPIRED];
+      const refreshState = [State.NEED_REFRESH];
+      const state = this.getFinalState(context.pathInfo.param as LoginPageParams);
+
+      hilog.info(LogDomain.PAGES, 'login', 'onReady, state: %{public}s', state.toString());
+
+      if (loginState.includes(state)) {
+        await this.auth(AuthType.LOGIN);
+      }
+
+      if (refreshState.includes(state)) {
+        await this.auth(AuthType.LOGIN_REFRESH);
+      }
+    });
   }
 
   @Builder
@@ -65,13 +77,40 @@ struct Login {
     })
   }
 
-  private async retryAuth(callback: () => Promise<Authorization>): Promise<void> {
-    await Dialog.execute(
-      () => this.loadingDialog(),
-      callback,
-      () => this.loginConfirmDialog(() => this.retryAuth(callback))
-    );
+  private async auth(isRefresh: AuthType): Promise<void> {
+    if (AuthType.LOGIN === isRefresh) {
+      await Dialog.execute(
+        () => this.loadingDialog(),
+        () => this.authorization.login(),
+        () => this.loginConfirmDialog(() => this.auth(isRefresh))
+      );
+    }
 
+    if (AuthType.LOGIN_REFRESH === isRefresh) {
+      const dialogId = await Dialog.open(() => this.loadingDialog());
+
+      try {
+        await this.authorization.refresh(this.authorization.refreshToken);
+
+        Dialog.close(dialogId);
+      } catch (e) {
+        hilog.warn(LogDomain.PAGES, 'login', 'refresh_token 刷新失败，可能过期或服务器错误，重新登录， Cause: %{public}s',
+          JSON.stringify(e))
+
+        Dialog.close(dialogId);
+
+        return this.auth(AuthType.LOGIN);
+      }
+    }
+
+    App.isShowLoginPage = false;
     this.pages.pop();
+  }
+
+  private getFinalState(pageParams: LoginPageParams): State {
+    const forceAuthorizationState: State | undefined = pageParams?.forceAuthorizationState;
+    const currentAuthorizationState = this.authorization.state();
+
+    return forceAuthorizationState ?? currentAuthorizationState;
   }
 }

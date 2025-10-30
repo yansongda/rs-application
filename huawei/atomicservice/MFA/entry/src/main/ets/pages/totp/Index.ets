@@ -24,6 +24,7 @@ export struct Index {
   onAuthorizationChange(): void {
     hilog.info(LogDomain.PAGES, 'totp/index', '监测到认证信息发生变化');
 
+    this.itemsRuntime.clear();
     this.fetch();
   }
 

@@ -145,6 +145,7 @@ export class ItemRuntime {
     this._intervalId = undefined;
   }
 
+  // todo: 重定向到登录时，仍然运行
   async freshCode() {
     try {
       const detail = await Totp.detail(this._id);

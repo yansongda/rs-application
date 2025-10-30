@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from '@ohos/axios';
 import { App, AppEnv, HttpDomain, LogDomain } from '../App';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Authorization } from '../models/Auth';
+import { Authorization, State } from '../models/Auth';
 import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
 import { application } from '@kit.AbilityKit';
+import { LoginPageParams } from '../pages/Login';
 
 const authorization = (): Authorization => PersistenceV2.globalConnect({ type: Authorization })!;
 const pages = (): NavPathStack => AppStorageV2.connect(NavPathStack)!;
@@ -60,14 +61,16 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
 
   const responseCode: number = response.data.code ?? '-1';
 
-  // token 过期
-  if ([1000, 1001, 1002, 1004].includes(responseCode)) {
-    pages().pushPathByName('login', null);
+  // refresh_token 过期
+  if ([1005, 1006].includes(responseCode) && false === App.isShowLoginPage) {
+    App.isShowLoginPage = true;
+    pages().pushPathByName('login', { forceAuthorizationState: State.REFRESH_TOKEN_EXPIRED } as LoginPageParams);
   }
 
-  // refresh_token 过期
-  if ([1005, 1006].includes(responseCode)) {
-    pages().pushPathByName('login', null);
+  // token 过期
+  if ([1000, 1001, 1002, 1004].includes(responseCode) && false === App.isShowLoginPage) {
+    App.isShowLoginPage = true;
+    pages().pushPathByName('login', { forceAuthorizationState: State.NEED_REFRESH } as LoginPageParams);
   }
 
   return response;

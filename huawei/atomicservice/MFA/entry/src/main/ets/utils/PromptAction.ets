@@ -1,5 +1,5 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { LogDomain } from '../App';
+import { App, LogDomain } from '../App';
 import { AppStorageV2, UIContext } from '@kit.ArkUI';
 import { PromptAction as OhosPromptAction } from '@ohos.arkui.UIContext';
 import promptAction from '@ohos.promptAction';
@@ -69,6 +69,10 @@ export class Dialog extends PromptAction {
 
 export class Toast extends PromptAction {
   static show(options: promptAction.ShowToastOptions): void {
+    if (true === App.isShowLoginPage) {
+      return;
+    }
+
     try {
       PromptAction.action.showToast(options);
     } catch (error) {

@@ -24,7 +24,24 @@ export enum AppEnv {
 }
 
 export class App {
-  private static clientId: string | undefined;
+  private static _clientId: string | undefined;
+
+  static get clientId(): string {
+    if ('undefined' !== typeof App._clientId) {
+      return App._clientId;
+    }
+
+    const clientId = App.getMetadata('client_id');
+
+    if ('undefined' === typeof clientId) {
+      return 'undefined';
+    }
+
+    App._clientId = clientId
+
+    return clientId;
+  }
+
   private static _version: string | undefined;
 
   static get version(): string {
@@ -55,6 +72,16 @@ export class App {
     return App._env;
   }
 
+  private static _isShowLoginPage = false;
+
+  static get isShowLoginPage(): boolean {
+    return App._isShowLoginPage
+  }
+
+  static set isShowLoginPage(isShowLoginPage: boolean) {
+    App._isShowLoginPage = isShowLoginPage;
+  }
+
   static getMetadata(name: string, module?: string): string | undefined {
     if (typeof module === 'undefined') {
       module = 'entry';
@@ -81,21 +108,5 @@ export class App {
     hilog.info(LogDomain.UTILS, 'utils/app', 'BundleInfo 获取信息: %{public}s', JSON.stringify(bundleInfo));
 
     return bundleInfo;
-  }
-
-  static getClientId(): string {
-    if ('undefined' !== typeof App.clientId) {
-      return App.clientId;
-    }
-
-    const clientId = App.getMetadata('client_id');
-
-    if ('undefined' === typeof clientId) {
-      return 'undefined';
-    }
-
-    App.clientId = clientId
-
-    return clientId;
   }
 }

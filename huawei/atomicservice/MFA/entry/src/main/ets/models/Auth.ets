@@ -65,11 +65,9 @@ export class Authorization {
 
   async login(): Promise<Authorization> {
     const credential = await this.loginWithHuaweiID();
-    const clientId = App.getClientId();
 
     hilog.info(LogDomain.MODELS, 'models/auth', '认证信息, credential: %{public}s, client_id: %{public}s',
-      JSON.stringify(credential),
-      clientId);
+      JSON.stringify(credential));
 
     if ('undefined' === typeof credential) {
       hilog.error(LogDomain.MODELS, 'models/auth', '获取到的认证信息为空');
@@ -77,7 +75,7 @@ export class Authorization {
       return Promise.reject();
     }
 
-    const response = await AccessToken.login(clientId, credential?.authorizationCode!);
+    const response = await AccessToken.login(App.clientId, credential?.authorizationCode!);
 
     this._authorizedAt = new Date();
     this._accessToken = response.access_token;
@@ -94,9 +92,7 @@ export class Authorization {
       Promise.reject();
     }
 
-    const clientId = App.getClientId();
-
-    const response = await AccessToken.loginRefresh(clientId, refreshToken!);
+    const response = await AccessToken.loginRefresh(App.clientId, refreshToken!);
 
     this._authorizedAt = new Date();
     this._accessToken = response.access_token;
