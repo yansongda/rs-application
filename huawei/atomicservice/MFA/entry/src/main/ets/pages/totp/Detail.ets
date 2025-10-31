@@ -1,10 +1,16 @@
 import { ItemRuntime } from '../../models/Runtime';
 
+interface ListItem {
+  title: Resource | string;
+  value: Resource | string;
+}
+
 @Builder
 export function builder() {
   Detail()
 }
 
+@Preview
 @ComponentV2
 struct Detail {
   private runtime: ItemRuntime | undefined = undefined;
@@ -28,73 +34,14 @@ struct Detail {
         }
         .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
 
-        Column() {
-          Text($r('app.string.detail_page_basic_information'))
-            .fontColor(Color.Grey)
-            .textAlign(TextAlign.Start)
-            .width('100%')
-            .margin({
-              left: $r('app.integer.detail_page_block_title_margin_left'),
-              bottom: $r('app.integer.detail_page_block_title_margin_bottom')
-            })
+        this.card($r('app.string.detail_page_basic_information'), [
+          { title: $r('app.string.detail_page_issuer'), value: this.runtime?.issuer ?? 'NaN' } as ListItem,
+          { title: $r('app.string.detail_page_username'), value: this.runtime?.username ?? 'NaN' } as ListItem,
+        ])
 
-          List({ space: 10 }) {
-            ListItemGroup({ style: ListItemGroupStyle.CARD }) {
-              ListItem({ style: ListItemStyle.CARD }) {
-                Row() {
-                  Text($r('app.string.detail_page_issuer'))
-                    .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
-                    .textAlign(TextAlign.Start)
-                    .width($r('app.string.detail_page_block_item_title_width'))
-
-                  Row() {
-                    Text(this.runtime?.issuer ?? 'NaN')
-                      .textAlign(TextAlign.End)
-                      .width('90%')
-                      .maxLines(1)
-                      .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-                    Text() {
-                      SymbolSpan($r('sys.symbol.chevron_right'))
-                    }
-                    .textAlign(TextAlign.End)
-                    .width('10%')
-                  }
-                  .width($r('app.string.detail_page_block_item_content_width'))
-                }
-              }
-
-              ListItem({ style: ListItemStyle.CARD }) {
-                Row() {
-                  Text($r('app.string.detail_page_username'))
-                    .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
-                    .textAlign(TextAlign.Start)
-                    .width($r('app.string.detail_page_block_item_title_width'))
-
-                  Row() {
-                    Text(this.runtime?.username ?? 'NaN')
-                      .textAlign(TextAlign.End)
-                      .width('90%')
-                      .maxLines(2)
-                      .textOverflow({ overflow: TextOverflow.Ellipsis })
-
-                    Text() {
-                      SymbolSpan($r('sys.symbol.chevron_right'))
-                    }
-                    .textAlign(TextAlign.End)
-                    .width('10%')
-                  }
-                  .width($r('app.string.detail_page_block_item_content_width'))
-                }
-                .width('100%')
-              }
-            }
-            .divider({ strokeWidth: 1 })
-          }
-          .width('100%')
-          .height('100%')
-        }
-        .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
+        this.card($r('app.string.detail_page_config_information'), [
+          { title: $r('app.string.detail_page_config_period'), value: this.runtime?.config.period ?? '30' } as ListItem,
+        ])
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
@@ -105,5 +52,63 @@ struct Detail {
     .onWillHide(() => {
       this.runtime = undefined;
     });
+  }
+
+  @Builder
+  card(headerText: Resource | string, items: ListItem[]) {
+    Column() {
+      this.header(headerText);
+
+      List({ space: 10 }) {
+        ListItemGroup({ style: ListItemGroupStyle.CARD }) {
+          ForEach(items, (item: ListItem) => {
+            this.listItem(item.title, item.value)
+          })
+        }
+        .divider({ strokeWidth: 1 })
+      }
+      .width('100%')
+      .height('100%')
+    }
+    .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') });
+  }
+
+  @Builder
+  header(text: Resource | string) {
+    Text(text)
+      .fontColor(Color.Grey)
+      .textAlign(TextAlign.Start)
+      .width('100%')
+      .margin({
+        left: $r('app.integer.detail_page_block_title_margin_left'),
+        bottom: $r('app.integer.detail_page_block_title_margin_bottom')
+      });
+  }
+
+  @Builder
+  listItem(title: Resource | string, value: Resource | string) {
+    ListItem({ style: ListItemStyle.CARD }) {
+      Row() {
+        Text(title)
+          .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
+          .textAlign(TextAlign.Start)
+          .width($r('app.string.detail_page_block_item_title_width'))
+
+        Row() {
+          Text(value)
+            .textAlign(TextAlign.End)
+            .width('90%')
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+          Text() {
+            SymbolSpan($r('sys.symbol.chevron_right'))
+          }
+          .textAlign(TextAlign.End)
+          .width('10%')
+        }
+        .width($r('app.string.detail_page_block_item_content_width'))
+      }
+    };
   }
 }

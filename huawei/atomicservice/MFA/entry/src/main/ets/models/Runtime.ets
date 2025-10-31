@@ -6,28 +6,14 @@ import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../App';
 
-export interface IItemRuntime {
-  id: string;
-  code: string | undefined;
-  progress: number | undefined;
-  issuer: string;
-  username: string;
-  config: IItemConfig;
-  timeoutId: number | undefined;
-  intervalId: number | undefined;
-}
-
 @ObservedV2
 export class ItemRuntime {
-  constructor(runtime: IItemRuntime) {
-    this._id = runtime.id;
-    this._code = runtime.code;
-    this._progress = runtime.progress;
-    this._issuer = runtime.issuer;
-    this._username = runtime.username;
-    this._config = runtime.config;
-    this._timeoutId = runtime.timeoutId;
-    this._intervalId = runtime.intervalId;
+  constructor(item: IItem) {
+    this._id = item.id;
+    this._code = item.code;
+    this._issuer = item.issuer;
+    this._username = item.username;
+    this._config = item.config;
   }
 
   private _id: string;
@@ -90,6 +76,7 @@ export class ItemRuntime {
 
   public set config(value: IItemConfig) {
     this._config = value;
+    this._progress = value.period;
   }
 
   private _timeoutId: number | undefined;
@@ -224,7 +211,7 @@ export class ItemsRuntime {
     } catch (error) {
     }
 
-    return runtime ?? new ItemRuntime({} as IItemRuntime);
+    return runtime ?? new ItemRuntime({} as IItem);
   }
 
   isEmpty(): boolean {
@@ -238,14 +225,7 @@ export class ItemsRuntime {
   add(item: IItem): ItemRuntime {
     this.stop(item.id);
 
-    const runtime = new ItemRuntime({
-      id: item.id,
-      code: item.code,
-      progress: item.config.period,
-      issuer: item.issuer,
-      username: item.username,
-      config: item.config,
-    } as IItemRuntime);
+    const runtime = new ItemRuntime(item);
 
     try {
       this._runtimes.set(item.id, runtime);

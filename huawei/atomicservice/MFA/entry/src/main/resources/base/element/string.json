@@ -94,11 +94,19 @@
     },
     {
       "name": "detail_page_block_item_title_width",
-      "value": "20%"
+      "value": "30%"
     },
     {
       "name": "detail_page_block_item_content_width",
-      "value": "80%"
+      "value": "70%"
+    },
+    {
+      "name": "detail_page_config_information",
+      "value": "配置信息"
+    },
+    {
+      "name": "detail_page_config_period",
+      "value": "更新周期"
     },
     {
       "name": "models_runtime_refresh_code_failed",
