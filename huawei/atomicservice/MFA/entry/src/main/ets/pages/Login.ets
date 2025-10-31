@@ -1,5 +1,5 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { App, LogDomain } from '../App';
+import { LogDomain } from '../App';
 import { Authorization, State } from '../models/Auth';
 import {
   AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2
@@ -38,8 +38,6 @@ struct Login {
     .backgroundColor($r('sys.color.comp_background_focus'))
     .hideTitleBar(true)
     .onReady(async (context: NavDestinationContext) => {
-      App.isShowLoginPage = true;
-
       const loginState = [State.EMPTY_AUTHORIZATION, State.REFRESH_TOKEN_EXPIRED];
       const refreshState = [State.NEED_REFRESH];
       const state = this.getFinalState(context.pathInfo.param as LoginPageParams);
@@ -76,16 +74,16 @@ struct Login {
     })
   }
 
-  private async auth(isRefresh: AuthType): Promise<void> {
-    if (AuthType.LOGIN === isRefresh) {
+  private async auth(type: AuthType): Promise<void> {
+    if (AuthType.LOGIN === type) {
       await Dialog.execute(
         () => this.loadingDialog(),
         () => this.authorization.login(),
-        () => this.loginConfirmDialog(() => this.auth(isRefresh))
+        () => this.loginConfirmDialog(() => this.auth(type))
       );
     }
 
-    if (AuthType.LOGIN_REFRESH === isRefresh) {
+    if (AuthType.LOGIN_REFRESH === type) {
       const dialogId = await Dialog.open(() => this.loadingDialog());
 
       try {
@@ -102,7 +100,6 @@ struct Login {
       }
     }
 
-    App.isShowLoginPage = false;
     this.pages.pop();
   }
 

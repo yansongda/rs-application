@@ -2,6 +2,9 @@ import { HashMap } from '@kit.ArkTS';
 import { Totp } from '../api/Totp';
 import { IItem, IItemConfig } from '../types/Item';
 import { Toast } from '../utils/PromptAction';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { AppPagesName, LogDomain } from '../App';
 
 export interface IItemRuntime {
   id: string;
@@ -112,6 +115,14 @@ export class ItemRuntime {
   start() {
     this.stop();
 
+    const allPathName: string[] = AppStorageV2.connect(NavPathStack)!.getAllPathName();
+
+    hilog.info(LogDomain.MODELS, 'models/runtime', 'all page path name: %{public}s', JSON.stringify(allPathName));
+
+    if (AppPagesName.LOGIN.toString() === (allPathName[0] ?? 'undefined')) {
+      return;
+    }
+
     this.freshCode();
 
     const now = new Date();
@@ -145,7 +156,6 @@ export class ItemRuntime {
     this._intervalId = undefined;
   }
 
-  // todo: 重定向到登录时，仍然运行
   async freshCode() {
     try {
       const detail = await Totp.detail(this._id);

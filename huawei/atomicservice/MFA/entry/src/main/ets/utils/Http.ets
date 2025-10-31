@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from '@ohos/axios';
-import { App, AppEnv, HttpDomain, LogDomain } from '../App';
+import { App, AppEnv, AppPagesName, HttpDomain, LogDomain } from '../App';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization, State } from '../models/Auth';
 import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
@@ -62,15 +62,25 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   const responseCode: number = response.data.code ?? '-1';
 
   // refresh_token 过期
-  if ([1005, 1006].includes(responseCode) && false === App.isShowLoginPage) {
-    App.isShowLoginPage = true;
-    pages().pushPathByName('login', { forceAuthorizationState: State.REFRESH_TOKEN_EXPIRED } as LoginPageParams);
+  if ([1005, 1006].includes(responseCode)) {
+    const allPathName = pages().getAllPathName();
+
+    hilog.info(LogDomain.UTILS, 'utils/http', 'all page path name: %{public}s', JSON.stringify(allPathName));
+
+    if (AppPagesName.LOGIN.toString() !== (allPathName[0] ?? 'undefined')) {
+      pages().pushPathByName('login', { forceAuthorizationState: State.REFRESH_TOKEN_EXPIRED } as LoginPageParams);
+    }
   }
 
   // token 过期
-  if ([1000, 1001, 1002, 1004].includes(responseCode) && false === App.isShowLoginPage) {
-    App.isShowLoginPage = true;
-    pages().pushPathByName('login', { forceAuthorizationState: State.NEED_REFRESH } as LoginPageParams);
+  if ([1000, 1001, 1002, 1004].includes(responseCode)) {
+    const allPathName = pages().getAllPathName();
+
+    hilog.info(LogDomain.UTILS, 'utils/http', 'all page path name: %{public}s', JSON.stringify(allPathName));
+
+    if (AppPagesName.LOGIN.toString() !== (allPathName[0] ?? 'undefined')) {
+      pages().pushPathByName('login', { forceAuthorizationState: State.NEED_REFRESH } as LoginPageParams);
+    }
   }
 
   return response;

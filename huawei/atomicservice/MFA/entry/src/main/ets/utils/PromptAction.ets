@@ -1,5 +1,5 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { App, LogDomain } from '../App';
+import { AppPagesName, LogDomain } from '../App';
 import { AppStorageV2, UIContext } from '@kit.ArkUI';
 import { PromptAction as OhosPromptAction } from '@ohos.arkui.UIContext';
 import promptAction from '@ohos.promptAction';
@@ -13,6 +13,16 @@ class PromptAction {
     }
 
     return PromptAction._action;
+  }
+
+  private static _pages: NavPathStack | undefined;
+
+  protected static get pages(): NavPathStack {
+    if ('undefined' === typeof PromptAction._pages) {
+      PromptAction._pages = AppStorageV2.connect(NavPathStack)!;
+    }
+
+    return PromptAction._pages;
   }
 }
 
@@ -69,9 +79,8 @@ export class Dialog extends PromptAction {
 
 export class Toast extends PromptAction {
   static show(options: promptAction.ShowToastOptions): void {
-    if (true === App.isShowLoginPage) {
-      // todo
-      // return;
+    if (AppPagesName.LOGIN.toString() === (PromptAction.pages.getAllPathName()[0] ?? 'undefined')) {
+      return;
     }
 
     try {
