@@ -152,8 +152,8 @@ export struct Index {
               .padding({ left: 8, right: 8 })
 
               Progress({
-                value: this.itemsRuntime.get(ri.item.valueOf()).progress,
-                total: this.itemsRuntime.get(ri.item.valueOf()).config.period,
+                value: this.itemsRuntime.get(ri.item.valueOf()).progress ?? 30,
+                total: this.itemsRuntime.get(ri.item.valueOf()).config?.period ?? 30,
                 type: ProgressType.Linear,
               })
                 .height(2)
