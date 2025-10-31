@@ -19,8 +19,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 
@@ -83,8 +83,8 @@ packages:
   tdesign-miniprogram@1.10.1:
     resolution: {integrity: sha512-rKM3JYfJGB+R9G/yp6kGVN0Kc0hKqKoQnpoWm7OVrXNsYM0dlJXwTf+WsLkQtgUyfM20taqNaxXD852Bx7IseQ==}
 
-  typescript@5.9.2:
-    resolution: {integrity: sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A==}
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -129,4 +129,4 @@ snapshots:
 
   tdesign-miniprogram@1.10.1: {}
 
-  typescript@5.9.2: {}
+  typescript@5.9.3: {}

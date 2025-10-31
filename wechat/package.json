@@ -17,7 +17,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
     "miniprogram-api-typings": "^4.1.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "tdesign-miniprogram": "^1.10.1"

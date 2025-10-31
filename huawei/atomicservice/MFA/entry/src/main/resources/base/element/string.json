@@ -1,0 +1,108 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "多因子认证（MFA）服务: TOTP 算法"
+    },
+    {
+      "name": "module_entry_ability_desc",
+      "value": "多因子认证（MFA）服务: TOTP 算法"
+    },
+    {
+      "name": "permission_reason_camera",
+      "value": "使用相机来扫码从而添加认证信息"
+    },
+    {
+      "name": "entry_ability_label",
+      "value": "MFA"
+    },
+    {
+      "name": "login_page_login",
+      "value": "正在登录..."
+    },
+    {
+      "name": "home_page_login_failed_title",
+      "value": "登录失败"
+    },
+    {
+      "name": "home_page_login_failed_content",
+      "value": "是否重试登录"
+    },
+    {
+      "name": "index_page_add_name",
+      "value": "新增"
+    },
+    {
+      "name": "index_page_add_failed_title",
+      "value": "添加失败"
+    },
+    {
+      "name": "index_page_name",
+      "value": "TOTP"
+    },
+    {
+      "name": "index_page_data_empty",
+      "value": "暂无数据"
+    },
+    {
+      "name": "index_page_detail_name",
+      "value": "详情"
+    },
+    {
+      "name": "index_page_delete_name",
+      "value": "删除"
+    },
+    {
+      "name": "index_page_cancel_name",
+      "value": "取消"
+    },
+    {
+      "name": "index_page_delete_title",
+      "value": "确认删除?"
+    },
+    {
+      "name": "index_page_delete_content",
+      "value": "删除后将无法恢复，请谨慎操作"
+    },
+    {
+      "name": "index_page_delete_failed_title",
+      "value": "删除失败"
+    },
+    {
+      "name": "index_page_fetch_failed_title",
+      "value": "加载失败"
+    },
+    {
+      "name": "index_page_delete_failed_content",
+      "value": "是否重试加载数据"
+    },
+    {
+      "name": "detail_page_name",
+      "value": "详情"
+    },
+    {
+      "name": "detail_page_basic_information",
+      "value": "基础信息"
+    },
+    {
+      "name": "detail_page_issuer",
+      "value": "发行方"
+    },
+    {
+      "name": "detail_page_username",
+      "value": "用户名"
+    },
+    {
+      "name": "detail_page_block_item_title_width",
+      "value": "20%"
+    },
+    {
+      "name": "detail_page_block_item_content_width",
+      "value": "80%"
+    },
+    {
+      "name": "models_runtime_refresh_code_failed",
+      "value": "更新验证码失败，请重新加载"
+    }
+  ]
+}

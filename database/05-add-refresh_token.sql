@@ -2,7 +2,7 @@ alter table account.access_token
     add expired_at timestamp null after data;
 alter table account.access_token
     add third_id varchar(128) not null after platform;
-update account.access_token set third_id = 'wx36601dc74412c674'
+update account.access_token set third_id = 'wx36601dc74412c674';
 
 
 create table account.refresh_token
@@ -20,6 +20,3 @@ create table account.refresh_token
     constraint uk_account_refresh_token
         unique (refresh_token)
 );
-
-create index idx_account_user_id
-    on refresh_token (user_id);

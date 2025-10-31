@@ -22,12 +22,19 @@ pub struct ThirdConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     pub wechat: Option<WechatConfig>,
+    pub huawei: Option<HuaweiConfig>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WechatConfig {
     pub app_id: String,
     pub app_secret: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HuaweiConfig {
+    pub client_id: String,
+    pub client_secret: String,
 }
 
 pub async fn fetch(

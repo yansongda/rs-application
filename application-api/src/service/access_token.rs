@@ -1,10 +1,10 @@
-use crate::request::access_token::{LoginRequestParams, RefreshLoginRequestParams};
+use crate::request::access_token::{LoginRefreshRequestParams, LoginRequestParams};
 use application_database::account::third_user;
 use application_database::account::user;
 use application_database::account::{Platform, third_config};
 use application_database::account::{access_token, refresh_token};
 use application_kernel::result::{Error, Result};
-use application_util::wechat;
+use application_util::{huawei, wechat};
 
 pub async fn login(
     request: &LoginRequestParams,
@@ -12,6 +12,7 @@ pub async fn login(
     let platform = request.platform;
     let (user_id, access_token_data) = match platform {
         Platform::Wechat => login_wechat(request).await,
+        Platform::Huawei => login_huawei(request).await,
         _ => Err(Error::ParamsLoginPlatformUnsupported(None)),
     }?;
 
@@ -30,8 +31,8 @@ pub async fn login(
 }
 
 pub async fn login_refresh(
-    request: &RefreshLoginRequestParams,
-) -> Result<access_token::AccessToken> {
+    request: &LoginRefreshRequestParams,
+) -> Result<(refresh_token::RefreshToken, access_token::AccessToken)> {
     let refresh_token = refresh_token::fetch(request.refresh_token.as_str())
         .await
         .map_err(|_| Error::AuthorizationRefreshTokenInvalid(None))?;
@@ -48,7 +49,10 @@ pub async fn login_refresh(
 
     let data = access_token.data.0.clone();
 
-    access_token::update(access_token, data).await
+    Ok((
+        refresh_token::update_or_insert(access_token.id).await?,
+        access_token::update(access_token, data).await?,
+    ))
 }
 
 async fn login_wechat(
@@ -70,6 +74,40 @@ async fn login_wechat(
     Ok((
         get_user_id(&Platform::Wechat, wechat_response.openid.as_str()).await?,
         access_token::AccessTokenData::from(wechat_response),
+    ))
+}
+
+async fn login_huawei(
+    request: &LoginRequestParams,
+) -> Result<(u64, access_token::AccessTokenData)> {
+    let config = third_config::fetch(&Platform::Huawei, request.third_id.as_str()).await?;
+
+    let app_secret = config
+        .config
+        .as_ref()
+        .and_then(|c| c.huawei.as_ref())
+        .ok_or(Error::InternalDatabaseDataInvalid(None))?
+        .client_secret
+        .as_ref();
+
+    let token_response =
+        huawei::token(request.code.as_str(), config.third_id.as_str(), app_secret).await?;
+    let token_info_response = huawei::token_info(token_response.access_token.as_str()).await?;
+
+    Ok((
+        get_user_id(&Platform::Huawei, token_info_response.union_id.as_str()).await?,
+        access_token::AccessTokenData {
+            wechat: None,
+            huawei: Some(access_token::HuaweiAccessTokenData {
+                token_type: token_response.token_type,
+                scope: token_response.scope,
+                refresh_token: token_response.refresh_token,
+                client_id: token_info_response.client_id,
+                union_id: token_info_response.union_id,
+                project_id: token_info_response.project_id,
+                r#type: token_info_response.r#type,
+            }),
+        },
     ))
 }
 

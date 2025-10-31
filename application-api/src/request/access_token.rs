@@ -1,6 +1,5 @@
 use crate::request::Validator;
 use application_database::account::Platform;
-use application_database::account::access_token::AccessToken;
 use application_kernel::result::Error;
 use serde::{Deserialize, Serialize};
 
@@ -51,20 +50,20 @@ pub struct LoginResponse {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct RefreshLoginRequest {
+pub struct LoginRefreshRequest {
     pub platform: Option<Platform>,
     pub third_id: Option<String>,
     pub refresh_token: Option<String>,
 }
 
-pub struct RefreshLoginRequestParams {
+pub struct LoginRefreshRequestParams {
     pub platform: Platform,
     pub third_id: String,
     pub refresh_token: String,
 }
 
-impl Validator for RefreshLoginRequest {
-    type Data = RefreshLoginRequestParams;
+impl Validator for LoginRefreshRequest {
+    type Data = LoginRefreshRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
@@ -78,7 +77,7 @@ impl Validator for RefreshLoginRequest {
         if let Some(refresh_token) = &self.refresh_token
             && refresh_token.chars().count() > 8
         {
-            return Ok(RefreshLoginRequestParams {
+            return Ok(LoginRefreshRequestParams {
                 platform: self.platform.unwrap(),
                 third_id: self.third_id.as_ref().unwrap().to_owned(),
                 refresh_token: refresh_token.to_string(),
@@ -90,16 +89,8 @@ impl Validator for RefreshLoginRequest {
 }
 
 #[derive(Debug, Serialize)]
-pub struct RefreshLoginResponse {
+pub struct LoginRefreshResponse {
     pub access_token: String,
     pub expired_in: u32,
-}
-
-impl From<AccessToken> for RefreshLoginResponse {
-    fn from(token: AccessToken) -> Self {
-        RefreshLoginResponse {
-            access_token: token.access_token.to_owned(),
-            expired_in: token.get_expired_in(),
-        }
-    }
+    pub refresh_token: String,
 }

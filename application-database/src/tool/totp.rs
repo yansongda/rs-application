@@ -107,7 +107,7 @@ pub async fn fetch(id: u64) -> Result<Totp> {
     Err(Error::ParamsTotpNotFound(None))
 }
 
-pub async fn insert(totp: CreatedTotp) -> Result<u64> {
+pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     let sql = "insert into tool.totp (user_id, username, issuer, config) values (?, ?, ?, ?)";
     let started_at = Instant::now();
 
@@ -128,7 +128,15 @@ pub async fn insert(totp: CreatedTotp) -> Result<u64> {
 
     info!(elapsed, sql, ?totp);
 
-    Ok(result?.last_insert_id())
+    Ok(Totp {
+        id: result?.last_insert_id(),
+        user_id: totp.user_id,
+        username: totp.username,
+        issuer: totp.issuer,
+        config: Json(totp.config),
+        created_at: Local::now(),
+        updated_at: Local::now(),
+    })
 }
 
 pub async fn update_issuer(id: u64, issuer: &str) -> Result<()> {

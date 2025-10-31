@@ -79,4 +79,4 @@ create table tool.totp
 create index idx_tool_user_id
     on tool.totp (user_id);
 
--- TODO: 导入数据
+-- 剩余导入数据

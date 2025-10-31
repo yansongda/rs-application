@@ -22,7 +22,7 @@ pub struct RefreshToken {
 
 impl RefreshToken {
     pub fn is_expired(&self) -> bool {
-        Local::now() < self.expired_at
+        Local::now() > self.expired_at
     }
 
     pub async fn access_token(&self) -> Result<AccessToken> {
@@ -90,8 +90,7 @@ pub async fn fetch_by_access_token_id(access_token_id: u64) -> Result<RefreshTok
 pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
     let sql = "insert into account.refresh_token (access_token_id, refresh_token, expired_at) values (?, ?, ?)";
     let refresh_token = Uuid::now_v7().to_string();
-    let expired_at =
-        Local::now() + chrono::Duration::seconds(G_CONFIG.access_token.refresh_expired_in as i64);
+    let expired_at = G_CONFIG.access_token.get_refresh_expired_at();
     let started_at = Instant::now();
 
     let result = sqlx::query(sql)
@@ -123,8 +122,7 @@ pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
 pub async fn update(mut refresh_token: RefreshToken) -> Result<RefreshToken> {
     let sql = "update account.refresh_token set refresh_token = ?, expired_at = ? where id = ?";
     let refresh_token_value = Uuid::now_v7().to_string();
-    let expired_at =
-        Local::now() + chrono::Duration::seconds(G_CONFIG.access_token.refresh_expired_in as i64);
+    let expired_at = G_CONFIG.access_token.get_refresh_expired_at();
     let started_at = Instant::now();
 
     let _ = sqlx::query(sql)

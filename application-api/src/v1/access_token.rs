@@ -1,7 +1,7 @@
 use crate::extract::Json;
 use crate::request::Validator;
 use crate::request::access_token::{
-    LoginRequest, LoginResponse, RefreshLoginRequest, RefreshLoginResponse,
+    LoginRefreshRequest, LoginRefreshResponse, LoginRequest, LoginResponse,
 };
 use crate::response::{Resp, Response};
 use crate::service;
@@ -20,12 +20,16 @@ pub async fn login(Json(request): Json<LoginRequest>) -> Resp<LoginResponse> {
     }))
 }
 
-pub async fn login_refresh(Json(request): Json<RefreshLoginRequest>) -> Resp<RefreshLoginResponse> {
+pub async fn login_refresh(Json(request): Json<LoginRefreshRequest>) -> Resp<LoginRefreshResponse> {
     let req = request.validate()?;
 
-    let token = service::access_token::login_refresh(&req).await?;
+    let (refresh_token, access_token) = service::access_token::login_refresh(&req).await?;
 
-    Ok(Response::success(token.into()))
+    Ok(Response::success(LoginRefreshResponse {
+        access_token: access_token.access_token.to_owned(),
+        expired_in: access_token.get_expired_in(),
+        refresh_token: refresh_token.refresh_token,
+    }))
 }
 
 pub async fn valid(Extension(_): Extension<AccessToken>) -> Resp<()> {

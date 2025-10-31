@@ -22,7 +22,7 @@ mod request;
 mod response;
 mod routes;
 mod service;
-pub mod v1;
+mod v1;
 
 pub struct App {
     listen: SocketAddr,

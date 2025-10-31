@@ -1,0 +1,56 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
+          "storePassword": "0000001801D6B2D2EB5143566B9957A051A6051486CA7492113680B0360528EE83278086B6D99870",
+          "keyAlias": "HarmonyOS",
+          "keyPassword": "0000001809ACBF662E01D64FBA02FA3842654E4D0132D6EBE02F481030F23D65CAC50B93102E88B6",
+          "signAlg": "SHA256withECDSA",
+          "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
+          "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "5.1.0(18)",
+        "compatibleSdkVersion": "5.1.0(18)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": false
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

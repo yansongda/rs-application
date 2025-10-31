@@ -1,3 +1,4 @@
+use chrono::{DateTime, Local};
 use config::{Config as C, Environment, File};
 use serde::Deserialize;
 use std::collections::HashMap;
@@ -106,5 +107,15 @@ impl Default for AccessToken {
             expired_in: 3600,
             refresh_expired_in: 86400 * 30,
         }
+    }
+}
+
+impl AccessToken {
+    pub fn get_expired_at(&self) -> DateTime<Local> {
+        Local::now() + chrono::Duration::seconds(self.expired_in as i64)
+    }
+
+    pub fn get_refresh_expired_at(&self) -> DateTime<Local> {
+        Local::now() + chrono::Duration::seconds(self.refresh_expired_in as i64)
     }
 }
