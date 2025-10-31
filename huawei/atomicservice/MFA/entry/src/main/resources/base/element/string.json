@@ -9,6 +9,10 @@
       "value": "多因子认证（MFA）服务: TOTP 算法"
     },
     {
+      "name": "permission_reason_camera",
+      "value": "使用相机来扫码从而添加认证信息"
+    },
+    {
       "name": "entry_ability_label",
       "value": "MFA"
     },
