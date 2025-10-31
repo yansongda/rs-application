@@ -5,6 +5,10 @@
       "value": "MFA"
     },
     {
+      "name": "app_description",
+      "value": "多因子认证（MFA）服务，目前支持 TOTP 算法，为您提供简单、可靠、纯粹的身份验证解决方案。"
+    },
+    {
       "name": "loading",
       "value": "加载中..."
     },
