@@ -1,7 +1,7 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Index } from './totp/Index';
-import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
-import { Authorization, State } from '../models/Auth';
+import { AppStorageV2, PersistenceV2, UIContext } from '@kit.ArkUI';
+import { Authorization } from '../models/Auth';
 import { LogDomain } from '../App';
 
 @Entry
@@ -9,14 +9,17 @@ import { LogDomain } from '../App';
 struct Home {
   @Local
   private isShow: boolean = false;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private authorization: Authorization =
-    PersistenceV2.globalConnect({ type: Authorization })!;
+    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
   aboutToAppear(): void {
-    if (State.NORMAL !== this.authorization.state()) {
-      this.pages.pushPathByName('login', null);
-    }
+    // if (State.NORMAL !== this.authorization.state()) {
+    //   this.pages.pushPathByName('login', null);
+    // }
+
+    // todo: 解除以上注释
+    AppStorageV2.connect(UIContext, () => this.getUIContext());
   }
 
   onPageShow(): void {

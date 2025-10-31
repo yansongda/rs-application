@@ -1,5 +1,4 @@
 import { HashMap } from '@kit.ArkTS';
-import { Totp } from '../api/Totp';
 import { IItem, IItemConfig } from '../types/Item';
 import { Toast } from '../utils/PromptAction';
 import { AppStorageV2 } from '@kit.ArkUI';
@@ -145,8 +144,10 @@ export class ItemRuntime {
 
   async freshCode() {
     try {
-      const detail = await Totp.detail(this._id);
-      this._code = detail.code;
+      this._code = '123456';
+      // todo
+      // const detail = await Totp.detail(this._id);
+      // this._code = detail.code;
     } catch (e) {
       this._code = 'NaN';
 
@@ -195,12 +196,12 @@ export class ItemsRuntime {
   delete(id: string) {
     this.stop(id);
 
+    this._ids.delete(id);
+
     try {
       this._runtimes.remove(id);
     } catch (error) {
     }
-
-    this._ids.delete(id);
   }
 
   get(id: string): ItemRuntime {
