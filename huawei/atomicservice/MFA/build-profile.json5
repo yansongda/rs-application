@@ -6,9 +6,22 @@
         "type": "HarmonyOS",
         "material": {
           "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
-          "storePassword": "0000001801D6B2D2EB5143566B9957A051A6051486CA7492113680B0360528EE83278086B6D99870",
+          "storePassword": "0000001890A5376D43542E661ABD4B2B700D49E467A14E61087085FFCEDCCC18FD5675D51F6F72D8",
           "keyAlias": "HarmonyOS",
-          "keyPassword": "0000001809ACBF662E01D64FBA02FA3842654E4D0132D6EBE02F481030F23D65CAC50B93102E88B6",
+          "keyPassword": "000000183574C9D896F99DF1A12798ACA755601F577385EB08C316BB59A9A74FF818EBA22388B4B8",
+          "signAlg": "SHA256withECDSA",
+          "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
+          "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"
+        }
+      },
+      {
+        "name": "office",
+        "type": "HarmonyOS",
+        "material": {
+          "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
+          "storePassword": "00000018747972910E624CC6334C28BBB52FC425315D385AF8738BD317A34AA259D9C6546B140E96",
+          "keyAlias": "HarmonyOS",
+          "keyPassword": "0000001843B7EA891B5447B92BE93586A7530BB33C6D1683B8C290697F470C4EBD239E1CB4E0EFC7",
           "signAlg": "SHA256withECDSA",
           "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
           "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"
