@@ -1,69 +1,42 @@
-import { ItemRuntime } from '../../models/Runtime';
-
-interface ListItem {
+interface ListItemA {
   title: Resource | string;
   value: Resource | string;
 }
 
-@Builder
-export function builder() {
-  Detail()
-}
-
-@Preview
+@Entry
 @ComponentV2
-struct Detail {
-  private runtime: ItemRuntime | undefined = undefined;
-
+struct Test {
   build() {
     NavDestination() {
       Column() {
-        Column() {
-          Progress({
-            value: this.runtime?.progress ?? 0,
-            total: this.runtime?.config.period ?? 30,
-            type: ProgressType.Linear
-          })
-            .height(2)
-            .color($r('app.color.main'))
-
-          Text(this.runtime?.code ?? 'NaN')
-            .textAlign(TextAlign.Center)
-            .fontSize(70)
-            .margin({ top: 20 })
-        }
-        .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
-
-        this.card($r('app.string.detail_page_basic_information'), [
-          { title: $r('app.string.detail_page_issuer'), value: this.runtime?.issuer ?? 'NaN' } as ListItem,
-          { title: $r('app.string.detail_page_username'), value: this.runtime?.username ?? 'NaN' } as ListItem,
+        this.card('项目1', [
+          { title: '标题1', value: 'NaN' } as ListItemA,
+          { title: '标题2', value: 'NaN' } as ListItemA,
         ])
 
-        this.card($r('app.string.detail_page_config_information'), [
-          { title: $r('app.string.detail_page_config_period'), value: this.runtime?.config.period ?? '30' } as ListItem,
+        this.card('项目2', [
+          { title: '标题3', value: '30' } as ListItemA,
         ])
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
-    .title($r('app.string.detail_page_name'))
-    .onReady((context: NavDestinationContext) => {
-      this.runtime = context.pathInfo.param as ItemRuntime;
+    .title('详情')
+    .onReady(() => {
     })
     .onWillHide(() => {
-      this.runtime = undefined;
     });
   }
 
   @Builder
-  card(headerText: Resource | string, items: ListItem[]) {
+  card(headerText: Resource | string, items: ListItemA[]) {
     Column() {
       this.header(headerText);
 
       List({ space: 10 }) {
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
-          ForEach(items, (item: ListItem) => {
+          ForEach(items, (item: ListItemA) => {
             this.listItem(item.title, item.value)
-          }, (item: ListItem, index: number) => index + item.title.toString())
+          }, (item: ListItemA, index: number) => index + item.title.toString())
         }
         .divider({ strokeWidth: 1 })
       }
