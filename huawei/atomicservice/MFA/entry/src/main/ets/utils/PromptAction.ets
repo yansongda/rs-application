@@ -70,7 +70,8 @@ export class Dialog extends PromptAction {
 export class Toast extends PromptAction {
   static show(options: promptAction.ShowToastOptions): void {
     if (true === App.isShowLoginPage) {
-      return;
+      // todo
+      // return;
     }
 
     try {
