@@ -13,14 +13,12 @@ struct Home {
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization })!;
 
-  aboutToAppear(): void {
+  onPageShow(): void {
+    hilog.info(LogDomain.PAGES, 'totp/home', '页面显示');
+
     if (State.NORMAL !== this.authorization.state()) {
       this.pages.pushPathByName('login', null);
     }
-  }
-
-  onPageShow(): void {
-    hilog.info(LogDomain.PAGES, 'totp/home', '页面显示');
 
     this.isShow = true;
   }
