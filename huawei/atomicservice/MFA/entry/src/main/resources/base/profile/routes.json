@@ -9,6 +9,16 @@
       "name": "totp/detail",
       "pageSourceFile": "src/main/ets/pages/totp/Detail.ets",
       "buildFunction": "builder"
+    },
+    {
+      "name": "totp/edit/issuer",
+      "pageSourceFile": "src/main/ets/pages/totp/EditIssuer.ets",
+      "buildFunction": "builder"
+    },
+    {
+      "name": "totp/edit/username",
+      "pageSourceFile": "src/main/ets/pages/totp/EditUsername.ets",
+      "buildFunction": "builder"
     }
   ]
 }

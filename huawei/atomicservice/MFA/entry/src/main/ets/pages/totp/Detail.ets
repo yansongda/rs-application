@@ -1,8 +1,11 @@
 import { ItemRuntime } from '../../models/Runtime';
+import { AppStorageV2 } from '@kit.ArkUI';
+import { AppPagesName } from '../../App';
 
 interface ListItem {
   title: Resource | string;
   value: Resource | string;
+  jump?: string;
 }
 
 @Builder
@@ -13,6 +16,7 @@ export function builder() {
 @Preview
 @ComponentV2
 struct Detail {
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private runtime: ItemRuntime | undefined = undefined;
 
   build() {
@@ -32,20 +36,31 @@ struct Detail {
             .fontSize(70)
             .margin({ top: 20 })
         }
-        .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
+        .margin({ bottom: $r('app.integer.totp_detail_page_block_margin_bottom') })
 
-        this.card($r('app.string.detail_page_basic_information'), [
-          { title: $r('app.string.detail_page_issuer'), value: this.runtime?.issuer ?? 'NaN' } as ListItem,
-          { title: $r('app.string.detail_page_username'), value: this.runtime?.username ?? 'NaN' } as ListItem,
+        this.card($r('app.string.totp_detail_page_basic_information'), [
+          {
+            title: $r('app.string.totp_detail_page_issuer'),
+            value: this.runtime?.issuer ?? 'NaN',
+            jump: AppPagesName.TOTP_EDIT_ISSUER
+          } as ListItem,
+          {
+            title: $r('app.string.totp_detail_page_username'),
+            value: this.runtime?.username ?? 'NaN',
+            jump: AppPagesName.TOTP_EDIT_USERNAME
+          } as ListItem,
         ])
 
-        this.card($r('app.string.detail_page_config_information'), [
-          { title: $r('app.string.detail_page_config_period'), value: this.runtime?.config.period ?? '30' } as ListItem,
+        this.card($r('app.string.totp_detail_page_config_information'), [
+          {
+            title: $r('app.string.totp_detail_page_config_period'),
+            value: this.runtime?.config.period ?? '30'
+          } as ListItem,
         ])
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
-    .title($r('app.string.detail_page_name'))
+    .title($r('app.string.totp_detail_page_name'))
     .onReady((context: NavDestinationContext) => {
       this.runtime = context.pathInfo.param as ItemRuntime;
     })
@@ -62,7 +77,7 @@ struct Detail {
       List({ space: 10 }) {
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
           ForEach(items, (item: ListItem) => {
-            this.listItem(item.title, item.value)
+            this.listItem(item.title, item.value, item.jump)
           }, (item: ListItem, index: number) => index + item.title.toString())
         }
         .divider({ strokeWidth: 1 })
@@ -70,7 +85,7 @@ struct Detail {
       .width('100%')
       .height('100%')
     }
-    .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
+    .margin({ bottom: $r('app.integer.totp_detail_page_block_margin_bottom') })
   }
 
   @Builder
@@ -80,19 +95,19 @@ struct Detail {
       .textAlign(TextAlign.Start)
       .width('100%')
       .margin({
-        left: $r('app.integer.detail_page_block_title_margin_left'),
-        bottom: $r('app.integer.detail_page_block_title_margin_bottom')
+        left: $r('app.integer.totp_detail_page_block_title_margin_left'),
+        bottom: $r('app.integer.totp_detail_page_block_title_margin_bottom')
       })
   }
 
   @Builder
-  listItem(title: Resource | string, value: Resource | string) {
+  listItem(title: Resource | string, value: Resource | string, jump?: string) {
     ListItem({ style: ListItemStyle.CARD }) {
       Row() {
         Text(title)
-          .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
+          .fontWeight($r('app.integer.totp_detail_page_block_item_title_font_weight'))
           .textAlign(TextAlign.Start)
-          .width($r('app.string.detail_page_block_item_title_width'))
+          .width($r('app.string.totp_detail_page_block_item_title_width'))
 
         Row() {
           Text(value)
@@ -101,14 +116,21 @@ struct Detail {
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-          Text() {
-            SymbolSpan($r('sys.symbol.chevron_right'))
+          if (jump) {
+            Text() {
+              SymbolSpan($r('sys.symbol.chevron_right'))
+            }
+            .textAlign(TextAlign.End)
+            .width('10%')
           }
-          .textAlign(TextAlign.End)
-          .width('10%')
         }
-        .width($r('app.string.detail_page_block_item_content_width'))
+        .width($r('app.string.totp_detail_page_block_item_content_width'))
       }
     }
+    .onClick(() => {
+      if (jump) {
+        this.pages.pushPathByName(jump, null);
+      }
+    })
   }
 }

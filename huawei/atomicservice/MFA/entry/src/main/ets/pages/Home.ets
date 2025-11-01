@@ -53,7 +53,7 @@ struct Home {
   title() {
     Row() {
       Image($r('app.media.default_avatar')).width(30).height(30).margin({ left: 10, right: 10 })
-      Text($r("app.string.index_page_name")).fontWeight(FontWeight.Bold).fontSize(30)
+      Text($r("app.string.totp_index_page_name")).fontWeight(FontWeight.Bold).fontSize(30)
     }
     .width('100%')
     .margin({ top: 10 })

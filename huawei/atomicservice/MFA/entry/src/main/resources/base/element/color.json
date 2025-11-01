@@ -9,28 +9,32 @@
       "value": "#FFFFFF"
     },
     {
-      "name": "index_page_issuer_font",
+      "name": "totp_index_page_issuer_font",
       "value": "#636363"
     },
     {
-      "name": "index_page_username_font",
+      "name": "totp_index_page_username_font",
       "value": "#808080"
     },
     {
-      "name": "index_page_item_background",
+      "name": "totp_index_page_item_background",
       "value": "#ffffff"
     },
     {
-      "name": "index_page_swipe_action_font",
+      "name": "totp_index_page_swipe_action_font",
       "value": "#ffffff"
     },
     {
-      "name": "index_page_swipe_action_detail_background",
+      "name": "totp_index_page_swipe_action_detail_background",
       "value": "#3c84e8"
     },
     {
-      "name": "index_page_swipe_action_delete_background",
+      "name": "totp_index_page_swipe_action_delete_background",
       "value": "#ffef4f4f"
+    },
+    {
+      "name": "main_container_background",
+      "value": "#F1F3F5"
     }
   ]
 }

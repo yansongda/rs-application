@@ -6,9 +6,9 @@
         "type": "HarmonyOS",
         "material": {
           "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
-          "storePassword": "0000001890A5376D43542E661ABD4B2B700D49E467A14E61087085FFCEDCCC18FD5675D51F6F72D8",
+          "storePassword": "00000018FC1DF65D3027D9CF61B5A5A289600696AEE652DBA8E8C7899E11AF2D59729946692C45AB",
           "keyAlias": "HarmonyOS",
-          "keyPassword": "000000183574C9D896F99DF1A12798ACA755601F577385EB08C316BB59A9A74FF818EBA22388B4B8",
+          "keyPassword": "000000188F3987C49B7A03112CD60A4DD5F0EE4AF37EEFC88B6AC3ECF806BFA1C0C513C755F1493E",
           "signAlg": "SHA256withECDSA",
           "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
           "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"

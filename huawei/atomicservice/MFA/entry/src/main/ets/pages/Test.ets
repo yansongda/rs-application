@@ -43,7 +43,7 @@ struct Test {
       .width('100%')
       .height('100%')
     }
-    .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') });
+    .margin({ bottom: $r('app.integer.totp_detail_page_block_margin_bottom') });
   }
 
   @Builder
@@ -53,8 +53,8 @@ struct Test {
       .textAlign(TextAlign.Start)
       .width('100%')
       .margin({
-        left: $r('app.integer.detail_page_block_title_margin_left'),
-        bottom: $r('app.integer.detail_page_block_title_margin_bottom')
+        left: $r('app.integer.totp_detail_page_block_title_margin_left'),
+        bottom: $r('app.integer.totp_detail_page_block_title_margin_bottom')
       });
   }
 
@@ -63,9 +63,9 @@ struct Test {
     ListItem({ style: ListItemStyle.CARD }) {
       Row() {
         Text(title)
-          .fontWeight($r('app.integer.detail_page_block_item_title_font_weight'))
+          .fontWeight($r('app.integer.totp_detail_page_block_item_title_font_weight'))
           .textAlign(TextAlign.Start)
-          .width($r('app.string.detail_page_block_item_title_width'))
+          .width($r('app.string.totp_detail_page_block_item_title_width'))
 
         Row() {
           Text(value)
@@ -80,7 +80,7 @@ struct Test {
           .textAlign(TextAlign.End)
           .width('10%')
         }
-        .width($r('app.string.detail_page_block_item_content_width'))
+        .width($r('app.string.totp_detail_page_block_item_content_width'))
       }
     };
   }

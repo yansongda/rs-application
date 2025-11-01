@@ -20,10 +20,11 @@ export function builder() {
   Login()
 }
 
-@Component
+@ComponentV2
 struct Login {
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
-  private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private authorization: Authorization =
+    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
   build() {
     NavDestination() {
