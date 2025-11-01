@@ -25,12 +25,6 @@ export struct Index {
     this.fetch();
   }
 
-  @Monitor('itemsRuntime')
-  onRuntimeChange(change: IMonitor): void {
-    hilog.info(0, 'totp/index', '监测到 runtime 发生变化, before: %{public}s, after: %{public}s',
-      JSON.stringify(change.value()?.before), JSON.stringify(change.value()?.now));
-  }
-
   @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
     hilog.info(LogDomain.PAGES, 'totp/index', '监测到认证信息发生变化');

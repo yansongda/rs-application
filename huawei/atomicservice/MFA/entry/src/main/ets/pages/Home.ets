@@ -13,17 +13,18 @@ struct Home {
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
 
+  // todo: 删除以下代码
   aboutToAppear(): void {
-    // if (State.NORMAL !== this.authorization.state()) {
-    //   this.pages.pushPathByName('login', null);
-    // }
-
-    // todo: 解除以上注释
     AppStorageV2.connect(UIContext, () => this.getUIContext());
   }
 
   onPageShow(): void {
     hilog.info(LogDomain.PAGES, 'totp/home', '页面显示');
+
+    // todo: 解除以下注释
+    // if (State.NORMAL !== this.authorization.state()) {
+    //   this.pages.pushPathByName('login', null);
+    // }
 
     this.isShow = true;
   }

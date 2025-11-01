@@ -70,7 +70,7 @@ struct Detail {
       .width('100%')
       .height('100%')
     }
-    .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') });
+    .margin({ bottom: $r('app.integer.detail_page_block_margin_bottom') })
   }
 
   @Builder
@@ -82,7 +82,7 @@ struct Detail {
       .margin({
         left: $r('app.integer.detail_page_block_title_margin_left'),
         bottom: $r('app.integer.detail_page_block_title_margin_bottom')
-      });
+      })
   }
 
   @Builder
@@ -109,6 +109,6 @@ struct Detail {
         }
         .width($r('app.string.detail_page_block_item_content_width'))
       }
-    };
+    }
   }
 }
