@@ -1,11 +1,13 @@
 import { ItemRuntime } from '../../models/Runtime';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { AppPagesName } from '../../App';
+import { EditIssuerPageParams } from './EditIssuer';
 
 interface ListItem {
   title: Resource | string;
   value: Resource | string;
   jump?: string;
+  jumpParams?: object;
 }
 
 @Builder
@@ -21,7 +23,7 @@ struct Detail {
 
   build() {
     NavDestination() {
-      Column() {
+      Column({ space: $r('app.integer.totp_detail_page_block_margin_bottom') }) {
         Column() {
           Progress({
             value: this.runtime?.progress ?? 0,
@@ -36,18 +38,19 @@ struct Detail {
             .fontSize(70)
             .margin({ top: 20 })
         }
-        .margin({ bottom: $r('app.integer.totp_detail_page_block_margin_bottom') })
 
         this.card($r('app.string.totp_detail_page_basic_information'), [
           {
             title: $r('app.string.totp_detail_page_issuer'),
             value: this.runtime?.issuer ?? 'NaN',
-            jump: AppPagesName.TOTP_EDIT_ISSUER
+            jump: AppPagesName.TOTP_EDIT_ISSUER,
+            jumpParams: { id: this.runtime?.id, issuer: this.runtime?.issuer } as EditIssuerPageParams
           } as ListItem,
           {
             title: $r('app.string.totp_detail_page_username'),
             value: this.runtime?.username ?? 'NaN',
-            jump: AppPagesName.TOTP_EDIT_USERNAME
+            jump: AppPagesName.TOTP_EDIT_USERNAME,
+            jumpParams: { id: this.runtime?.id, issuer: this.runtime?.issuer } as EditIssuerPageParams
           } as ListItem,
         ])
 
@@ -77,7 +80,7 @@ struct Detail {
       List({ space: 10 }) {
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
           ForEach(items, (item: ListItem) => {
-            this.listItem(item.title, item.value, item.jump)
+            this.listItem(item)
           }, (item: ListItem, index: number) => index + item.title.toString())
         }
         .divider({ strokeWidth: 1 })
@@ -85,7 +88,6 @@ struct Detail {
       .width('100%')
       .height('100%')
     }
-    .margin({ bottom: $r('app.integer.totp_detail_page_block_margin_bottom') })
   }
 
   @Builder
@@ -101,22 +103,22 @@ struct Detail {
   }
 
   @Builder
-  listItem(title: Resource | string, value: Resource | string, jump?: string) {
+  listItem(item: ListItem) {
     ListItem({ style: ListItemStyle.CARD }) {
       Row() {
-        Text(title)
+        Text(item.title)
           .fontWeight($r('app.integer.totp_detail_page_block_item_title_font_weight'))
           .textAlign(TextAlign.Start)
           .width($r('app.string.totp_detail_page_block_item_title_width'))
 
         Row() {
-          Text(value)
+          Text(item.value)
             .textAlign(TextAlign.End)
             .width('90%')
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-          if (jump) {
+          if (item.jump) {
             Text() {
               SymbolSpan($r('sys.symbol.chevron_right'))
             }
@@ -128,8 +130,8 @@ struct Detail {
       }
     }
     .onClick(() => {
-      if (jump) {
-        this.pages.pushPathByName(jump, null);
+      if (item.jump) {
+        this.pages.pushPathByName(item.jump, null);
       }
     })
   }

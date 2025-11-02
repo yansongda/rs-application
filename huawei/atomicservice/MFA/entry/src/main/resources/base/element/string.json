@@ -25,6 +25,10 @@
       "value": "正在登录..."
     },
     {
+      "name": "totp_home_page_name",
+      "value": "MFA"
+    },
+    {
       "name": "home_page_login_failed_title",
       "value": "登录失败"
     },
@@ -39,10 +43,6 @@
     {
       "name": "totp_index_page_add_failed_title",
       "value": "添加失败"
-    },
-    {
-      "name": "totp_index_page_name",
-      "value": "TOTP"
     },
     {
       "name": "totp_index_page_data_empty",
@@ -117,8 +117,16 @@
       "value": "设置发行方"
     },
     {
+      "name": "totp_edit_issuer_page_placeholder",
+      "value": "请输入发行方"
+    },
+    {
       "name": "totp_edit_username_page_title",
       "value": "设置用户名"
+    },
+    {
+      "name": "totp_edit_username_page_placeholder",
+      "value": "请输入用户名"
     }
   ]
 }

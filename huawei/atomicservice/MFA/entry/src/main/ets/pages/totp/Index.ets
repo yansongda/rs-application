@@ -87,7 +87,8 @@ export struct Index {
 
           try {
             const data =
-              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')), () => Totp.create(uri));
+              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
+                () => Totp.create(uri));
 
             this.itemsRuntime.add(data);
           } catch (e) {

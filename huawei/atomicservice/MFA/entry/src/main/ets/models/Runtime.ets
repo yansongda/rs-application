@@ -1,6 +1,5 @@
 import { HashMap } from '@kit.ArkTS';
 import { IItem, IItemConfig } from '../types/Item';
-import { Toast } from '../utils/PromptAction';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../App';
@@ -143,19 +142,13 @@ export class ItemRuntime {
   }
 
   async freshCode() {
-    try {
-      this._code = '123456';
-      // todo
-      // const detail = await Totp.detail(this._id);
-      // this._code = detail.code;
-    } catch (e) {
-      this._code = 'NaN';
-
-      Toast.show({
-        message: $r('app.string.models_runtime_refresh_code_failed'),
-        duration: 3000,
-      })
-    }
+    this._code = '123456';
+    // todo
+    // const detail = Toast.execute(() => Totp.detail(this._id), {
+    //   message: $r('app.string.models_runtime_refresh_code_failed'),
+    //   duration: 3000,
+    // });
+    // this._code = detail.code;
   }
 }
 
