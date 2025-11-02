@@ -9,12 +9,13 @@ export function builder() {
 
 export interface EditIssuerPageParams {
   id: string;
-  issuer?: string;
+  issuer: string;
 }
 
 @Preview
 @ComponentV2
 struct EditIssuer {
+  @Local
   private params: EditIssuerPageParams | undefined = undefined;
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
@@ -26,7 +27,7 @@ struct EditIssuer {
             .fontSize(30)
             .align(Alignment.Center)
 
-          TextInput({ placeholder: $r('app.string.totp_edit_issuer_page_placeholder'), text: this.params?.issuer!! })
+          TextInput({ placeholder: $r('app.string.totp_edit_issuer_page_placeholder'), text: this.params!.issuer!! })
         }
         .margin({ top: 30 })
         .layoutWeight(1)

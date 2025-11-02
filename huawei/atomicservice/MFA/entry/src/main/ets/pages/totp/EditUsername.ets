@@ -15,6 +15,7 @@ export interface EditUsernamePageParams {
 @Preview
 @ComponentV2
 struct EditUsername {
+  @Local
   private params: EditUsernamePageParams | undefined = undefined;
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
@@ -28,7 +29,7 @@ struct EditUsername {
 
           TextInput({
             placeholder: $r('app.string.totp_edit_username_page_placeholder'),
-            text: this.params?.username!!
+            text: this.params!.username!!
           })
         }
         .margin({ top: 30 })
