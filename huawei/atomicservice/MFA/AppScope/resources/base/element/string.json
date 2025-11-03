@@ -2,7 +2,7 @@
   "string": [
     {
       "name": "app_name",
-      "value": "MFA"
+      "value": "MFA双重认证"
     },
     {
       "name": "app_description",

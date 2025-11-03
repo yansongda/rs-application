@@ -14,14 +14,13 @@ export interface EditIssuerPageParams {
   issuer: string;
 }
 
-@Entry
 @ComponentV2
 struct EditIssuer {
   @Local
   private title: Resource | undefined = $r('app.string.totp_edit_issuer_page_title');
   @Local
   private params: EditIssuerPageParams | undefined = undefined;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
 
   build() {
     NavDestination() {

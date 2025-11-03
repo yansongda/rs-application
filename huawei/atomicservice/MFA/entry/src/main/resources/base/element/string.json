@@ -14,7 +14,7 @@
     },
     {
       "name": "entry_ability_label",
-      "value": "MFA"
+      "value": "TOTP"
     },
     {
       "name": "models_runtime_refresh_code_failed",

@@ -2,6 +2,7 @@ import { ItemRuntime } from '../../models/Runtime';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { AppPagesName } from '../../App';
 import { EditIssuerPageParams } from './EditIssuer';
+import { EditUsernamePageParams } from './EditUsername';
 
 interface ListItem {
   title: Resource | string;
@@ -50,7 +51,7 @@ struct Detail {
             title: $r('app.string.totp_detail_page_username'),
             value: this.runtime!.username ?? 'NaN',
             jump: AppPagesName.TOTP_EDIT_USERNAME,
-            jumpParams: { id: this.runtime!.id, issuer: this.runtime!.issuer ?? '' } as EditIssuerPageParams
+            jumpParams: { id: this.runtime!.id, username: this.runtime!.username ?? '' } as EditUsernamePageParams
           } as ListItem,
         ])
 
