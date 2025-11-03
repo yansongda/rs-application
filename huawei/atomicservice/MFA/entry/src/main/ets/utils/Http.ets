@@ -6,8 +6,9 @@ import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
 import { application } from '@kit.AbilityKit';
 import { LoginPageParams } from '../pages/Login';
 
-const authorization = (): Authorization => PersistenceV2.globalConnect({ type: Authorization })!;
-const pages = (): NavPathStack => AppStorageV2.connect(NavPathStack)!;
+const authorization =
+  (): Authorization => PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+const pages = (): NavPathStack => AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
 const url = (): string => {
   const env = App.env;
