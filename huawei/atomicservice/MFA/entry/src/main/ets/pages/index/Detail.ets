@@ -2,6 +2,14 @@ import { ItemRuntime } from '../../models/Runtime';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { AppPagesName } from '../../App';
 
+interface IItem {
+  title: Resource | string;
+  value: Resource | string;
+  jump?: string;
+  jumpParams?: object;
+  jumpAfterCallback?: boolean;
+}
+
 @ObservedV2
 class Item {
   title: Resource | string;
@@ -9,7 +17,19 @@ class Item {
   value: Resource | string;
   jump?: string;
   jumpParams?: object;
-  jumpCallback?: (result: IJumpCallbackResult) => void;
+  jumpAfterCallback: boolean = true;
+
+  constructor(item: IItem) {
+    this.title = item.title;
+    this.value = item.value;
+    this.jump = item.jump;
+    this.jumpParams = item.jumpParams;
+    this.jumpAfterCallback = item.jumpAfterCallback ?? false;
+  }
+
+  callback(result: IJumpCallbackResult) {
+    this.value = result.value;
+  }
 }
 
 export interface IJumpCallbackResult {
@@ -46,39 +66,27 @@ struct Detail {
         }
 
         this.card($r('app.string.totp_detail_page_basic_information'), [
-          {
+          new Item({
             title: $r('app.string.totp_detail_page_issuer'),
             value: this.runtime?.issuer ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_ISSUER,
             jumpParams: this.runtime,
-            jumpCallback: (result: IJumpCallbackResult) => {
-              if (!this.runtime) {
-                return;
-              }
-
-              this.runtime.issuer = result.value;
-            }
-          },
-          {
+            jumpAfterCallback: true,
+          }),
+          new Item({
             title: $r('app.string.totp_detail_page_username'),
             value: this.runtime?.username ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_USERNAME,
             jumpParams: this.runtime,
-            jumpCallback: (result: IJumpCallbackResult) => {
-              if (!this.runtime) {
-                return;
-              }
-
-              this.runtime.username = result.value;
-            }
-          },
+            jumpAfterCallback: true,
+          }),
         ])
 
         this.card($r('app.string.totp_detail_page_config_information'), [
-          {
+          new Item({
             title: $r('app.string.totp_detail_page_config_period'),
             value: (this.runtime?.config.period ?? '30').toString(),
-          },
+          }),
         ])
       }
     }
@@ -152,11 +160,11 @@ struct Detail {
     .onClick(() => {
       if (item.jump) {
         this.pages.pushPathByName(item.jump, item.jumpParams, (popInfo: PopInfo) => {
-          if (!item.jumpCallback) {
+          if (!item.jumpAfterCallback) {
             return;
           }
 
-          item.jumpCallback(popInfo.result as IJumpCallbackResult);
+          item.callback(popInfo.result as IJumpCallbackResult);
         });
       }
     })
