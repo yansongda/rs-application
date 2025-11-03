@@ -25,8 +25,11 @@ export enum AppEnv {
 
 export enum AppPagesName {
   LOGIN = 'login',
-  TOTP_EDIT_ISSUER = 'totp/edit/issuer',
-  TOTP_EDIT_USERNAME = 'totp/edit/username',
+  HOME = 'home',
+  INDEX = 'index',
+  INDEX_DETAIL = 'index/detail',
+  INDEX_EDIT_ISSUER = 'index/edit/issuer',
+  INDEX_EDIT_USERNAME = 'index/edit/username',
 }
 
 export class App {

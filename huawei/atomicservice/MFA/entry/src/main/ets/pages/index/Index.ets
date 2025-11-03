@@ -3,7 +3,7 @@ import { AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, P
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
-import { LogDomain } from '../../App';
+import { AppPagesName, LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
 import { scanBarcode } from '@kit.ScanKit';
 
@@ -22,7 +22,7 @@ export struct Index {
 
   @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
-    hilog.info(LogDomain.PAGES, 'totp/index', '监测到认证信息发生变化');
+    hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '监测到认证信息发生变化');
 
     this.itemsRuntime.clear();
     this.fetch();
@@ -31,13 +31,13 @@ export struct Index {
   @Monitor('isShow')
   onPageStateChange(change: IMonitor): void {
     if (false === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, 'totp/index', '页面隐藏');
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面隐藏');
 
       this.itemsRuntime.clear();
     }
 
     if (true === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, 'totp/index', '页面显示');
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
 
       this.fetch();
     }
@@ -77,7 +77,7 @@ export struct Index {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
           let uri = result.originalValue;
 
-          hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', uri);
+          hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
 
           try {
             const data =
@@ -179,7 +179,7 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPathByName('totp/detail', this.itemsRuntime.get(ri.item.valueOf()))
+            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(ri.item.valueOf()))
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -199,12 +199,12 @@ export struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.totp_index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName('totp/detail', this.itemsRuntime.get(id));
+        this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(id));
 
         try {
           this.scroller.closeAllSwipeActions();
         } catch (error) {
-          hilog.error(LogDomain.PAGES, 'totp/index', '调用 `closeAllSwipeActions` 失败')
+          hilog.error(LogDomain.PAGES, AppPagesName.INDEX, '调用 `closeAllSwipeActions` 失败')
         }
       })
 

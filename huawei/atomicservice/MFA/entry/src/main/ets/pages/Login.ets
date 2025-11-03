@@ -1,5 +1,5 @@
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { LogDomain } from '../App';
+import { AppPagesName, LogDomain } from '../App';
 import { Authorization, State } from '../models/Auth';
 import {
   AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2
@@ -43,7 +43,7 @@ struct Login {
       const refreshState = [State.NEED_REFRESH];
       const state = this.getFinalState(context.pathInfo.param as LoginPageParams);
 
-      hilog.info(LogDomain.PAGES, 'login', 'onReady, state: %{public}s', state.toString());
+      hilog.info(LogDomain.PAGES, AppPagesName.LOGIN, 'onReady, state: %{public}s', state.toString());
 
       if (loginState.includes(state)) {
         await this.auth(AuthType.LOGIN);
@@ -92,7 +92,8 @@ struct Login {
 
         Dialog.close(dialogId);
       } catch (e) {
-        hilog.warn(LogDomain.PAGES, 'login', 'refresh_token 刷新失败，可能过期或服务器错误，重新登录， Cause: %{public}s',
+        hilog.warn(LogDomain.PAGES, AppPagesName.LOGIN,
+          'refresh_token 刷新失败，可能过期或服务器错误，重新登录， Cause: %{public}s',
           JSON.stringify(e))
 
         Dialog.close(dialogId);

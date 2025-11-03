@@ -1,17 +1,22 @@
-import { Totp } from '../../api/Totp';
-import { Toast } from '../../utils/PromptAction';
+import { Totp } from '../../../api/Totp';
+import { Toast } from '../../../utils/PromptAction';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { LogDomain } from '../../App';
+import { AppPagesName, LogDomain } from '../../../App';
 
 @Builder
 export function builder() {
   EditIssuer()
 }
 
-export interface EditIssuerPageParams {
-  id: string;
-  issuer: string;
+export class EditIssuerPageParams {
+  id: string = '0';
+  issuer: string = '未知发行方';
+
+  constructor(id: string | undefined = '0', issuer: string | undefined = '未知发行方') {
+    this.id = id.toString();
+    this.issuer = issuer.toString();
+  }
 }
 
 @ComponentV2
@@ -19,7 +24,7 @@ struct EditIssuer {
   @Local
   private title: Resource | undefined = $r('app.string.totp_edit_issuer_page_title');
   @Local
-  private params: EditIssuerPageParams | undefined = undefined;
+  private params: EditIssuerPageParams = new EditIssuerPageParams();
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
 
   build() {
@@ -33,7 +38,8 @@ struct EditIssuer {
                 .align(Alignment.Center)
             }
 
-            TextInput({ placeholder: $r('app.string.totp_edit_issuer_page_placeholder'), text: this.params!.issuer!! })
+            TextInput({ placeholder: $r('app.string.totp_edit_issuer_page_placeholder'), text: this.params.issuer!! })
+              .defaultFocus(true)
               .onFocus(() => {
                 this.title = $r('app.string.totp_edit_issuer_page_title');
               })
@@ -48,10 +54,11 @@ struct EditIssuer {
             .width('100%')
             .margin({ bottom: 30 })
             .onClick(async () => {
-              hilog.info(LogDomain.PAGES, 'totp/edit/issuer', '修改后的值: %{public}s', this.params!.issuer);
+              hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_ISSUER, '修改后的值: %{public}s',
+                this.params.issuer);
 
               try {
-                await Toast.execute(() => Totp.editIssuer(this.params!.id, this.params!.issuer ?? '未知发行方'))
+                await Toast.execute(() => Totp.editIssuer(this.params.id, this.params.issuer))
 
                 this.pages.pop();
               } catch (e) {
@@ -65,12 +72,25 @@ struct EditIssuer {
     }
     .mode(NavDestinationMode.DIALOG)
     .backgroundColor($r('sys.color.comp_background_focus'))
-    .title(this.title)
+    .title(this.titleBuilder())
     .onReady((context: NavDestinationContext) => {
       this.params = context.pathInfo.param as EditIssuerPageParams;
     })
     .onWillHide(() => {
-      this.params = undefined;
+      this.params = new EditIssuerPageParams();
     });
+  }
+
+  @Builder
+  titleBuilder() {
+    Row() {
+      Text(this.title)
+        .fontWeight(FontWeight.Bold)
+        .fontSize(20)
+        .margin({ left: 10 })
+    }
+    .width('100%')
+    .height('100%')
+    .alignItems(VerticalAlign.Center)
   }
 }

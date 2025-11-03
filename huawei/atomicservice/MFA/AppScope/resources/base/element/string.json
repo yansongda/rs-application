@@ -2,11 +2,15 @@
   "string": [
     {
       "name": "app_name",
-      "value": "MFA双重认证"
+      "value": "MFA认证"
+    },
+    {
+      "name": "app_name_short",
+      "value": "MFA"
     },
     {
       "name": "app_description",
-      "value": "多因子认证（MFA）服务，目前支持 TOTP 算法，为您提供简单、可靠、纯粹的身份验证解决方案。"
+      "value": "多因子双重认证（MFA）服务，目前支持 TOTP 算法，为您提供简单、可靠、纯粹的双重认证解决方案。"
     },
     {
       "name": "loading",
@@ -29,7 +33,7 @@
       "value": "取消"
     },
     {
-      "name": "operation_failed_title",
+      "name": "operation_failed",
       "value": "操作失败"
     }
   ]

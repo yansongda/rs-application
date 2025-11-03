@@ -6,18 +6,18 @@
       "buildFunction": "builder"
     },
     {
-      "name": "totp/detail",
-      "pageSourceFile": "src/main/ets/pages/totp/Detail.ets",
+      "name": "index/detail",
+      "pageSourceFile": "src/main/ets/pages/index/Detail.ets",
       "buildFunction": "builder"
     },
     {
-      "name": "totp/edit/issuer",
-      "pageSourceFile": "src/main/ets/pages/totp/EditIssuer.ets",
+      "name": "index/edit/issuer",
+      "pageSourceFile": "src/main/ets/pages/index/edit/Issuer.ets",
       "buildFunction": "builder"
     },
     {
-      "name": "totp/edit/username",
-      "pageSourceFile": "src/main/ets/pages/totp/EditUsername.ets",
+      "name": "index/edit/username",
+      "pageSourceFile": "src/main/ets/pages/index/edit/Username.ets",
       "buildFunction": "builder"
     }
   ]

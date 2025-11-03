@@ -1,8 +1,8 @@
 import { ItemRuntime } from '../../models/Runtime';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { AppPagesName } from '../../App';
-import { EditIssuerPageParams } from './EditIssuer';
-import { EditUsernamePageParams } from './EditUsername';
+import { EditIssuerPageParams } from './edit/Issuer';
+import { EditUsernamePageParams } from './edit/Username';
 
 interface ListItem {
   title: Resource | string;
@@ -44,14 +44,14 @@ struct Detail {
           {
             title: $r('app.string.totp_detail_page_issuer'),
             value: this.runtime!.issuer ?? 'NaN',
-            jump: AppPagesName.TOTP_EDIT_ISSUER,
-            jumpParams: { id: this.runtime!.id, issuer: this.runtime!.issuer } as EditIssuerPageParams
+            jump: AppPagesName.INDEX_EDIT_ISSUER,
+            jumpParams: new EditIssuerPageParams(this.runtime!.id, this.runtime!.issuer),
           } as ListItem,
           {
             title: $r('app.string.totp_detail_page_username'),
             value: this.runtime!.username ?? 'NaN',
-            jump: AppPagesName.TOTP_EDIT_USERNAME,
-            jumpParams: { id: this.runtime!.id, username: this.runtime!.username ?? '' } as EditUsernamePageParams
+            jump: AppPagesName.INDEX_EDIT_USERNAME,
+            jumpParams: new EditUsernamePageParams(this.runtime!.id, this.runtime!.username ?? '')
           } as ListItem,
         ])
 
