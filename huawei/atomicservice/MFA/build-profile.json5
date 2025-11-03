@@ -32,8 +32,8 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "5.1.0(18)",
-        "compatibleSdkVersion": "5.1.0(18)",
+        "targetSdkVersion": "6.0.0(20)",
+        "compatibleSdkVersion": "6.0.0(20)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
@@ -45,8 +45,8 @@
       {
         "name": "default-office",
         "signingConfig": "office",
-        "targetSdkVersion": "5.1.0(18)",
-        "compatibleSdkVersion": "5.1.0(18)",
+        "targetSdkVersion": "6.0.0(20)",
+        "compatibleSdkVersion": "6.0.0(20)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {

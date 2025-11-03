@@ -86,7 +86,7 @@ struct Detail {
         .divider({ strokeWidth: 1 })
       }
       .width('100%')
-      .height('100%')
+      .height(LayoutPolicy.fixAtIdealSize)
     }
   }
 
@@ -131,7 +131,7 @@ struct Detail {
     }
     .onClick(() => {
       if (item.jump) {
-        this.pages.pushPathByName(item.jump, null);
+        this.pages.pushPathByName(item.jump, item.jumpParams);
       }
     })
   }

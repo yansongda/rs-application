@@ -1,12 +1,11 @@
 import { ItemsRuntime } from '../../models/Runtime';
 import { AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Authorization } from '../../models/Auth';
+import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
 import { LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
 import { scanBarcode } from '@kit.ScanKit';
-import { IItem } from '../../types/Item';
 
 @ComponentV2
 export struct Index {
@@ -20,11 +19,6 @@ export struct Index {
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
-
-  // todo: 删除以下内容
-  aboutToAppear(): void {
-    this.fetch();
-  }
 
   @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
@@ -265,8 +259,7 @@ export struct Index {
           }
 
           try {
-            // todo：解除一下注释
-            // await Totp.delete(this.swipeActionId);
+            await Totp.delete(this.swipeActionId);
 
             this.itemsRuntime.delete(this.swipeActionId);
             this.swipeActionId = undefined;
@@ -307,33 +300,14 @@ export struct Index {
   }
 
   private async fetch(): Promise<void> {
-    // if (this.authorization.state() !== State.NORMAL) {
-    //   return;
-    // }
-    //
-    // const items =
-    //   await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.all(),
-    //     () => this.fetchFailedDialog(() => this.fetch()));
-    //
-    // this.itemsRuntime = new ItemsRuntime(items.values());
+    if (this.authorization.state() !== State.NORMAL) {
+      return;
+    }
 
-    // todo: 解除以上注释，删除以下内容
-    const items = [
-      {
-        id: '1',
-        issuer: '1',
-        username: '1',
-        code: '123456',
-        config: { period: 30 }
-      } as IItem,
-      {
-        id: '2',
-        issuer: '2',
-        username: '2',
-        code: '123456',
-        config: { period: 30 }
-      } as IItem,
-    ]
-    this.itemsRuntime = new ItemsRuntime(items);
+    const items =
+      await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.all(),
+        () => this.fetchFailedDialog(() => this.fetch()));
+
+    this.itemsRuntime = new ItemsRuntime(items.values());
   }
 }

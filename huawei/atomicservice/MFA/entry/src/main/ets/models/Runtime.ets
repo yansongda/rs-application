@@ -3,6 +3,8 @@ import { IItem, IItemConfig } from '../types/Item';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../App';
+import { Toast } from '../utils/PromptAction';
+import { Totp } from '../api/Totp';
 
 @ObservedV2
 export class ItemRuntime {
@@ -142,13 +144,12 @@ export class ItemRuntime {
   }
 
   async freshCode() {
-    this._code = '123456';
-    // todo
-    // const detail = Toast.execute(() => Totp.detail(this._id), {
-    //   message: $r('app.string.models_runtime_refresh_code_failed'),
-    //   duration: 3000,
-    // });
-    // this._code = detail.code;
+    const detail = await Toast.execute(() => Totp.detail(this._id), {
+      message: $r('app.string.models_runtime_refresh_code_failed'),
+      duration: 3000,
+    });
+
+    this._code = detail.code;
   }
 }
 
