@@ -8,31 +8,31 @@
 
 ### optimized
 
-- optimize(backend): 优化 token 的过期时间计算方式 (#99)
+- optimize: 优化 token 的过期时间计算方式 (#99)
 
 ## v1.13.1
 
 ### fixed
 
-- fix(backend): 修正 refresh_token 访问 url (#98)
+- fix: 修正 refresh_token 访问 url (#98)
 
 ## v1.13.0
 
 ### optimized
 
-- optimize(backend): 完善 access-token 认证机制 (#97)
+- optimize: 完善 access-token 认证机制 (#97)
 
 ## v1.12.2
 
 ### optimized
 
-- optimize(backend): 优化 http 请求公共类 (#96)
+- optimize: 优化 http 请求公共类 (#96)
 
 ## v1.12.1
 
 ### optimized
 
-- optimize(backend): 删除与优化兼容性代码 (#95)
+- optimize: 删除与优化兼容性代码 (#95)
 
 ## v1.12.0
 
@@ -44,7 +44,7 @@
 
 ### optimized
 
-- optimize(backend): 优化配置文件 (#93)
+- optimize: 优化配置文件 (#93)
 
 ### chore
 
@@ -54,7 +54,7 @@
 
 ### perf
 
-- perf(backend): 优化 clone() 相关代码，提升性能 (#92)
+- perf: 优化 clone() 相关代码，提升性能 (#92)
 
 ## v1.11.0
 
