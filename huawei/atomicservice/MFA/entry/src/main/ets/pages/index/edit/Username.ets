@@ -25,51 +25,46 @@ struct EditUsername {
   private title: Resource | undefined = $r('app.string.totp_edit_username_page_title');
   @Local
   private params: EditUsernamePageParams = new EditUsernamePageParams();
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
   build() {
     NavDestination() {
-      Scroll() {
-        Column() {
-          Column({ space: 40 }) {
-            if (!this.title) {
-              Text($r('app.string.totp_edit_username_page_title'))
-                .fontSize(30)
-                .align(Alignment.Center)
-            }
-
-            TextInput({
-              placeholder: $r('app.string.totp_edit_username_page_placeholder'),
-              text: this.params.username!!
-            })
-              .defaultFocus(true)
-              .onFocus(() => {
-                this.title = $r('app.string.totp_edit_username_page_title');
-              })
-              .onBlur(() => {
-                this.title = undefined;
-              })
-          }
-          .margin({ top: 30 })
-          .layoutWeight(1)
-
-          Button($r('app.string.ok'))
-            .width('100%')
-            .margin({ bottom: 30 })
-            .onClick(async () => {
-              hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s',
-                this.params!.username);
-
-              try {
-                await Toast.execute(() => Totp.editUsername(this.params.id, this.params.username))
-
-                this.pages.pop();
-              } catch (e) {
-              }
-            })
+      Column({ space: 40 }) {
+        if (!this.title) {
+          Text($r('app.string.totp_edit_username_page_title'))
+            .fontSize(30)
+            .align(Alignment.Center)
         }
-        .padding({ left: 10, right: 10 })
+
+        TextInput({
+          placeholder: $r('app.string.totp_edit_username_page_placeholder'),
+          text: this.params.username!!
+        })
+          .defaultFocus(true)
+          .onFocus(() => {
+            this.title = $r('app.string.totp_edit_username_page_title');
+          })
+          .onBlur(() => {
+            this.title = undefined;
+          })
+
+        Button($r('app.string.ok'))
+          .width('100%')
+          .margin({ bottom: 30 })
+          .onClick(async () => {
+            hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s',
+              this.params!.username);
+
+            try {
+              await Toast.execute(() => Totp.editUsername(this.params.id, this.params.username))
+
+              this.pages.pop();
+            } catch (e) {
+            }
+          })
       }
+      .margin({ top: 30 })
+      .padding({ left: 10, right: 10 })
       .width('100%')
       .height('100%')
     }
