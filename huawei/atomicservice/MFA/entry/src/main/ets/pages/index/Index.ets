@@ -3,26 +3,26 @@ import { AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, P
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
-import { LogDomain } from '../../App';
+import { AppPagesName, LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
 import { scanBarcode } from '@kit.ScanKit';
 
-@Preview
 @ComponentV2
 export struct Index {
   @Param
   isShow: boolean = false;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack)!;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   @Local
-  private authorization: Authorization = PersistenceV2.globalConnect({ type: Authorization })!;
+  private authorization: Authorization =
+    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
 
   @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
-    hilog.info(LogDomain.PAGES, 'totp/index', '监测到认证信息发生变化');
+    hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '监测到认证信息发生变化');
 
     this.itemsRuntime.clear();
     this.fetch();
@@ -31,13 +31,13 @@ export struct Index {
   @Monitor('isShow')
   onPageStateChange(change: IMonitor): void {
     if (false === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, 'totp/index', '页面隐藏');
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面隐藏');
 
       this.itemsRuntime.clear();
     }
 
     if (true === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, 'totp/index', '页面显示');
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
 
       this.fetch();
     }
@@ -55,13 +55,13 @@ export struct Index {
         Row() {
           Text() {
             SymbolSpan($r('sys.symbol.line_viewfinder'))
-              .fontSize($r('app.integer.index_page_add_button_font_size'))
+              .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
               .fontColor([Color.White])
           }
           .margin({ right: 5 })
 
-          Text($r('app.string.index_page_add_name'))
-            .fontSize($r('app.integer.index_page_add_button_font_size'))
+          Text($r('app.string.totp_index_page_add_name'))
+            .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
         }
       }
       .backgroundColor($r('app.color.main'))
@@ -77,11 +77,12 @@ export struct Index {
         scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
           let uri = result.originalValue;
 
-          hilog.info(LogDomain.PAGES, 'totp/home', '扫码结果: %{public}s', uri);
+          hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
 
           try {
             const data =
-              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')), () => Totp.create(uri));
+              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
+                () => Totp.create(uri));
 
             this.itemsRuntime.add(data);
           } catch (e) {
@@ -104,7 +105,7 @@ export struct Index {
       }
       .fontSize(50)
 
-      Text($r('app.string.index_page_data_empty'))
+      Text($r('app.string.totp_index_page_data_empty'))
         .margin({ top: 10 })
     }
     .margin({ top: 50 })
@@ -124,7 +125,7 @@ export struct Index {
                   Column() {
                     Text(this.itemsRuntime.get(ri.item.valueOf()).issuer)
                       .fontSize(30)
-                      .fontColor($r('app.color.index_page_issuer_font'))
+                      .fontColor($r('app.color.totp_index_page_issuer_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -133,7 +134,7 @@ export struct Index {
                   Column() {
                     Text(this.itemsRuntime.get(ri.item.valueOf()).username)
                       .fontSize(12)
-                      .fontColor($r('app.color.index_page_username_font'))
+                      .fontColor($r('app.color.totp_index_page_username_font'))
                       .textAlign(TextAlign.Center)
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -162,7 +163,7 @@ export struct Index {
           }
           .borderRadius(10)
           .height(100)
-          .backgroundColor($r('app.color.index_page_item_background'))
+          .backgroundColor($r('app.color.totp_index_page_item_background'))
           .swipeAction({
             end: {
               builder: () => {
@@ -178,7 +179,7 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPathByName('totp/detail', this.itemsRuntime.get(ri.item.valueOf()))
+            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(ri.item.valueOf()))
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -191,29 +192,29 @@ export struct Index {
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.index_page_detail_name")).fontColor($r('app.color.index_page_swipe_action_font'))
+        Text($r("app.string.totp_index_page_detail_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
       }
       .height('100%')
       .width(60)
       .type(ButtonType.Normal)
-      .backgroundColor($r('app.color.index_page_swipe_action_detail_background'))
+      .backgroundColor($r('app.color.totp_index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName('totp/detail', this.itemsRuntime.get(id));
+        this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(id));
 
         try {
           this.scroller.closeAllSwipeActions();
         } catch (error) {
-          hilog.error(LogDomain.PAGES, 'totp/index', '调用 `closeAllSwipeActions` 失败')
+          hilog.error(LogDomain.PAGES, AppPagesName.INDEX, '调用 `closeAllSwipeActions` 失败')
         }
       })
 
       Button() {
-        Text($r("app.string.index_page_delete_name")).fontColor($r('app.color.index_page_swipe_action_font'))
+        Text($r("app.string.totp_index_page_delete_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
       }
       .height('100%')
       .width(60)
       .type(ButtonType.Normal)
-      .backgroundColor($r('app.color.index_page_swipe_action_delete_background'))
+      .backgroundColor($r('app.color.totp_index_page_swipe_action_delete_background'))
       .onClick(() => {
         this.swipeActionId = id;
 
@@ -223,16 +224,16 @@ export struct Index {
   }
 
   @Builder
-  loadingDialog(content: Resource) {
+  loadingDialog(content?: Resource) {
     LoadingDialogV2({
-      content,
+      content: content ?? $r('app.string.handling'),
     })
   }
 
   @Builder
   addFailedDialog(content: string) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.index_page_add_failed_title'),
+      primaryTitle: $r('app.string.totp_index_page_add_failed_title'),
       content,
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.ok'),
@@ -244,13 +245,13 @@ export struct Index {
   @Builder
   deleteDialog() {
     AlertDialogV2({
-      primaryTitle: $r('app.string.index_page_delete_title'),
-      content: $r('app.string.index_page_delete_content'),
+      primaryTitle: $r('app.string.totp_index_page_delete_title'),
+      content: $r('app.string.totp_index_page_delete_content'),
       primaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.index_page_cancel_name'),
+        content: $r('app.string.totp_index_page_cancel_name'),
       }),
       secondaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.index_page_delete_name'),
+        content: $r('app.string.totp_index_page_delete_name'),
         role: ButtonRole.ERROR,
         action: async () => {
           if ('undefined' == typeof this.swipeActionId) {
@@ -273,7 +274,7 @@ export struct Index {
   @Builder
   deleteFailedDialog(content: string) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.index_page_delete_failed_title'),
+      primaryTitle: $r('app.string.totp_index_page_delete_failed_title'),
       content,
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.ok'),
@@ -285,8 +286,8 @@ export struct Index {
   @Builder
   fetchFailedDialog(action: () => void) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.index_page_fetch_failed_title'),
-      content: $r('app.string.index_page_delete_failed_content'),
+      primaryTitle: $r('app.string.totp_index_page_fetch_failed_title'),
+      content: $r('app.string.totp_index_page_delete_failed_content'),
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.retry'),
         role: ButtonRole.ERROR,

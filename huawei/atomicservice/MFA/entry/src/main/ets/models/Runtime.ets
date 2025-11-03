@@ -1,9 +1,9 @@
 import { HashMap } from '@kit.ArkTS';
 import { IItem, IItemConfig } from '../types/Item';
-import { Toast } from '../utils/PromptAction';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../App';
+import { Toast } from '../utils/PromptAction';
 import { Totp } from '../api/Totp';
 
 @ObservedV2
@@ -48,6 +48,7 @@ export class ItemRuntime {
     this._progress = value;
   }
 
+  @Trace
   private _issuer: string;
 
   public get issuer(): string {
@@ -58,6 +59,7 @@ export class ItemRuntime {
     this._issuer = value;
   }
 
+  @Trace
   private _username: string;
 
   public get username(): string {
@@ -144,17 +146,12 @@ export class ItemRuntime {
   }
 
   async freshCode() {
-    try {
-      const detail = await Totp.detail(this._id);
-      this._code = detail.code;
-    } catch (e) {
-      this._code = 'NaN';
+    const detail = await Toast.execute(() => Totp.detail(this._id), undefined, {
+      message: $r('app.string.models_runtime_refresh_code_failed'),
+      duration: 3000,
+    });
 
-      Toast.show({
-        message: $r('app.string.models_runtime_refresh_code_failed'),
-        duration: 3000,
-      })
-    }
+    this._code = detail.code;
   }
 }
 

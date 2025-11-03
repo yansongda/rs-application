@@ -2,7 +2,7 @@
   "module": {
     "name": "entry",
     "type": "entry",
-    "description": "$string:module_desc",
+    "description": "$string:app_description",
     "mainElement": "EntryAbility",
     "deviceTypes": [
       "phone",
@@ -16,10 +16,10 @@
       {
         "name": "EntryAbility",
         "srcEntry": "./ets/ability/EntryAbility.ets",
-        "description": "$string:module_entry_ability_desc",
-        "icon": "$media:icon",
-        "label": "$string:entry_ability_label",
-        "startWindowIcon": "$media:start_icon",
+        "description": "$string:app_description",
+        "icon": "$media:app_icon",
+        "label": "$string:app_name",
+        "startWindowIcon": "$media:app_icon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
         "skills": [
