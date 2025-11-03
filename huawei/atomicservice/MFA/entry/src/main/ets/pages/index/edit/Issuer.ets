@@ -4,6 +4,7 @@ import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { ItemRuntime } from '../../../models/Runtime';
+import { IJumpCallbackResult } from '../Detail';
 
 @Builder
 export function builder() {
@@ -42,14 +43,15 @@ struct EditIssuer {
           .width('100%')
           .margin({ bottom: 30 })
           .onClick(async () => {
-            hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_ISSUER, '修改后的值: %{public}s',
-              this.runtime?.issuer);
+            const issuer = this.runtime?.issuer ?? '未知发行方';
+
+            hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_ISSUER, '修改后的值: %{public}s', issuer);
 
             try {
-              await Toast.execute(() => Totp.editIssuer(this.runtime?.id ?? 'unknown',
-                this.runtime?.issuer ?? '未知发行方'), () => this.loadingDialog())
+              await Toast.execute(() => Totp.editIssuer(this.runtime?.id ?? 'unknown', issuer),
+                () => this.loadingDialog())
 
-              this.pages.pop();
+              this.pages.pop({ value: issuer } as IJumpCallbackResult);
             } catch (e) {
             }
           })

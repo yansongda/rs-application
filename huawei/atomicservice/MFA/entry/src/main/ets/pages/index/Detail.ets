@@ -2,11 +2,18 @@ import { ItemRuntime } from '../../models/Runtime';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { AppPagesName } from '../../App';
 
-interface IListItem {
+@ObservedV2
+class Item {
   title: Resource | string;
+  @Trace
   value: Resource | string;
   jump?: string;
   jumpParams?: object;
+  jumpCallback?: (result: IJumpCallbackResult) => void;
+}
+
+export interface IJumpCallbackResult {
+  value: string;
 }
 
 @Builder
@@ -44,12 +51,26 @@ struct Detail {
             value: this.runtime?.issuer ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_ISSUER,
             jumpParams: this.runtime,
+            jumpCallback: (result: IJumpCallbackResult) => {
+              if (!this.runtime) {
+                return;
+              }
+
+              this.runtime.issuer = result.value;
+            }
           },
           {
             title: $r('app.string.totp_detail_page_username'),
             value: this.runtime?.username ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_USERNAME,
-            jumpParams: this.runtime
+            jumpParams: this.runtime,
+            jumpCallback: (result: IJumpCallbackResult) => {
+              if (!this.runtime) {
+                return;
+              }
+
+              this.runtime.username = result.value;
+            }
           },
         ])
 
@@ -72,15 +93,15 @@ struct Detail {
   }
 
   @Builder
-  card(headerText: Resource | string, items: IListItem[]) {
+  card(headerText: Resource | string, items: Item[]) {
     Column() {
       this.header(headerText);
 
       List({ space: 10 }) {
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
-          ForEach(items, (item: IListItem) => {
+          ForEach(items, (item: Item) => {
             this.listItem(item)
-          }, (item: IListItem, index: number) => index + item.title.toString())
+          }, (item: Item, index: number) => index + item.title.toString())
         }
         .divider({ strokeWidth: 1 })
       }
@@ -102,7 +123,7 @@ struct Detail {
   }
 
   @Builder
-  listItem(item: IListItem) {
+  listItem(item: Item) {
     ListItem({ style: ListItemStyle.CARD }) {
       Row() {
         Text(item.title)
@@ -130,7 +151,13 @@ struct Detail {
     }
     .onClick(() => {
       if (item.jump) {
-        this.pages.pushPathByName(item.jump, item.jumpParams);
+        this.pages.pushPathByName(item.jump, item.jumpParams, (popInfo: PopInfo) => {
+          if (!item.jumpCallback) {
+            return;
+          }
+
+          item.jumpCallback(popInfo.result as IJumpCallbackResult);
+        });
       }
     })
   }

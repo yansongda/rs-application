@@ -1,9 +1,10 @@
 import { Totp } from '../../../api/Totp';
 import { Toast } from '../../../utils/PromptAction';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { ItemRuntime } from '../../../models/Runtime';
+import { IJumpCallbackResult } from '../Detail';
 
 @Builder
 export function builder() {
@@ -42,14 +43,15 @@ struct EditUsername {
           .width('100%')
           .margin({ bottom: 30 })
           .onClick(async () => {
-            hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s',
-              this.runtime?.username);
+            const username = this.runtime?.username ?? '未知用户名';
+
+            hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s', username);
 
             try {
-              await Toast.execute(() => Totp.editUsername(this.runtime?.id ?? 'unknown',
-                this.runtime?.username ?? '未知用户名'))
+              await Toast.execute(() => Totp.editUsername(this.runtime?.id ?? 'unknown', username),
+                () => this.loadingDialog())
 
-              this.pages.pop();
+              this.pages.pop({ value: username } as IJumpCallbackResult);
             } catch (e) {
             }
           })
@@ -81,5 +83,12 @@ struct EditUsername {
     .width('100%')
     .height('100%')
     .alignItems(VerticalAlign.Center)
+  }
+
+  @Builder
+  loadingDialog(content?: Resource) {
+    LoadingDialogV2({
+      content: content ?? $r('app.string.handling'),
+    })
   }
 }
