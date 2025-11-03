@@ -13,8 +13,8 @@ jobs:
     name: Check - Backend
     runs-on: ubuntu-latest
     defaults:
-    run:
-      working-directory: rust
+      run:
+        working-directory: rust
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -42,8 +42,8 @@ jobs:
     name: Lint - Backend
     runs-on: ubuntu-latest
     defaults:
-    run:
-      working-directory: rust
+      run:
+        working-directory: rust
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
