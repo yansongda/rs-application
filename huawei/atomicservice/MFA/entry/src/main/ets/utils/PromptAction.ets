@@ -89,10 +89,23 @@ export class Toast extends PromptAction {
     }
   }
 
-  static async execute<T>(callback: () => Promise<T>, options?: promptAction.ShowToastOptions): Promise<T> {
+  static async execute<T>(callback: () => Promise<T>, openBuilder?: CustomBuilder,
+    options?: promptAction.ShowToastOptions): Promise<T> {
+    let dialogId: number | undefined;
+
+    if (openBuilder) {
+      dialogId = await Dialog.open(openBuilder);
+    }
+
     try {
-      return await callback();
+      const result = await callback();
+
+      Dialog.close(dialogId);
+
+      return result;
     } catch (e) {
+      Dialog.close(dialogId);
+
       Toast.show(options ?? {
         message: e.message,
         duration: 3000,

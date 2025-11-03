@@ -23,7 +23,6 @@ export class EditUsernamePageParams {
 struct EditUsername {
   @Local
   private title: Resource | undefined = $r('app.string.totp_edit_username_page_title');
-  @Local
   private params: EditUsernamePageParams = new EditUsernamePageParams();
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 

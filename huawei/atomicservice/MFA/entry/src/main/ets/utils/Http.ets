@@ -69,7 +69,9 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
     hilog.info(LogDomain.UTILS, 'utils/http', 'all page path name: %{public}s', JSON.stringify(allPathName));
 
     if (AppPagesName.LOGIN.toString() !== (allPathName[0] ?? 'undefined')) {
-      pages().pushPathByName('login', { forceAuthorizationState: State.REFRESH_TOKEN_EXPIRED } as LoginPageParams);
+      pages()
+        .pushPathByName(AppPagesName.LOGIN,
+          { forceAuthorizationState: State.REFRESH_TOKEN_EXPIRED } as LoginPageParams);
     }
   }
 
@@ -80,7 +82,7 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
     hilog.info(LogDomain.UTILS, 'utils/http', 'all page path name: %{public}s', JSON.stringify(allPathName));
 
     if (AppPagesName.LOGIN.toString() !== (allPathName[0] ?? 'undefined')) {
-      pages().pushPathByName('login', { forceAuthorizationState: State.NEED_REFRESH } as LoginPageParams);
+      pages().pushPathByName(AppPagesName.LOGIN, { forceAuthorizationState: State.NEED_REFRESH } as LoginPageParams);
     }
   }
 

@@ -1,6 +1,6 @@
 import { Totp } from '../../../api/Totp';
 import { Toast } from '../../../utils/PromptAction';
-import { AppStorageV2 } from '@kit.ArkUI';
+import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 
@@ -23,7 +23,6 @@ export class EditIssuerPageParams {
 struct EditIssuer {
   @Local
   private title: Resource | undefined = $r('app.string.totp_edit_issuer_page_title');
-  @Local
   private params: EditIssuerPageParams = new EditIssuerPageParams();
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
@@ -53,7 +52,7 @@ struct EditIssuer {
               this.params.issuer);
 
             try {
-              await Toast.execute(() => Totp.editIssuer(this.params.id, this.params.issuer))
+              await Toast.execute(() => Totp.editIssuer(this.params.id, this.params.issuer), () => this.loadingDialog())
 
               this.pages.pop();
             } catch (e) {
@@ -70,8 +69,6 @@ struct EditIssuer {
     .title(this.titleBuilder())
     .onReady((context: NavDestinationContext) => {
       this.params = context.pathInfo.param as EditIssuerPageParams;
-      this.params = new EditIssuerPageParams();
-
     })
     .onWillHide(() => {
       this.params = new EditIssuerPageParams();
@@ -89,5 +86,12 @@ struct EditIssuer {
     .width('100%')
     .height('100%')
     .alignItems(VerticalAlign.Center)
+  }
+
+  @Builder
+  loadingDialog(content?: Resource) {
+    LoadingDialogV2({
+      content: content ?? $r('app.string.handling'),
+    })
   }
 }

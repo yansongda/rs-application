@@ -224,9 +224,9 @@ export struct Index {
   }
 
   @Builder
-  loadingDialog(content: Resource) {
+  loadingDialog(content?: Resource) {
     LoadingDialogV2({
-      content,
+      content: content ?? $r('app.string.handling'),
     })
   }
 

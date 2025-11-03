@@ -144,7 +144,7 @@ export class ItemRuntime {
   }
 
   async freshCode() {
-    const detail = await Toast.execute(() => Totp.detail(this._id), {
+    const detail = await Toast.execute(() => Totp.detail(this._id), undefined, {
       message: $r('app.string.models_runtime_refresh_code_failed'),
       duration: 3000,
     });

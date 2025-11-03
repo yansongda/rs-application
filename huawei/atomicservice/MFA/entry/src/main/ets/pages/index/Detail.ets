@@ -27,8 +27,8 @@ struct Detail {
       Column({ space: $r('app.integer.totp_detail_page_block_margin_bottom') }) {
         Column() {
           Progress({
-            value: this.runtime!.progress ?? 0,
-            total: this.runtime!.config.period ?? 30,
+            value: this.runtime?.progress ?? 0,
+            total: this.runtime?.config.period ?? 30,
             type: ProgressType.Linear
           })
             .height(2)
@@ -43,22 +43,22 @@ struct Detail {
         this.card($r('app.string.totp_detail_page_basic_information'), [
           {
             title: $r('app.string.totp_detail_page_issuer'),
-            value: this.runtime!.issuer ?? 'NaN',
+            value: this.runtime?.issuer ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_ISSUER,
-            jumpParams: new EditIssuerPageParams(this.runtime!.id, this.runtime!.issuer),
+            jumpParams: new EditIssuerPageParams(this.runtime?.id, this.runtime?.issuer),
           } as ListItem,
           {
             title: $r('app.string.totp_detail_page_username'),
-            value: this.runtime!.username ?? 'NaN',
+            value: this.runtime?.username ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_USERNAME,
-            jumpParams: new EditUsernamePageParams(this.runtime!.id, this.runtime!.username ?? '')
+            jumpParams: new EditUsernamePageParams(this.runtime?.id, this.runtime?.username ?? '')
           } as ListItem,
         ])
 
         this.card($r('app.string.totp_detail_page_config_information'), [
           {
             title: $r('app.string.totp_detail_page_config_period'),
-            value: (this.runtime!.config.period ?? '30').toString(),
+            value: (this.runtime?.config.period ?? '30').toString(),
           } as ListItem,
         ])
       }

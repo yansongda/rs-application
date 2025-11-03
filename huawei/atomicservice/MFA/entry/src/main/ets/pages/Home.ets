@@ -17,7 +17,7 @@ struct Home {
     hilog.info(LogDomain.PAGES, AppPagesName.HOME, '页面显示');
 
     if (State.NORMAL !== this.authorization.state()) {
-      this.pages.pushPathByName('login', null);
+      this.pages.pushPathByName(AppPagesName.LOGIN, null);
     }
 
     this.isShow = true;
