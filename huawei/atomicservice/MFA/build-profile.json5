@@ -19,9 +19,9 @@
         "type": "HarmonyOS",
         "material": {
           "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
-          "storePassword": "00000018747972910E624CC6334C28BBB52FC425315D385AF8738BD317A34AA259D9C6546B140E96",
+          "storePassword": "000000183F6D95C36C9F07F85658C5B91D2A8741361DBB595FA8C906E68E8FB36BEEAC3F331257E5",
           "keyAlias": "HarmonyOS",
-          "keyPassword": "0000001843B7EA891B5447B92BE93586A7530BB33C6D1683B8C290697F470C4EBD239E1CB4E0EFC7",
+          "keyPassword": "000000187FA9D7C9D2D83D8C57A188E7E1FA8AE65A28E602E8BE50485DB86FC909B3FB515E448BB6",
           "signAlg": "SHA256withECDSA",
           "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
           "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"
@@ -32,6 +32,19 @@
       {
         "name": "default",
         "signingConfig": "default",
+        "targetSdkVersion": "5.1.0(18)",
+        "compatibleSdkVersion": "5.1.0(18)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": false
+          }
+        }
+      },
+      {
+        "name": "default-office",
+        "signingConfig": "office",
         "targetSdkVersion": "5.1.0(18)",
         "compatibleSdkVersion": "5.1.0(18)",
         "runtimeOS": "HarmonyOS",
@@ -60,7 +73,8 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default"
+            "default",
+            "default-office"
           ]
         }
       ]
