@@ -3,28 +3,19 @@ import { Toast } from '../../../utils/PromptAction';
 import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
+import { ItemRuntime } from '../../../models/Runtime';
 
 @Builder
 export function builder() {
   EditIssuer()
 }
 
-export class EditIssuerPageParams {
-  id: string = '0';
-  issuer: string = '未知发行方';
-
-  constructor(id: string | undefined = '0', issuer: string | undefined = '未知发行方') {
-    this.id = id.toString();
-    this.issuer = issuer.toString();
-  }
-}
-
 @ComponentV2
 struct EditIssuer {
   @Local
   private title: Resource | undefined = $r('app.string.totp_edit_issuer_page_title');
-  private params: EditIssuerPageParams = new EditIssuerPageParams();
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private runtime: ItemRuntime | undefined = undefined;
 
   build() {
     NavDestination() {
@@ -35,7 +26,10 @@ struct EditIssuer {
             .align(Alignment.Center)
         }
 
-        TextInput({ placeholder: $r('app.string.totp_edit_issuer_page_placeholder'), text: this.params.issuer!! })
+        TextInput({
+          placeholder: $r('app.string.totp_edit_issuer_page_placeholder'),
+          text: this.runtime!.issuer!!
+        })
           .defaultFocus(true)
           .onFocus(() => {
             this.title = $r('app.string.totp_edit_issuer_page_title');
@@ -49,10 +43,11 @@ struct EditIssuer {
           .margin({ bottom: 30 })
           .onClick(async () => {
             hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_ISSUER, '修改后的值: %{public}s',
-              this.params.issuer);
+              this.runtime?.issuer);
 
             try {
-              await Toast.execute(() => Totp.editIssuer(this.params.id, this.params.issuer), () => this.loadingDialog())
+              await Toast.execute(() => Totp.editIssuer(this.runtime?.id ?? 'unknown',
+                this.runtime?.issuer ?? '未知发行方'), () => this.loadingDialog())
 
               this.pages.pop();
             } catch (e) {
@@ -68,10 +63,10 @@ struct EditIssuer {
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title(this.titleBuilder())
     .onReady((context: NavDestinationContext) => {
-      this.params = context.pathInfo.param as EditIssuerPageParams;
+      this.runtime = context.pathInfo.param as ItemRuntime;
     })
     .onWillHide(() => {
-      this.params = new EditIssuerPageParams();
+      this.runtime = undefined;
     });
   }
 

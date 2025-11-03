@@ -1,10 +1,8 @@
 import { ItemRuntime } from '../../models/Runtime';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { AppPagesName } from '../../App';
-import { EditIssuerPageParams } from './edit/Issuer';
-import { EditUsernamePageParams } from './edit/Username';
 
-interface ListItem {
+interface IListItem {
   title: Resource | string;
   value: Resource | string;
   jump?: string;
@@ -45,21 +43,21 @@ struct Detail {
             title: $r('app.string.totp_detail_page_issuer'),
             value: this.runtime?.issuer ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_ISSUER,
-            jumpParams: new EditIssuerPageParams(this.runtime?.id, this.runtime?.issuer),
-          } as ListItem,
+            jumpParams: this.runtime,
+          },
           {
             title: $r('app.string.totp_detail_page_username'),
             value: this.runtime?.username ?? 'NaN',
             jump: AppPagesName.INDEX_EDIT_USERNAME,
-            jumpParams: new EditUsernamePageParams(this.runtime?.id, this.runtime?.username ?? '')
-          } as ListItem,
+            jumpParams: this.runtime
+          },
         ])
 
         this.card($r('app.string.totp_detail_page_config_information'), [
           {
             title: $r('app.string.totp_detail_page_config_period'),
             value: (this.runtime?.config.period ?? '30').toString(),
-          } as ListItem,
+          },
         ])
       }
     }
@@ -74,15 +72,15 @@ struct Detail {
   }
 
   @Builder
-  card(headerText: Resource | string, items: ListItem[]) {
+  card(headerText: Resource | string, items: IListItem[]) {
     Column() {
       this.header(headerText);
 
       List({ space: 10 }) {
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
-          ForEach(items, (item: ListItem) => {
+          ForEach(items, (item: IListItem) => {
             this.listItem(item)
-          }, (item: ListItem, index: number) => index + item.title.toString())
+          }, (item: IListItem, index: number) => index + item.title.toString())
         }
         .divider({ strokeWidth: 1 })
       }
@@ -104,7 +102,7 @@ struct Detail {
   }
 
   @Builder
-  listItem(item: ListItem) {
+  listItem(item: IListItem) {
     ListItem({ style: ListItemStyle.CARD }) {
       Row() {
         Text(item.title)

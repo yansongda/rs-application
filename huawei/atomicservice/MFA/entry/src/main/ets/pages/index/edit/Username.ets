@@ -3,28 +3,19 @@ import { Toast } from '../../../utils/PromptAction';
 import { AppStorageV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
+import { ItemRuntime } from '../../../models/Runtime';
 
 @Builder
 export function builder() {
   EditUsername()
 }
 
-export class EditUsernamePageParams {
-  id: string = '0';
-  username: string = '未知用户名';
-
-  constructor(id: string | undefined = '0', username: string | undefined = '未知用户名') {
-    this.id = id.toString();
-    this.username = username.toString();
-  }
-}
-
 @ComponentV2
 struct EditUsername {
   @Local
   private title: Resource | undefined = $r('app.string.totp_edit_username_page_title');
-  private params: EditUsernamePageParams = new EditUsernamePageParams();
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private runtime: ItemRuntime | undefined = undefined;
 
   build() {
     NavDestination() {
@@ -37,7 +28,7 @@ struct EditUsername {
 
         TextInput({
           placeholder: $r('app.string.totp_edit_username_page_placeholder'),
-          text: this.params.username!!
+          text: this.runtime!.username!!
         })
           .defaultFocus(true)
           .onFocus(() => {
@@ -52,10 +43,11 @@ struct EditUsername {
           .margin({ bottom: 30 })
           .onClick(async () => {
             hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s',
-              this.params!.username);
+              this.runtime?.username);
 
             try {
-              await Toast.execute(() => Totp.editUsername(this.params.id, this.params.username))
+              await Toast.execute(() => Totp.editUsername(this.runtime?.id ?? 'unknown',
+                this.runtime?.username ?? '未知用户名'))
 
               this.pages.pop();
             } catch (e) {
@@ -71,10 +63,10 @@ struct EditUsername {
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title(this.titleBuilder())
     .onReady((context: NavDestinationContext) => {
-      this.params = context.pathInfo.param as EditUsernamePageParams;
+      this.runtime = context.pathInfo.param as ItemRuntime;
     })
     .onWillHide(() => {
-      this.params = new EditUsernamePageParams();
+      this.runtime = undefined;
     });
   }
 

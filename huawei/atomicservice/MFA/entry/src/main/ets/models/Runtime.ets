@@ -48,6 +48,7 @@ export class ItemRuntime {
     this._progress = value;
   }
 
+  @Trace
   private _issuer: string;
 
   public get issuer(): string {
@@ -58,6 +59,7 @@ export class ItemRuntime {
     this._issuer = value;
   }
 
+  @Trace
   private _username: string;
 
   public get username(): string {
