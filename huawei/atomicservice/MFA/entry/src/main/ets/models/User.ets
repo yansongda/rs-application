@@ -1,75 +1,81 @@
 @ObservedV2
 export class Config {
   @Trace
-  private _avatar: string | undefined;
+  private _avatar: Resource | string | undefined;
 
-  public set avatar(value: string | undefined) {
-    this._avatar = value;
-  }
-
-  public get avatar(): string | undefined {
+  public get avatar(): Resource | string | undefined {
     return this._avatar;
   }
 
-  @Trace
-  private _nickname: string | undefined;
-
-  public set nickname(value: string | undefined) {
-    this._nickname = value;
+  public set avatar(value: Resource | string | undefined) {
+    this._avatar = value;
   }
 
-  public get nickname(): string | undefined {
+  @Trace
+  private _nickname: Resource | string | undefined;
+
+  public get nickname(): Resource | string | undefined {
     return this._nickname;
   }
 
-  @Trace
-  private _slogan: string | undefined;
-
-  public set slogan(value: string | undefined) {
-    this._slogan = value;
+  public set nickname(value: Resource | string | undefined) {
+    this._nickname = value;
   }
 
-  public get slogan(): string | undefined {
+  @Trace
+  private _slogan: Resource | string | undefined;
+
+  public get slogan(): Resource | string | undefined {
     return this._slogan;
+  }
+
+  public set slogan(value: Resource | string | undefined) {
+    this._slogan = value;
   }
 }
 
 @ObservedV2
 export class User {
-  private _id: string;
+  constructor() {
+    const config = new Config();
 
-  public set id(value: string) {
-    this._id = value;
+    config.avatar = $r('app.media.default_avatar');
+    config.nickname = $r('app.string.models_user_default_nickname');
+    config.slogan = $r('app.string.models_user_default_slogan');
+
+    this._config = config;
   }
 
-  public get id(): string {
+  @Trace
+  private _id: string | undefined;
+
+  public get id(): string | undefined {
     return this._id;
+  }
+
+  public set id(value: string | undefined) {
+    this._id = value;
   }
 
   @Trace
   private _phone: string | undefined;
 
-  public set phone(value: string | undefined) {
-    this._phone = value;
-  }
-
   public get phone(): string | undefined {
     return this._phone;
   }
 
-  private _config: Config | undefined;
-
-  public set config(value: Config | undefined) {
-    this._config = value;
+  public set phone(value: string | undefined) {
+    this._phone = value;
   }
+
+  @Trace
+  private _config: Config | undefined;
 
   public get config(): Config | undefined {
     return this._config;
   }
 
-  constructor(id: string) {
-    this._id = id;
+  public set config(value: Config | undefined) {
+    this._config = value;
   }
-
-
 }

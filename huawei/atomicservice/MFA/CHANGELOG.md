@@ -1,3 +1,17 @@
+## v1.2.0
+
+### added
+
+- feat: 增加「我的」页面
+
+### optimized
+
+- optimize: 优化操作提示体验
+
+### changed
+
+- change(internal): 优化 string 常量命名
+
 ## v1.1.0
 
 ### added

@@ -89,8 +89,12 @@ export class Toast extends PromptAction {
     }
   }
 
-  static async execute<T>(callback: () => Promise<T>, openBuilder?: CustomBuilder,
-    options?: promptAction.ShowToastOptions): Promise<T> {
+  static async execute<T>(
+    callback: () => Promise<T>,
+    openBuilder?: CustomBuilder,
+    successMessage?: Resource | string | undefined,
+    failedMessage?: Resource | string | undefined
+  ): Promise<T> {
     let dialogId: number | undefined;
 
     if (openBuilder) {
@@ -102,12 +106,19 @@ export class Toast extends PromptAction {
 
       Dialog.close(dialogId);
 
+      if (successMessage) {
+        Toast.show({
+          message: successMessage,
+          duration: 3000,
+        });
+      }
+
       return result;
     } catch (e) {
       Dialog.close(dialogId);
 
-      Toast.show(options ?? {
-        message: e.message,
+      Toast.show({
+        message: failedMessage ?? e.message,
         duration: 3000,
       });
 

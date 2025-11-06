@@ -60,7 +60,7 @@ export struct Index {
           }
           .margin({ right: 5 })
 
-          Text($r('app.string.totp_index_page_add_name'))
+          Text($r('app.string.index_index_page_add_name'))
             .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
         }
       }
@@ -105,7 +105,7 @@ export struct Index {
       }
       .fontSize(50)
 
-      Text($r('app.string.totp_index_page_data_empty'))
+      Text($r('app.string.index_index_page_data_empty'))
         .margin({ top: 10 })
     }
     .margin({ top: 50 })
@@ -192,7 +192,7 @@ export struct Index {
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.totp_index_page_detail_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
+        Text($r("app.string.index_index_page_detail_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
       }
       .height('100%')
       .width(60)
@@ -209,7 +209,7 @@ export struct Index {
       })
 
       Button() {
-        Text($r("app.string.totp_index_page_delete_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
+        Text($r("app.string.index_index_page_delete_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
       }
       .height('100%')
       .width(60)
@@ -233,7 +233,7 @@ export struct Index {
   @Builder
   addFailedDialog(content: string) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_add_failed_title'),
+      primaryTitle: $r('app.string.index_index_page_add_failed_title'),
       content,
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.ok'),
@@ -245,13 +245,13 @@ export struct Index {
   @Builder
   deleteDialog() {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_delete_title'),
-      content: $r('app.string.totp_index_page_delete_content'),
+      primaryTitle: $r('app.string.index_index_page_delete_title'),
+      content: $r('app.string.index_index_page_delete_content'),
       primaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.totp_index_page_cancel_name'),
+        content: $r('app.string.index_index_page_cancel_name'),
       }),
       secondaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.totp_index_page_delete_name'),
+        content: $r('app.string.index_index_page_delete_name'),
         role: ButtonRole.ERROR,
         action: async () => {
           if ('undefined' == typeof this.swipeActionId) {
@@ -259,10 +259,13 @@ export struct Index {
           }
 
           try {
-            await Totp.delete(this.swipeActionId);
+            const dialogId = await Dialog.open(() => this.loadingDialog());
 
+            await Totp.delete(this.swipeActionId);
             this.itemsRuntime.delete(this.swipeActionId);
             this.swipeActionId = undefined;
+
+            Dialog.close(dialogId);
           } catch (e) {
             await Dialog.open(() => this.deleteFailedDialog(e.message));
           }
@@ -274,7 +277,7 @@ export struct Index {
   @Builder
   deleteFailedDialog(content: string) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_delete_failed_title'),
+      primaryTitle: $r('app.string.index_index_page_delete_failed_title'),
       content,
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.ok'),
@@ -286,8 +289,8 @@ export struct Index {
   @Builder
   fetchFailedDialog(action: () => void) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_fetch_failed_title'),
-      content: $r('app.string.totp_index_page_delete_failed_content'),
+      primaryTitle: $r('app.string.index_index_page_fetch_failed_title'),
+      content: $r('app.string.index_index_page_delete_failed_content'),
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.retry'),
         role: ButtonRole.ERROR,

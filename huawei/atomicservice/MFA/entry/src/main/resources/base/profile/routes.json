@@ -6,6 +6,11 @@
       "buildFunction": "builder"
     },
     {
+      "name": "guide",
+      "pageSourceFile": "src/main/ets/pages/Guide.ets",
+      "buildFunction": "builder"
+    },
+    {
       "name": "index/detail",
       "pageSourceFile": "src/main/ets/pages/index/Detail.ets",
       "buildFunction": "builder"
@@ -18,6 +23,11 @@
     {
       "name": "index/edit/username",
       "pageSourceFile": "src/main/ets/pages/index/edit/Username.ets",
+      "buildFunction": "builder"
+    },
+    {
+      "name": "user",
+      "pageSourceFile": "src/main/ets/pages/user/Index.ets",
       "buildFunction": "builder"
     }
   ]

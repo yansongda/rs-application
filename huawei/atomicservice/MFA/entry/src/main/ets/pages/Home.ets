@@ -3,6 +3,7 @@ import { Index } from './index/Index';
 import { AppStorageV2, PersistenceV2 } from '@kit.ArkUI';
 import { Authorization, State } from '../models/Auth';
 import { AppPagesName, LogDomain } from '../App';
+import { User } from '../models/User';
 
 @Entry
 @ComponentV2
@@ -12,6 +13,8 @@ struct Home {
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private authorization: Authorization =
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+  private user: User =
+    PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
 
   onPageShow(): void {
     hilog.info(LogDomain.PAGES, AppPagesName.HOME, '页面显示');
@@ -46,7 +49,11 @@ struct Home {
   @Builder
   title() {
     Row() {
-      Image($r('app.media.default_avatar')).width(30).height(30).margin({ right: 10 })
+      Image(this.user.config?.avatar ?? $r('app.media.default_avatar')).width(30).height(30).margin({ right: 10 })
+        .onClick(() => {
+          this.pages.pushPathByName(AppPagesName.USER, null);
+        })
+
       Text($r("app.string.app_name_short")).fontWeight(FontWeight.Bold).fontSize(30)
     }
     .width('100%')

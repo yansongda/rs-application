@@ -4,7 +4,7 @@ import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { ItemRuntime } from '../../../models/Runtime';
-import { IJumpCallbackResult } from '../Detail';
+import { IJumpCallbackResult } from '../../../components/Card';
 
 @Builder
 export function builder() {
@@ -14,7 +14,7 @@ export function builder() {
 @ComponentV2
 struct EditUsername {
   @Local
-  private title: Resource | undefined = $r('app.string.totp_edit_username_page_title');
+  private title: Resource | undefined = $r('app.string.index_edit_username_page_title');
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private runtime: ItemRuntime | undefined = undefined;
 
@@ -22,18 +22,19 @@ struct EditUsername {
     NavDestination() {
       Column({ space: 40 }) {
         if (!this.title) {
-          Text($r('app.string.totp_edit_username_page_title'))
+          Text($r('app.string.index_edit_username_page_title'))
+            .fontWeight(FontWeight.Bold)
             .fontSize(30)
             .align(Alignment.Center)
         }
 
         TextInput({
-          placeholder: $r('app.string.totp_edit_username_page_placeholder'),
+          placeholder: $r('app.string.index_edit_username_page_placeholder'),
           text: this.runtime!.username!!
         })
           .defaultFocus(true)
           .onFocus(() => {
-            this.title = $r('app.string.totp_edit_username_page_title');
+            this.title = $r('app.string.index_edit_username_page_title');
           })
           .onBlur(() => {
             this.title = undefined;
@@ -48,8 +49,11 @@ struct EditUsername {
             hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s', username);
 
             try {
-              await Toast.execute(() => Totp.editUsername(this.runtime?.id ?? 'unknown', username),
-                () => this.loadingDialog())
+              await Toast.execute(
+                () => Totp.editUsername(this.runtime?.id ?? 'unknown', username),
+                () => this.loadingDialog(),
+                $r('app.string.operation_success'),
+              )
 
               this.pages.pop({ value: username } as IJumpCallbackResult);
             } catch (e) {
