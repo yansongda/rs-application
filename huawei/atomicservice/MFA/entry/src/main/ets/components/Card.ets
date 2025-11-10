@@ -68,8 +68,8 @@ export struct Card {
       .textAlign(TextAlign.Start)
       .width('100%')
       .margin({
-        left: $r('app.integer.totp_detail_page_block_title_margin_left'),
-        bottom: $r('app.integer.totp_detail_page_block_title_margin_bottom')
+        left: $r('app.integer.components_card_header_margin_left'),
+        bottom: $r('app.integer.components_card_header_margin_bottom')
       })
   }
 
@@ -78,7 +78,7 @@ export struct Card {
     ListItem({ style: ListItemStyle.CARD }) {
       Row() {
         Text(item.title)
-          .fontWeight($r('app.integer.totp_detail_page_block_item_title_font_weight'))
+          .fontWeight(FontWeight.Bold)
           .textAlign(TextAlign.Start)
           .width($r('app.string.index_detail_page_block_item_title_width'))
 

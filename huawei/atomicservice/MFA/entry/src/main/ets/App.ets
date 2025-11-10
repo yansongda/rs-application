@@ -32,6 +32,7 @@ export enum AppPagesName {
   INDEX_EDIT_ISSUER = 'index/edit/issuer',
   INDEX_EDIT_USERNAME = 'index/edit/username',
   USER = 'user',
+  USER_DETAIL = 'user/detail',
 }
 
 export class App {

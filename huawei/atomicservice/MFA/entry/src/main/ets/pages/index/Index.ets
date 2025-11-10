@@ -55,13 +55,13 @@ export struct Index {
         Row() {
           Text() {
             SymbolSpan($r('sys.symbol.line_viewfinder'))
-              .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
+              .fontSize($r('app.integer.index_index_page_add_button_font_size'))
               .fontColor([Color.White])
           }
           .margin({ right: 5 })
 
           Text($r('app.string.index_index_page_add_name'))
-            .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
+            .fontSize($r('app.integer.index_index_page_add_button_font_size'))
         }
       }
       .backgroundColor($r('app.color.main'))

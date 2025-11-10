@@ -45,27 +45,42 @@ export class Authorization {
     return this._expiredAt;
   }
 
-  static async authenticateWithHuaweiID(scopes?: string[]): Promise<authentication.LoginWithHuaweiIDCredential> {
-    const authenticateWithHuaweiRequest =
+  static async authenticateWithHuaweiID(scopes?: string[]): Promise<authentication.AuthorizationWithHuaweiIDCredential> {
+    const request =
       new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
 
-    authenticateWithHuaweiRequest.scopes = scopes;
-    authenticateWithHuaweiRequest.forceAuthorization = true;
-    authenticateWithHuaweiRequest.state = util.generateRandomUUID();
+    request.scopes = scopes;
+    request.forceAuthorization = true;
+    request.state = util.generateRandomUUID();
 
-    return Authorization.executeAuthenticateWithHuaweiID(authenticateWithHuaweiRequest);
+    let authenticateWithHuaweiIDResponse: authentication.AuthorizationWithHuaweiIDResponse;
+
+    try {
+      authenticateWithHuaweiIDResponse =
+        await (new authentication.AuthenticationController()).executeRequest(request);
+    } catch (error) {
+      // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
+      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
+
+      return Promise.reject();
+    }
+
+    if (authenticateWithHuaweiIDResponse.state && request.state !== authenticateWithHuaweiIDResponse.state) {
+      hilog.error(LogDomain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
+        authenticateWithHuaweiIDResponse.state, request.state);
+
+      return Promise.reject();
+    }
+
+    return authenticateWithHuaweiIDResponse.data!;
   }
 
   static async loginWithHuaweiID(): Promise<authentication.LoginWithHuaweiIDCredential> {
-    const authenticateWithHuaweiRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
+    const request = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
 
-    authenticateWithHuaweiRequest.forceLogin = false;
-    authenticateWithHuaweiRequest.state = util.generateRandomUUID();
+    request.forceLogin = false;
+    request.state = util.generateRandomUUID();
 
-    return Authorization.executeAuthenticateWithHuaweiID(authenticateWithHuaweiRequest);
-  }
-
-  private static async executeAuthenticateWithHuaweiID(request: authentication.AuthorizationWithHuaweiIDRequest | authentication.LoginWithHuaweiIDRequest): Promise<authentication.LoginWithHuaweiIDCredential> {
     let loginWithHuaweiIDResponse: authentication.LoginWithHuaweiIDResponse;
 
     try {

@@ -14,7 +14,7 @@ struct Detail {
 
   build() {
     NavDestination() {
-      Column({ space: $r('app.integer.totp_detail_page_block_margin_bottom') }) {
+      Column({ space: $r('app.integer.column_space') }) {
         Column() {
           Progress({
             value: this.runtime?.progress ?? 0,

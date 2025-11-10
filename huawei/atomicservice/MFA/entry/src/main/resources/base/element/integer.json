@@ -1,24 +1,24 @@
 {
   "integer": [
     {
-      "name": "totp_index_page_add_button_font_size",
+      "name": "column_space",
       "value": 20
     },
     {
-      "name": "totp_detail_page_block_margin_bottom",
-      "value": 20
-    },
-    {
-      "name": "totp_detail_page_block_title_margin_left",
-      "value": 45
-    },
-    {
-      "name": "totp_detail_page_block_title_margin_bottom",
+      "name": "column_space_smaller",
       "value": 10
     },
     {
-      "name": "totp_detail_page_block_item_title_font_weight",
-      "value": 500
+      "name": "index_index_page_add_button_font_size",
+      "value": 20
+    },
+    {
+      "name": "components_card_header_margin_left",
+      "value": 45
+    },
+    {
+      "name": "components_card_header_margin_bottom",
+      "value": 10
     }
   ]
 }

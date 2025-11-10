@@ -125,19 +125,19 @@
       "value": "我的"
     },
     {
-      "name": "user_index_page_info_nickname",
-      "value": "昵称"
-    },
-    {
-      "name": "user_index_page_info_slogan",
-      "value": "Slogan"
-    },
-    {
-      "name": "user_index_page_personal_title",
+      "name": "user_page_information",
       "value": "个人信息"
     },
     {
-      "name": "user_index_page_personal_phone_title",
+      "name": "user_detail_page_nickname",
+      "value": "昵称"
+    },
+    {
+      "name": "user_detail_page_slogan",
+      "value": "Slogan"
+    },
+    {
+      "name": "user_detail_page_phone",
       "value": "手机号"
     }
   ]
