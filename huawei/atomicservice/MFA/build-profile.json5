@@ -5,26 +5,26 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
-          "storePassword": "00000018FC1DF65D3027D9CF61B5A5A289600696AEE652DBA8E8C7899E11AF2D59729946692C45AB",
+          "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer",
           "keyAlias": "HarmonyOS",
-          "keyPassword": "000000188F3987C49B7A03112CD60A4DD5F0EE4AF37EEFC88B6AC3ECF806BFA1C0C513C755F1493E",
-          "signAlg": "SHA256withECDSA",
+          "keyPassword": "00000018D17EBC7C4FD7F761AF5679FD00045CFCB554E81230C1C9CA3C3665A08356893955A9FBE5",
           "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
-          "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
+          "storePassword": "0000001802AD7ADC930CE86013596AB73EC828ABCDC0F350A89E25EE2440C412967AD34A7150F01E"
         }
       },
       {
-        "name": "office",
+        "name": "debug",
         "type": "HarmonyOS",
         "material": {
-          "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
-          "storePassword": "000000183F6D95C36C9F07F85658C5B91D2A8741361DBB595FA8C906E68E8FB36BEEAC3F331257E5",
-          "keyAlias": "HarmonyOS",
-          "keyPassword": "000000187FA9D7C9D2D83D8C57A188E7E1FA8AE65A28E602E8BE50485DB86FC909B3FB515E448BB6",
+          "certpath": "/Users/yansongda/.ohos/config/debug_MFA_yxcAK7YoBF6BbJhMI7Of-7ghh9Ac1TmE0OODPHjy-Vk=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B847443831A7BCD9900832545970518AC67FFE726AA4BE0D8955CCD452D90437FAD7318E6750A1F",
+          "profile": "/Users/yansongda/.ohos/config/debug_MFA_yxcAK7YoBF6BbJhMI7Of-7ghh9Ac1TmE0OODPHjy-Vk=.p7b",
           "signAlg": "SHA256withECDSA",
-          "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
-          "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer"
+          "storeFile": "/Users/yansongda/.ohos/config/debug_MFA_yxcAK7YoBF6BbJhMI7Of-7ghh9Ac1TmE0OODPHjy-Vk=.p12",
+          "storePassword": "0000001BB57D3A99B0B21D2807D63F4F2601D9D63EE9247B95DB64648D130E74228009F89F87174DCAA597"
         }
       }
     ],
@@ -32,19 +32,6 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "targetSdkVersion": "6.0.0(20)",
-        "compatibleSdkVersion": "6.0.0(20)",
-        "runtimeOS": "HarmonyOS",
-        "buildOption": {
-          "strictMode": {
-            "caseSensitiveCheck": true,
-            "useNormalizedOHMUrl": false
-          }
-        }
-      },
-      {
-        "name": "default-office",
-        "signingConfig": "office",
         "targetSdkVersion": "6.0.0(20)",
         "compatibleSdkVersion": "6.0.0(20)",
         "runtimeOS": "HarmonyOS",
@@ -74,7 +61,6 @@
           "name": "default",
           "applyToProducts": [
             "default",
-            "default-office"
           ]
         }
       ]

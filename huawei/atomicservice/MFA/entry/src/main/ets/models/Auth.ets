@@ -88,7 +88,7 @@ export class Authorization {
         await (new authentication.AuthenticationController()).executeRequest(request);
     } catch (error) {
       // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
-      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
+      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', JSON.stringify(error))
 
       return Promise.reject();
     }
