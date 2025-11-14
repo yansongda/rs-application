@@ -125,6 +125,10 @@
       "value": "我的"
     },
     {
+      "name": "user_detail_page_name",
+      "value": "个人信息"
+    },
+    {
       "name": "user_page_information",
       "value": "个人信息"
     },

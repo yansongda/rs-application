@@ -2,6 +2,7 @@ import { PersistenceV2 } from '@kit.ArkUI';
 import { Card, CardItem } from '../../components/Card';
 import { User } from '../../models/User';
 import { Authorization } from '../../models/Auth';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 @Builder
 export function builder() {
@@ -19,7 +20,9 @@ struct Detail {
       Column({ space: $r('app.integer.column_space') }) {
 
         Image(this.user.config?.avatar ?? $r('app.media.default_avatar')).width('25%')
-
+          .onClick(() => {
+            this.getAvatarAndNickName();
+          })
 
         Card({
           items: [
@@ -46,12 +49,14 @@ struct Detail {
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
-    .title($r('app.string.user_index_page_name'))
+    .title($r('app.string.user_detail_page_name'))
     .mode(NavDestinationMode.DIALOG)
   }
 
   private async getAvatarAndNickName() {
     const credential = await Authorization.authenticateWithHuaweiID(['profile']);
+
+    hilog.info(0, 'user/detail', 'credential: %{public}s', JSON.stringify(credential));
 
     this.user.config!.avatar = credential.avatarUri!;
     this.user.config!.nickname = credential.nickName!;
