@@ -19,7 +19,8 @@ struct Detail {
     NavDestination() {
       Column({ space: $r('app.integer.column_space') }) {
 
-        Image(this.user.config?.avatar ?? $r('app.media.default_avatar')).width('25%')
+        Image(this.user.config?.avatar ?? $r('app.media.default_avatar'))
+          .width('25%')
           .onClick(() => {
             this.getAvatarAndNickName();
           })
@@ -54,7 +55,7 @@ struct Detail {
   }
 
   private async getAvatarAndNickName() {
-    const credential = await Authorization.authenticateWithHuaweiID(['profile']);
+    const credential = await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
 
     hilog.info(0, 'user/detail', 'credential: %{public}s', JSON.stringify(credential));
 

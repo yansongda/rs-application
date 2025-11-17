@@ -4,6 +4,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { App, LogDomain } from '../App';
 import { dateformat } from '@developers/dateformat';
 import { AccessToken } from '../api/AccessToken';
+import { Context } from '@kit.AbilityKit';
 
 export enum State {
   EMPTY_AUTHORIZATION = 0,
@@ -45,7 +46,7 @@ export class Authorization {
     return this._expiredAt;
   }
 
-  static async authenticateWithHuaweiID(scopes?: string[]): Promise<authentication.AuthorizationWithHuaweiIDCredential> {
+  static async authenticateWithHuaweiID(scopes?: string[], context?: Context): Promise<authentication.AuthorizationWithHuaweiIDCredential> {
     const request =
       new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
 
@@ -58,7 +59,7 @@ export class Authorization {
 
     try {
       authenticateWithHuaweiIDResponse =
-        await (new authentication.AuthenticationController()).executeRequest(request);
+        await (new authentication.AuthenticationController(context)).executeRequest(request);
     } catch (error) {
       // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
       hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', JSON.stringify(error))
