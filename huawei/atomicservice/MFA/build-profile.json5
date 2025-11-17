@@ -7,11 +7,24 @@
         "material": {
           "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书.cer",
           "keyAlias": "HarmonyOS",
-          "keyPassword": "00000018F3C58280D6916FD1F33EE0B7F987D2B5AAB879A2A88BA2D16E190E245E0569910E7813C5",
+          "keyPassword": "000000181F0BAB2DAAE4C7D24626225A06B841C658BE0F0572C8CE6577D10873FAD1BAFF12CE5B1C",
+          "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Release.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
+          "storePassword": "00000018F68210DD1C4DF10622DF81872B4BA8DCE8FF368D3AE77B793713FBBDE59425B79742C9F3"
+        }
+      },
+      {
+        "name": "debug",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/yansongda/200-HarmonyOS/HarmonyOS-证书-Debug.cer",
+          "keyAlias": "HarmonyOS-Debug",
+          "keyPassword": "000000180F27B209097B52FD2909F7601CE7F8AEA44263B0256BBBE322F92C7F6AE80AF53DBCEC3F",
           "profile": "/Users/yansongda/200-HarmonyOS/元服务-MFA-Debug.p7b",
           "signAlg": "SHA256withECDSA",
           "storeFile": "/Users/yansongda/200-HarmonyOS/HarmonyOS-秘钥.p12",
-          "storePassword": "00000018331BD0EE2F0369505AD796ECF4B2479C328FE719741B7B88763F8338BAF4FA917EA27476"
+          "storePassword": "00000018BEB4CB919442626456BD32D9992005B83D369D1501253FEC3E14E891886FA8AE198849CA",
         }
       }
     ],
@@ -19,6 +32,19 @@
       {
         "name": "default",
         "signingConfig": "default",
+        "targetSdkVersion": "6.0.0(20)",
+        "compatibleSdkVersion": "6.0.0(20)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": false
+          }
+        }
+      },
+      {
+        "name": "debug",
+        "signingConfig": "debug",
         "targetSdkVersion": "6.0.0(20)",
         "compatibleSdkVersion": "6.0.0(20)",
         "runtimeOS": "HarmonyOS",
@@ -47,7 +73,8 @@
         {
           "name": "default",
           "applyToProducts": [
-            "default"
+            "default",
+            "debug"
           ]
         }
       ]
