@@ -7,7 +7,6 @@ export function builder() {
   Detail()
 }
 
-@Preview
 @ComponentV2
 struct Detail {
   private runtime: ItemRuntime | undefined = undefined;

@@ -1,3 +1,5 @@
+import { Type } from '@kit.ArkUI';
+
 @ObservedV2
 export class Config {
   @Trace
@@ -68,6 +70,7 @@ export class User {
     this._phone = value;
   }
 
+  @Type(Config)
   @Trace
   private _config: Config | undefined;
 

@@ -8,7 +8,6 @@ export function builder() {
   Index()
 }
 
-@Preview
 @ComponentV2
 struct Index {
   private user: User =
