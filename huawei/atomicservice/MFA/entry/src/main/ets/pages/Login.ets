@@ -66,7 +66,7 @@ struct Login {
   loginConfirmDialog(action: () => void) {
     AlertDialogV2({
       primaryTitle: $r('app.string.home_page_login_failed_title'),
-      content: $r('app.string.home_page_login_failed_content'),
+      content: $r('app.string.is_retry'),
       secondaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.retry'),
         role: ButtonRole.ERROR,

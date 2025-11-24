@@ -1,8 +1,12 @@
-import { PersistenceV2 } from '@kit.ArkUI';
+import { AdvancedDialogV2Button, AlertDialogV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { Card, CardItem } from '../../components/Card';
 import { User } from '../../models/User';
 import { Authorization } from '../../models/Auth';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { Dialog } from '../../utils/PromptAction';
+import { User as UserApi } from '../../api/User';
+import { AppPagesName, LogDomain } from '../../App';
+import { HttpError } from '../../utils/Http';
 
 @Builder
 export function builder() {
@@ -60,16 +64,52 @@ struct Detail {
     .mode(NavDestinationMode.DIALOG)
   }
 
+  @Builder
+  loadingDialog() {
+    LoadingDialogV2({
+      content: $r('app.string.handling'),
+    })
+  }
+
+  @Builder
+  editConfirmDialog(action: () => void) {
+    AlertDialogV2({
+      primaryTitle: $r('app.string.user_detail_page_edit_failed'),
+      content: $r('app.string.is_retry'),
+      secondaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.retry'),
+        role: ButtonRole.ERROR,
+        action
+      }),
+    })
+  }
+
   private async getAvatarAndNickName() {
     const credential = await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
 
-    hilog.info(0, 'user/detail', 'credential: %{public}s', JSON.stringify(credential));
+    hilog.info(LogDomain.PAGES, AppPagesName.USER_DETAIL, '授权获取的用户信息: %{public}s', JSON.stringify(credential));
 
-    // todo: 调用 API 存储
-
+    await this.edit(credential.avatarUri!, credential.nickName!);
 
     this.user.config!.avatar = credential.avatarUri!;
     this.user.config!.nickname = credential.nickName!;
     this.cardNickname.value = credential.nickName!;
+  }
+
+  private async edit(avatarUri: string, nickName: string): Promise<void> {
+    await Dialog.execute(
+      () => this.loadingDialog(),
+      async () => {
+        try {
+          await UserApi.editAvatar(avatarUri);
+          await UserApi.editNickname(nickName);
+        } catch (e) {
+          return Promise.reject(new HttpError(e.message));
+        }
+
+        return Promise.resolve();
+      },
+      () => this.editConfirmDialog(() => this.edit(avatarUri, nickName)),
+    );
   }
 }

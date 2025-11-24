@@ -13,7 +13,7 @@ export interface EditNicknameRequest {
 export class User {
   static async detail(): Promise<UserModel> {
     const response: AxiosResponse<Response<UserModel>> =
-      await http.post<UserModel, AxiosResponse<Response<UserModel>>, void>('api/v1/user/detail');
+      await http.post<UserModel, AxiosResponse<Response<UserModel>>, void>('api/v1/users/detail');
 
     if (response.data?.data?.id) {
       return response.data.data;
@@ -24,7 +24,7 @@ export class User {
 
   static async editAvatar(avatar: string): Promise<void> {
     const response: AxiosResponse<Response<void>> =
-      await http.post<void, AxiosResponse<Response<void>>, EditAvatarRequest>('api/v1/user/edit/avatar',
+      await http.post<void, AxiosResponse<Response<void>>, EditAvatarRequest>('api/v1/users/edit/avatar',
         {
           avatar,
         });
@@ -38,7 +38,7 @@ export class User {
 
   static async editNickname(nickname: string): Promise<void> {
     const response: AxiosResponse<Response<void>> =
-      await http.post<void, AxiosResponse<Response<void>>, EditNicknameRequest>('api/v1/user/edit/nickname',
+      await http.post<void, AxiosResponse<Response<void>>, EditNicknameRequest>('api/v1/users/edit/nickname',
         {
           nickname,
         });

@@ -72,13 +72,13 @@ export class User {
 
   @Type(Config)
   @Trace
-  private _config: Config | undefined;
+  private _config: Config;
 
-  public get config(): Config | undefined {
+  public get config(): Config {
     return this._config;
   }
 
-  public set config(value: Config | undefined) {
+  public set config(value: Config) {
     this._config = value;
   }
 }
