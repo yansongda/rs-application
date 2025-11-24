@@ -34,6 +34,11 @@
       "name": "user/detail",
       "pageSourceFile": "src/main/ets/pages/user/Detail.ets",
       "buildFunction": "builder"
+    },
+    {
+      "name": "user/delete",
+      "pageSourceFile": "src/main/ets/pages/user/Delete.ets",
+      "buildFunction": "builder"
     }
   ]
 }

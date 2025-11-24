@@ -43,6 +43,10 @@
     {
       "name": "operation_success",
       "value": "操作成功"
+    },
+    {
+      "name": "more",
+      "value": "更多"
     }
   ]
 }

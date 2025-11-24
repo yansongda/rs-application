@@ -49,12 +49,31 @@ struct Home {
   @Builder
   title() {
     Row() {
-      Image(this.user.config?.avatar ?? $r('app.media.default_avatar')).width(30).height(30).margin({ right: 10 })
+      Image(this.user.config?.avatar ?? $r('app.media.default_avatar'))
+        .width(30)
+        .height(30)
+        .margin({ right: 10 })
+        .borderRadius(10)
         .onClick(() => {
-          this.pages.pushPathByName(AppPagesName.USER, null);
+          this.pages.pushPathByName(AppPagesName.USER_DETAIL, null);
         })
 
       Text($r("app.string.app_name_short")).fontWeight(FontWeight.Bold).fontSize(30)
+
+      Text() {
+        SymbolSpan($r('sys.symbol.plus'))
+      }
+      // .textAlign(TextAlign.End)
+      .alignSelf(ItemAlign.End)
+      .bindMenu([
+        {
+          value: '扫码添加',
+          action: () => {
+
+          },
+          icon: $r('sys.symbol.line_viewfinder')
+        }
+      ])
     }
     .width('100%')
     .height('100%')

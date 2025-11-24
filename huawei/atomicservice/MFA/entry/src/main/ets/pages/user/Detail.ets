@@ -57,6 +57,17 @@ struct Detail {
             this.cardPhone,
           ]
         })
+
+        Card({
+          title: $r('app.string.more'),
+          items: [
+            new CardItem({
+              title: $r('app.string.user_detail_page_delete_account'),
+              value: '',
+              jump: AppPagesName.USER_DELETE,
+            })
+          ]
+        })
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
