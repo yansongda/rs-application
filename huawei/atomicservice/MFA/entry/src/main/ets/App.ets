@@ -33,6 +33,7 @@ export enum AppPagesName {
   INDEX_EDIT_USERNAME = 'index/edit/username',
   USER = 'user',
   USER_DETAIL = 'user/detail',
+  USER_DELETE = 'user/delete',
 }
 
 export class App {
