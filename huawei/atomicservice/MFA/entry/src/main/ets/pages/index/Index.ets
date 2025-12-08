@@ -51,17 +51,24 @@ export struct Index {
         this.main()
       }
 
-      Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
+      // todo: 扫码与手动添加
+      // .bindMenu([
+      //   {
+      //     value: '扫码添加',
+      //     action: () => {
+      //
+      //     },
+      //     icon: $r('sys.symbol.line_viewfinder')
+      //   }
+      // ])
+
+      Button({ type: ButtonType.Circle }) {
         Row() {
           Text() {
-            SymbolSpan($r('sys.symbol.line_viewfinder'))
+            SymbolSpan($r('sys.symbol.plus'))
               .fontSize($r('app.integer.index_index_page_add_button_font_size'))
               .fontColor([Color.White])
           }
-          .margin({ right: 5 })
-
-          Text($r('app.string.index_index_page_add_name'))
-            .fontSize($r('app.integer.index_index_page_add_button_font_size'))
         }
       }
       .backgroundColor($r('app.color.main'))

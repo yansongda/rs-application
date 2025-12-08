@@ -6,7 +6,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Dialog } from '../../utils/PromptAction';
 import { User as UserApi } from '../../api/User';
 import { AppPagesName, LogDomain } from '../../App';
-import { HttpError } from '../../utils/Http';
+import { ISloganPageParams } from './edit/Slogan';
 
 @Builder
 export function builder() {
@@ -20,12 +20,23 @@ struct Detail {
   @Local
   private cardNickname: CardItem = new CardItem({
     title: $r('app.string.user_detail_page_nickname'),
-    value: this.user.config?.nickname ?? $r('app.string.models_user_default_nickname')
+    value: this.user.config.nickname ?? $r('app.string.models_user_default_nickname'),
+    jump: async () => {
+      const credential =
+        await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
+
+      hilog.info(LogDomain.PAGES, AppPagesName.USER_DETAIL, '授权获取的用户信息: %{public}s',
+        JSON.stringify(credential));
+
+      this.editNickName(credential.nickName!);
+    }
   });
   @Local
   private cardSlogan: CardItem = new CardItem({
     title: $r('app.string.user_detail_page_slogan'),
-    value: this.user.config?.slogan ?? $r('app.string.models_user_default_slogan'),
+    value: this.user.config.slogan ?? $r('app.string.models_user_default_slogan'),
+    jump: AppPagesName.USER_EDIT_SLOGAN,
+    jumpParams: { slogan: this.user.config.slogan ?? $r('app.string.models_user_default_slogan') } as ISloganPageParams
   });
   @Local
   private cardPhone: CardItem = new CardItem({
@@ -37,11 +48,17 @@ struct Detail {
     NavDestination() {
       Column({ space: $r('app.integer.column_space') }) {
 
-        Image(this.user.config?.avatar ?? $r('app.media.default_avatar'))
+        Image(this.user.config.avatar ?? $r('app.media.default_avatar'))
           .width('25%')
           .borderRadius(10)
-          .onClick(() => {
-            this.getAvatarAndNickName();
+          .onClick(async () => {
+            const credential =
+              await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
+
+            hilog.info(LogDomain.PAGES, AppPagesName.USER_DETAIL, '授权获取的用户信息: %{public}s',
+              JSON.stringify(credential));
+
+            this.editAvatar(credential.avatarUri!);
           })
 
         Card({
@@ -95,32 +112,24 @@ struct Detail {
     })
   }
 
-  private async getAvatarAndNickName() {
-    const credential = await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
-
-    hilog.info(LogDomain.PAGES, AppPagesName.USER_DETAIL, '授权获取的用户信息: %{public}s', JSON.stringify(credential));
-
-    await this.edit(credential.avatarUri!, credential.nickName!);
-
-    this.user.config!.avatar = credential.avatarUri!;
-    this.user.config!.nickname = credential.nickName!;
-    this.cardNickname.value = credential.nickName!;
-  }
-
-  private async edit(avatarUri: string, nickName: string): Promise<void> {
+  private async editAvatar(avatarUri: string): Promise<void> {
     await Dialog.execute(
       () => this.loadingDialog(),
-      async () => {
-        try {
-          await UserApi.editAvatar(avatarUri);
-          await UserApi.editNickname(nickName);
-        } catch (e) {
-          return Promise.reject(new HttpError(e.message));
-        }
-
-        return Promise.resolve();
-      },
-      () => this.editConfirmDialog(() => this.edit(avatarUri, nickName)),
+      () => UserApi.editAvatar(avatarUri),
+      () => this.editConfirmDialog(() => this.editAvatar(avatarUri)),
     );
+
+    this.user.config!.avatar = avatarUri;
+  }
+
+  private async editNickName(nickName: string): Promise<void> {
+    await Dialog.execute(
+      () => this.loadingDialog(),
+      () => UserApi.editNickname(nickName),
+      () => this.editConfirmDialog(() => this.editNickName(nickName)),
+    );
+
+    this.user.config!.nickname = nickName;
+    this.cardNickname.value = nickName;
   }
 }

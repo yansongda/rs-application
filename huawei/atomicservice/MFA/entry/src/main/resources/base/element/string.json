@@ -147,6 +147,14 @@
     {
       "name": "user_detail_page_delete_account",
       "value": "注销服务"
+    },
+    {
+      "name": "user_detail_edit_slogan_page_title",
+      "value": "设置 Slogan"
+    },
+    {
+      "name": "user_detail_edit_slogan_page_placeholder",
+      "value": "请输入 Slogan"
     }
   ]
 }

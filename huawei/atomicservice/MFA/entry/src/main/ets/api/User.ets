@@ -10,6 +10,10 @@ export interface EditNicknameRequest {
   nickname: string;
 }
 
+export interface EditSloganRequest {
+  slogan: string;
+}
+
 export class User {
   static async detail(): Promise<UserModel> {
     const response: AxiosResponse<Response<UserModel>> =
@@ -41,6 +45,20 @@ export class User {
       await http.post<void, AxiosResponse<Response<void>>, EditNicknameRequest>('api/v1/users/edit/nickname',
         {
           nickname,
+        });
+
+    if (0 === response.data?.code) {
+      return;
+    }
+
+    return Promise.reject(new HttpError(response.data.message));
+  }
+
+  static async editSlogan(slogan: string): Promise<void> {
+    const response: AxiosResponse<Response<void>> =
+      await http.post<void, AxiosResponse<Response<void>>, EditSloganRequest>('api/v1/users/edit/slogan',
+        {
+          slogan,
         });
 
     if (0 === response.data?.code) {

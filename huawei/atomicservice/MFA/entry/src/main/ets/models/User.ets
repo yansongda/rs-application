@@ -3,35 +3,35 @@ import { Type } from '@kit.ArkUI';
 @ObservedV2
 export class Config {
   @Trace
-  private _avatar: Resource | string | undefined;
+  private _avatar: string | undefined;
 
-  public get avatar(): Resource | string | undefined {
+  public get avatar(): string | undefined {
     return this._avatar;
   }
 
-  public set avatar(value: Resource | string | undefined) {
+  public set avatar(value: string | undefined) {
     this._avatar = value;
   }
 
   @Trace
-  private _nickname: Resource | string | undefined;
+  private _nickname: string | undefined;
 
-  public get nickname(): Resource | string | undefined {
+  public get nickname(): string | undefined {
     return this._nickname;
   }
 
-  public set nickname(value: Resource | string | undefined) {
+  public set nickname(value: string | undefined) {
     this._nickname = value;
   }
 
   @Trace
-  private _slogan: Resource | string | undefined;
+  private _slogan: string | undefined;
 
-  public get slogan(): Resource | string | undefined {
+  public get slogan(): string | undefined {
     return this._slogan;
   }
 
-  public set slogan(value: Resource | string | undefined) {
+  public set slogan(value: string | undefined) {
     this._slogan = value;
   }
 }
@@ -39,13 +39,7 @@ export class Config {
 @ObservedV2
 export class User {
   constructor() {
-    const config = new Config();
-
-    config.avatar = $r('app.media.default_avatar');
-    config.nickname = $r('app.string.models_user_default_nickname');
-    config.slogan = $r('app.string.models_user_default_slogan');
-
-    this._config = config;
+    this._config = new Config();
   }
 
   @Trace

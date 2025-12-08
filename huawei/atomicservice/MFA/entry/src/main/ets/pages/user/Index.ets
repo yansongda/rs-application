@@ -17,8 +17,8 @@ struct Index {
     NavDestination() {
       Column({ space: $r('app.integer.column_space') }) {
         Column({ space: $r('app.integer.column_space_smaller') }) {
-          Image(this.user.config?.avatar ?? $r('app.media.default_avatar')).width('25%')
-          Text(this.user.config?.nickname ?? $r('app.string.models_user_default_nickname'))
+          Image(this.user.config.avatar ?? $r('app.media.default_avatar')).width('25%')
+          Text(this.user.config.nickname ?? $r('app.string.models_user_default_nickname'))
             .fontWeight(FontWeight.Bold)
         }
 

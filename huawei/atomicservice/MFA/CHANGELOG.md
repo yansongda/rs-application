@@ -3,10 +3,12 @@
 ### added
 
 - feat: 增加「我的」页面
+- feat: 增加手动输入方式增加
 
 ### optimized
 
 - optimize: 优化操作提示体验
+- optimize: 优化新增操作
 
 ### changed
 

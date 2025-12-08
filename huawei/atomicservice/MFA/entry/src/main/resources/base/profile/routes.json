@@ -39,6 +39,11 @@
       "name": "user/delete",
       "pageSourceFile": "src/main/ets/pages/user/Delete.ets",
       "buildFunction": "builder"
+    },
+    {
+      "name": "user/edit/slogan",
+      "pageSourceFile": "src/main/ets/pages/user/edit/Slogan.ets",
+      "buildFunction": "builder"
     }
   ]
 }

@@ -3,7 +3,7 @@ import { AppStorageV2 } from '@kit.ArkUI';
 interface ICardItem {
   title: Resource | string;
   value: Resource | string;
-  jump?: string;
+  jump?: string | CallableFunction;
   jumpParams?: object;
   jumpAfterCallback?: boolean;
 }
@@ -13,7 +13,7 @@ export class CardItem {
   title: Resource | string;
   @Trace
   value: Resource | string;
-  jump?: string;
+  jump?: string | CallableFunction;
   jumpParams?: object;
   jumpAfterCallback: boolean = true;
 
@@ -101,7 +101,7 @@ export struct Card {
       }
     }
     .onClick(() => {
-      if (item.jump) {
+      if ('string' === typeof item.jump) {
         this.pages.pushPathByName(item.jump, item.jumpParams, (popInfo: PopInfo) => {
           if (!item.jumpAfterCallback) {
             return;
@@ -109,6 +109,10 @@ export struct Card {
 
           item.callback(popInfo.result as IJumpCallbackResult);
         });
+      }
+
+      if ('function' === typeof item.jump) {
+        item.jump();
       }
     })
   }
