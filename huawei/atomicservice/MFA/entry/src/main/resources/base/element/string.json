@@ -155,6 +155,26 @@
     {
       "name": "user_detail_edit_slogan_page_placeholder",
       "value": "请输入 Slogan"
+    },
+    {
+      "name": "user_delete_page_notice",
+      "value": "为了保证您的数据和财产安全，请仔细阅读以下内容。"
+    },
+    {
+      "name": "user_delete_page_operation",
+      "value": "注销服务后，我们将进行以下操作："
+    },
+    {
+      "name": "user_delete_page_operation_delete_profile",
+      "value": "· 永久删除您所有个人资料信息，且无法恢复"
+    },
+    {
+      "name": "user_delete_page_operation_delete_totp",
+      "value": "· 永久删除您当前账户关联的关于 MFA 的所有云端数据，且无法恢复"
+    },
+    {
+      "name": "user_delete_page_delete_button",
+      "value": "确认注销"
     }
   ]
 }

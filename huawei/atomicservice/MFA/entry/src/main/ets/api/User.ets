@@ -67,4 +67,15 @@ export class User {
 
     return Promise.reject(new HttpError(response.data.message));
   }
+
+  static async delete(): Promise<void> {
+    const response: AxiosResponse<Response<void>> =
+      await http.post<void, AxiosResponse<Response<void>>, void>('api/v1/users/delete');
+
+    if (0 === response.data?.code) {
+      return;
+    }
+
+    return Promise.reject(new HttpError(response.data.message));
+  }
 }
