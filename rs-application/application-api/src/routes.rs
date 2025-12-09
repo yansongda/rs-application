@@ -6,7 +6,10 @@ use crate::middleware::authorization;
 use crate::v1;
 
 pub fn api_v1() -> Router {
-    Router::new().merge(api_v1_account()).merge(api_v1_tool())
+    Router::new()
+        .merge(api_v1_account())
+        .merge(api_v1_totp())
+        .merge(api_v1_short_url())
 }
 
 fn api_v1_account() -> Router {
@@ -29,22 +32,16 @@ fn api_v1_account() -> Router {
                 .route("/edit/avatar", post(v1::users::edit_avatar))
                 .route("/edit/nickname", post(v1::users::edit_nickname))
                 .route("/edit/slogan", post(v1::users::edit_slogan))
-                .route("/edit/phone", post(v1::users::edit_phone)),
+                .route("/edit/phone", post(v1::users::edit_phone))
+                .route("/delete", post(v1::users::delete)),
         )
         .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)));
 
     Router::new().merge(unauthorized).merge(authorized)
 }
 
-fn api_v1_tool() -> Router {
-    let unauthorized = Router::new().nest(
-        "/short-url",
-        Router::new()
-            .route("/detail", post(v1::short_url::detail))
-            .route("/redirect/{short}", get(v1::short_url::redirect)),
-    );
-
-    let authorized = Router::new()
+fn api_v1_totp() -> Router {
+    Router::new()
         .nest(
             "/totp",
             Router::new()
@@ -55,6 +52,18 @@ fn api_v1_tool() -> Router {
                 .route("/edit/issuer", post(v1::totp::edit_issuer))
                 .route("/delete", post(v1::totp::delete)),
         )
+        .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)))
+}
+
+fn api_v1_short_url() -> Router {
+    let unauthorized = Router::new().nest(
+        "/short-url",
+        Router::new()
+            .route("/detail", post(v1::short_url::detail))
+            .route("/redirect/{short}", get(v1::short_url::redirect)),
+    );
+
+    let authorized = Router::new()
         .nest(
             "/short-url",
             Router::new().route("/create", post(v1::short_url::create)),
