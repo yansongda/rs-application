@@ -5,6 +5,7 @@ import { AppPagesName, LogDomain } from '../../../App';
 import { User as UserApi } from '../../../api/User';
 import { User } from '../../../models/User';
 import { application } from '@kit.AbilityKit';
+import { IJumpCallbackResult } from '../../../components/Card';
 
 @Builder
 export function builder() {
@@ -19,10 +20,11 @@ export interface ISloganPageParams {
 struct EditSlogan {
   @Local
   private title: Resource | undefined = $r('app.string.user_detail_edit_slogan_page_title');
+  @Local
+  private slogan: string = '';
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private user: User =
     PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
-  private slogan: string = '';
 
   build() {
     NavDestination() {
@@ -60,7 +62,7 @@ struct EditSlogan {
               );
 
               this.user.config.slogan = this.slogan;
-              this.pages.pop();
+              this.pages.pop({ value: this.slogan } as IJumpCallbackResult);
             } catch (e) {
             }
           })
@@ -76,7 +78,7 @@ struct EditSlogan {
     .onReady((context: NavDestinationContext) => {
       let slogan = (context.pathInfo.param as ISloganPageParams).slogan;
 
-      if ('string' !== typeof slogan) {
+      if ('object' === typeof slogan) {
         try {
           slogan = application.getApplicationContext().resourceManager.getStringSync(slogan.id)
         } catch (error) {
@@ -84,7 +86,7 @@ struct EditSlogan {
         }
       }
 
-      this.slogan = this.slogan;
+      this.slogan = slogan;
     })
     .onWillHide(() => {
       this.slogan = '';

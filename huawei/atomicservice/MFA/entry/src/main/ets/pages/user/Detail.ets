@@ -36,7 +36,8 @@ struct Detail {
     title: $r('app.string.user_detail_page_slogan'),
     value: this.user.config.slogan ?? $r('app.string.models_user_default_slogan'),
     jump: AppPagesName.USER_EDIT_SLOGAN,
-    jumpParams: { slogan: this.user.config.slogan ?? $r('app.string.models_user_default_slogan') } as ISloganPageParams
+    jumpParams: { slogan: this.user.config.slogan ?? $r('app.string.models_user_default_slogan') } as ISloganPageParams,
+    jumpAfterCallback: true,
   });
   @Local
   private cardPhone: CardItem = new CardItem({
@@ -89,7 +90,6 @@ struct Detail {
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title($r('app.string.user_detail_page_name'))
-    .mode(NavDestinationMode.DIALOG)
   }
 
   @Builder
