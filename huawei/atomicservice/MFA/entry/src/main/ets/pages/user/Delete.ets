@@ -54,7 +54,7 @@ struct Delete {
 
               this.user.config = new Config();
 
-              this.pages.pop();
+              this.pages.clear();
             })
 
           Row() {

@@ -52,75 +52,83 @@ export struct Index {
   }
 
   build() {
-    Stack({ alignContent: Alignment.BottomEnd }) {
-      Refresh({ refreshing: this.isRefreshing!! }) {
-        if (this.itemsRuntime.ids.size <= 0) {
-          this.empty()
-        } else {
-          this.main()
-        }
-      }
-      .onRefreshing(() => {
-        this.refresh();
-
-        this.isRefreshing = false;
-      })
-      .refreshOffset(64)
-      .pullToRefresh(true)
-
-      Button({ type: ButtonType.Circle }) {
-        Row() {
-          Text() {
-            SymbolSpan($r('sys.symbol.plus'))
-              .fontSize($r('app.integer.index_index_page_add_button_font_size'))
-              .fontColor([Color.White])
+    NavDestination() {
+      Stack({ alignContent: Alignment.BottomEnd }) {
+        Refresh({ refreshing: this.isRefreshing!! }) {
+          if (this.itemsRuntime.ids.size <= 0) {
+            this.empty()
+          } else {
+            this.main()
           }
         }
-      }
-      .backgroundColor($r('app.color.main'))
-      .fontColor(Color.White)
-      .padding({
-        top: 10,
-        bottom: 10,
-        left: 10,
-        right: 10
-      })
-      .margin({ bottom: 50, right: 50 })
-      .bindMenu([
-        {
-          value: '扫码添加',
-          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.line_viewfinder')),
-          action: () => {
-            scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
-              let uri = result.originalValue;
+        .onRefreshing(() => {
+          this.refresh();
 
-              hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
+          this.isRefreshing = false;
+        })
+        .refreshOffset(64)
+        .pullToRefresh(true)
 
-              try {
-                const data =
-                  await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
-                    () => Totp.create(uri));
-
-                this.itemsRuntime.add(data);
-              } catch (e) {
-                await Dialog.open(() => this.addFailedDialog(e.message));
-              }
-            });
-          },
-        },
-        {
-          value: '输入添加',
-          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.doc_plaintext_and_pencil')),
-          action: () => {
-            // todo
-          },
+        Button({ type: ButtonType.Circle }) {
+          Row() {
+            Text() {
+              SymbolSpan($r('sys.symbol.plus'))
+                .fontSize($r('app.integer.index_index_page_add_button_font_size'))
+                .fontColor([Color.White])
+            }
+          }
         }
-      ])
+        .backgroundColor($r('app.color.main'))
+        .fontColor(Color.White)
+        .padding({
+          top: 10,
+          bottom: 10,
+          left: 10,
+          right: 10
+        })
+        .margin({ bottom: 50, right: 50 })
+        .bindMenu([
+          {
+            value: '扫码添加',
+            symbolIcon: new SymbolGlyphModifier($r('sys.symbol.line_viewfinder')),
+            action: () => {
+              scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
+                let uri = result.originalValue;
+
+                hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
+
+                try {
+                  const data =
+                    await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
+                      () => Totp.create(uri));
+
+                  this.itemsRuntime.add(data);
+                } catch (e) {
+                  await Dialog.open(() => this.addFailedDialog(e.message));
+                }
+              });
+            },
+          },
+          {
+            value: '输入添加',
+            symbolIcon: new SymbolGlyphModifier($r('sys.symbol.doc_plaintext_and_pencil')),
+            action: () => {
+              // todo
+            },
+          }
+        ])
+      }
     }
     .width('100%')
     .height('100%')
     .backgroundColor($r('sys.color.comp_background_focus'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .onActive(() => {
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, 'on active')
+    })
+    .onHidden(() => {
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, 'on hidden')
+    })
   }
 
   @Builder
