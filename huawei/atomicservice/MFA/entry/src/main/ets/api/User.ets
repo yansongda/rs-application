@@ -19,7 +19,7 @@ export class User {
     const response: AxiosResponse<Response<UserModel>> =
       await http.post<UserModel, AxiosResponse<Response<UserModel>>, void>('api/v1/users/detail');
 
-    if (response.data?.data?.id) {
+    if (0 === response.data?.code && response.data.data) {
       return response.data.data;
     }
 

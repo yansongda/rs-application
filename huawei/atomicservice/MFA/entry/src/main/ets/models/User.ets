@@ -43,17 +43,6 @@ export class User {
   }
 
   @Trace
-  private _id: string | undefined;
-
-  public get id(): string | undefined {
-    return this._id;
-  }
-
-  public set id(value: string | undefined) {
-    this._id = value;
-  }
-
-  @Trace
   private _phone: string | undefined;
 
   public get phone(): string | undefined {
