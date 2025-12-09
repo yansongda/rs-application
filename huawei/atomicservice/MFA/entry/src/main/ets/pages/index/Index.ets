@@ -1,5 +1,12 @@
 import { ItemsRuntime } from '../../models/Runtime';
-import { AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
+import {
+  AdvancedDialogV2Button,
+  AlertDialogV2,
+  AppStorageV2,
+  LoadingDialogV2,
+  PersistenceV2,
+  SymbolGlyphModifier
+} from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Authorization, State } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
@@ -11,7 +18,8 @@ import { scanBarcode } from '@kit.ScanKit';
 export struct Index {
   @Param
   isShow: boolean = false;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  @Local
+  private isRefreshing: boolean = false;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
   @Local
@@ -19,13 +27,13 @@ export struct Index {
     PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
   @Monitor('authorization.accessToken')
   onAuthorizationChange(): void {
     hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '监测到认证信息发生变化');
 
-    this.itemsRuntime.clear();
-    this.fetch();
+    this.refresh();
   }
 
   @Monitor('isShow')
@@ -45,22 +53,20 @@ export struct Index {
 
   build() {
     Stack({ alignContent: Alignment.BottomEnd }) {
-      if (this.itemsRuntime.ids.size <= 0) {
-        this.empty()
-      } else {
-        this.main()
+      Refresh({ refreshing: this.isRefreshing!! }) {
+        if (this.itemsRuntime.ids.size <= 0) {
+          this.empty()
+        } else {
+          this.main()
+        }
       }
+      .onRefreshing(() => {
+        this.refresh();
 
-      // todo: 扫码与手动添加
-      // .bindMenu([
-      //   {
-      //     value: '扫码添加',
-      //     action: () => {
-      //
-      //     },
-      //     icon: $r('sys.symbol.line_viewfinder')
-      //   }
-      // ])
+        this.isRefreshing = false;
+      })
+      .refreshOffset(64)
+      .pullToRefresh(true)
 
       Button({ type: ButtonType.Circle }) {
         Row() {
@@ -80,23 +86,36 @@ export struct Index {
         right: 10
       })
       .margin({ bottom: 50, right: 50 })
-      .onClick(() => {
-        scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
-          let uri = result.originalValue;
+      .bindMenu([
+        {
+          value: '扫码添加',
+          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.line_viewfinder')),
+          action: () => {
+            scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
+              let uri = result.originalValue;
 
-          hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
+              hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
 
-          try {
-            const data =
-              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
-                () => Totp.create(uri));
+              try {
+                const data =
+                  await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
+                    () => Totp.create(uri));
 
-            this.itemsRuntime.add(data);
-          } catch (e) {
-            await Dialog.open(() => this.addFailedDialog(e.message));
-          }
-        });
-      })
+                this.itemsRuntime.add(data);
+              } catch (e) {
+                await Dialog.open(() => this.addFailedDialog(e.message));
+              }
+            });
+          },
+        },
+        {
+          value: '输入添加',
+          symbolIcon: new SymbolGlyphModifier($r('sys.symbol.doc_plaintext_and_pencil')),
+          action: () => {
+            // todo
+          },
+        }
+      ])
     }
     .width('100%')
     .height('100%')
@@ -319,5 +338,10 @@ export struct Index {
         () => this.fetchFailedDialog(() => this.fetch()));
 
     this.itemsRuntime = new ItemsRuntime(items.values());
+  }
+
+  private refresh() {
+    this.itemsRuntime.clear();
+    this.fetch();
   }
 }

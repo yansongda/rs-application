@@ -1,6 +1,7 @@
-import { User } from '../../api/User';
+import { User as UserApi } from '../../api/User';
+import { Config, User } from '../../models/User';
 import { Toast } from '../../utils/PromptAction';
-import { LoadingDialogV2 } from '@kit.ArkUI';
+import { AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 
 @Builder
 export function builder() {
@@ -12,6 +13,9 @@ export function builder() {
 struct Delete {
   @Local
   private isChecked: boolean = false;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  private user: User =
+    PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
 
   build() {
     NavDestination() {
@@ -43,10 +47,14 @@ struct Delete {
               }
 
               await Toast.execute(
-                () => User.delete(),
+                () => UserApi.delete(),
                 () => this.loadingDialog(),
                 $r('app.string.operation_success'),
               );
+
+              this.user.config = new Config();
+
+              this.pages.pop();
             })
 
           Row() {

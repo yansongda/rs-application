@@ -2,13 +2,13 @@
 
 ### added
 
-- feat: 增加「我的」页面
-- feat: 增加手动输入方式增加
+- feat: 「我的」页面增加
+- feat: 「首页」增加手动输入方式
+- feat: 「首页」增加下拉刷新功能
 
 ### optimized
 
-- optimize: 优化操作提示体验
-- optimize: 优化新增操作
+- optimize: 优化各类操作体验与提示文案
 
 ### changed
 
