@@ -1,5 +1,5 @@
 import { Toast } from '../../../utils/PromptAction';
-import { AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
+import { AppStorageV2, KeyboardAvoidMode, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { User as UserApi } from '../../../api/User';
@@ -26,51 +26,57 @@ struct EditSlogan {
   private user: User =
     PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
 
+  aboutToAppear(): void {
+    this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
+  }
+
   build() {
     NavDestination() {
-      Column({ space: 40 }) {
-        if (!this.title) {
-          Text($r('app.string.user_detail_edit_slogan_page_title'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(30)
-            .align(Alignment.Center)
+      Flex({ direction: FlexDirection.Column }) {
+        Column({ space: $r('app.integer.column_space_biggest') }) {
+          if (!this.title) {
+            Text($r('app.string.user_detail_edit_slogan_page_title'))
+              .fontWeight(FontWeight.Bold)
+              .fontSize(30)
+              .align(Alignment.Center)
+          }
+
+          TextInput({
+            placeholder: $r('app.string.user_detail_edit_slogan_page_placeholder'),
+            text: this.slogan!!,
+          })
+            .defaultFocus(true)
+            .onFocus(() => {
+              this.title = $r('app.string.user_detail_edit_slogan_page_title');
+            })
+            .onBlur(() => {
+              this.title = undefined;
+            })
         }
 
-        TextInput({
-          placeholder: $r('app.string.user_detail_edit_slogan_page_placeholder'),
-          text: this.slogan!!,
-        })
-          .defaultFocus(true)
-          .onFocus(() => {
-            this.title = $r('app.string.user_detail_edit_slogan_page_title');
-          })
-          .onBlur(() => {
-            this.title = undefined;
-          })
+        Flex({ direction: FlexDirection.ColumnReverse }) {
+          Button($r('app.string.ok'))
+            .width('100%')
+            .margin({ bottom: 30 })
+            .onClick(async () => {
+              hilog.info(LogDomain.PAGES, AppPagesName.USER_EDIT_SLOGAN, '修改后的值: %{public}s', this.slogan);
 
-        Button($r('app.string.ok'))
-          .width('100%')
-          .margin({ bottom: 30 })
-          .onClick(async () => {
-            hilog.info(LogDomain.PAGES, AppPagesName.USER_EDIT_SLOGAN, '修改后的值: %{public}s', this.slogan);
+              try {
+                await Toast.execute(
+                  () => UserApi.editSlogan(this.slogan),
+                  () => this.loadingDialog(),
+                  $r('app.string.operation_success'),
+                );
 
-            try {
-              await Toast.execute(
-                () => UserApi.editSlogan(this.slogan),
-                () => this.loadingDialog(),
-                $r('app.string.operation_success'),
-              );
-
-              this.user.config.slogan = this.slogan;
-              this.pages.pop({ value: this.slogan } as IJumpCallbackResult);
-            } catch (e) {
-            }
-          })
+                this.user.config.slogan = this.slogan;
+                this.pages.pop({ value: this.slogan } as IJumpCallbackResult);
+              } catch (e) {
+              }
+            })
+        }
       }
-      .margin({ top: 30 })
-      .padding({ left: 10, right: 10 })
-      .width('100%')
-      .height('100%')
+      .margin({ top: $r('app.integer.page_margin_smaller') })
+      .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
     }
     .mode(NavDestinationMode.DIALOG)
     .backgroundColor($r('sys.color.comp_background_focus'))

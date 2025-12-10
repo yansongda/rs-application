@@ -28,6 +28,7 @@ export enum AppPagesName {
   GUIDE = 'guide',
   HOME = 'home',
   INDEX = 'index',
+  INDEX_CREATE = 'index/create',
   INDEX_DETAIL = 'index/detail',
   INDEX_EDIT_ISSUER = 'index/edit/issuer',
   INDEX_EDIT_USERNAME = 'index/edit/username',

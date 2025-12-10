@@ -6,18 +6,23 @@
       "buildFunction": "builder"
     },
     {
-      "name": "index",
-      "pageSourceFile": "src/main/ets/pages/index/Index.ets",
-      "buildFunction": "builder"
-    },
-    {
       "name": "guide",
       "pageSourceFile": "src/main/ets/pages/Guide.ets",
       "buildFunction": "builder"
     },
     {
+      "name": "index",
+      "pageSourceFile": "src/main/ets/pages/index/Index.ets",
+      "buildFunction": "builder"
+    },
+    {
       "name": "index/detail",
       "pageSourceFile": "src/main/ets/pages/index/Detail.ets",
+      "buildFunction": "builder"
+    },
+    {
+      "name": "index/create",
+      "pageSourceFile": "src/main/ets/pages/index/create/Index.ets",
       "buildFunction": "builder"
     },
     {

@@ -1,6 +1,6 @@
 import { Totp } from '../../../api/Totp';
 import { Toast } from '../../../utils/PromptAction';
-import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
+import { AppStorageV2, KeyboardAvoidMode, LoadingDialogV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { ItemRuntime } from '../../../models/Runtime';
@@ -18,52 +18,58 @@ struct EditUsername {
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private runtime: ItemRuntime | undefined = undefined;
 
+  aboutToAppear(): void {
+    this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
+  }
+
   build() {
     NavDestination() {
-      Column({ space: 40 }) {
-        if (!this.title) {
-          Text($r('app.string.index_edit_username_page_title'))
-            .fontWeight(FontWeight.Bold)
-            .fontSize(30)
-            .align(Alignment.Center)
+      Flex({ direction: FlexDirection.Column }) {
+        Column({ space: $r('app.integer.column_space_biggest') }) {
+          if (!this.title) {
+            Text($r('app.string.index_edit_username_page_title'))
+              .fontWeight(FontWeight.Bold)
+              .fontSize(30)
+              .align(Alignment.Center)
+          }
+
+          TextInput({
+            placeholder: $r('app.string.index_edit_username_page_placeholder'),
+            text: this.runtime!.username!!
+          })
+            .defaultFocus(true)
+            .onFocus(() => {
+              this.title = $r('app.string.index_edit_username_page_title');
+            })
+            .onBlur(() => {
+              this.title = undefined;
+            })
         }
 
-        TextInput({
-          placeholder: $r('app.string.index_edit_username_page_placeholder'),
-          text: this.runtime!.username!!
-        })
-          .defaultFocus(true)
-          .onFocus(() => {
-            this.title = $r('app.string.index_edit_username_page_title');
-          })
-          .onBlur(() => {
-            this.title = undefined;
-          })
+        Flex({ direction: FlexDirection.ColumnReverse }) {
+          Button($r('app.string.ok'))
+            .width('100%')
+            .margin({ bottom: 30 })
+            .onClick(async () => {
+              const username = this.runtime?.username ?? '未知用户名';
 
-        Button($r('app.string.ok'))
-          .width('100%')
-          .margin({ bottom: 30 })
-          .onClick(async () => {
-            const username = this.runtime?.username ?? '未知用户名';
+              hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s', username);
 
-            hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s', username);
+              try {
+                await Toast.execute(
+                  () => Totp.editUsername(this.runtime?.id ?? 'unknown', username),
+                  () => this.loadingDialog(),
+                  $r('app.string.operation_success'),
+                )
 
-            try {
-              await Toast.execute(
-                () => Totp.editUsername(this.runtime?.id ?? 'unknown', username),
-                () => this.loadingDialog(),
-                $r('app.string.operation_success'),
-              )
-
-              this.pages.pop({ value: username } as IJumpCallbackResult);
-            } catch (e) {
-            }
-          })
+                this.pages.pop({ value: username } as IJumpCallbackResult);
+              } catch (e) {
+              }
+            })
+        }
       }
-      .margin({ top: 30 })
-      .padding({ left: 10, right: 10 })
-      .width('100%')
-      .height('100%')
+      .margin({ top: $r('app.integer.page_margin_smaller') })
+      .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
     }
     .mode(NavDestinationMode.DIALOG)
     .backgroundColor($r('sys.color.comp_background_focus'))

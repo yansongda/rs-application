@@ -68,7 +68,7 @@ export struct Index {
           Row() {
             Text() {
               SymbolSpan($r('sys.symbol.plus'))
-                .fontSize($r('app.integer.index_index_page_add_button_font_size'))
+                .fontSize(35)
                 .fontColor([Color.White])
             }
           }
@@ -76,10 +76,10 @@ export struct Index {
         .backgroundColor($r('app.color.main'))
         .fontColor(Color.White)
         .padding({
-          top: 10,
-          bottom: 10,
-          left: 10,
-          right: 10
+          top: $r('app.integer.page_padding'),
+          bottom: $r('app.integer.page_padding'),
+          left: $r('app.integer.page_padding'),
+          right: $r('app.integer.page_padding')
         })
         .margin({ bottom: 50, right: 50 })
         .bindMenu([
@@ -108,7 +108,7 @@ export struct Index {
             value: '输入添加',
             symbolIcon: new SymbolGlyphModifier($r('sys.symbol.doc_plaintext_and_pencil')),
             action: () => {
-              // todo
+              this.pages.pushPathByName(AppPagesName.INDEX_CREATE, null);
             },
           }
         ])
@@ -165,7 +165,7 @@ export struct Index {
       Text($r('app.string.index_index_page_data_empty'))
         .margin({ top: 10 })
     }
-    .margin({ top: 50 })
+    .margin({ top: $r('app.integer.page_margin') })
     .width('100%')
     .height('100%')
   }
@@ -207,7 +207,7 @@ export struct Index {
                 .width('60%')
               }
               .height(98)
-              .padding({ left: 8, right: 8 })
+              .padding({ left: $r('app.integer.page_padding_smaller'), right: $r('app.integer.page_padding_smaller') })
 
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress ?? 30,
@@ -236,9 +236,8 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            const detail = new ItemRuntime(this.itemsRuntime.get(ri.item.valueOf()));
-
-            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, detail)
+            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL,
+              new ItemRuntime(this.itemsRuntime.get(ri.item.valueOf())))
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -258,7 +257,7 @@ export struct Index {
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.totp_index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(id));
+        this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, new ItemRuntime(this.itemsRuntime.get(id)));
 
         try {
           this.scroller.closeAllSwipeActions();

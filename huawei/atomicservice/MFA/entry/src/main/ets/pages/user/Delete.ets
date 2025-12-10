@@ -8,7 +8,6 @@ export function builder() {
   Delete()
 }
 
-@Preview
 @ComponentV2
 struct Delete {
   @Local
@@ -63,7 +62,7 @@ struct Delete {
               .select(this.isChecked)
               .shape(CheckBoxShape.CIRCLE)
 
-            Text('我已知晓注销后将永久删除我的数据')
+            Text($r('app.string.user_delete_page_delete_confirm'))
           }
           .onClick(() => {
             this.isChecked = !this.isChecked;
@@ -71,7 +70,7 @@ struct Delete {
           .margin({ bottom: 10 })
         }
       }
-      .padding({ left: 10, right: 10 })
+      .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title($r('app.string.user_detail_page_delete_account'))

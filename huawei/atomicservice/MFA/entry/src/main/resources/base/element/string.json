@@ -69,7 +69,7 @@
       "value": "是否重试加载数据"
     },
     {
-      "name": "index_detail_page_name",
+      "name": "index_detail_page_title",
       "value": "详情"
     },
     {
@@ -99,6 +99,10 @@
     {
       "name": "index_detail_page_config_period",
       "value": "更新周期"
+    },
+    {
+      "name": "index_create_page_title",
+      "value": "手动创建"
     },
     {
       "name": "index_edit_issuer_page_title",
@@ -171,6 +175,10 @@
     {
       "name": "user_delete_page_operation_delete_totp",
       "value": "· 永久删除您当前账户关联的关于 MFA 的所有云端数据，且无法恢复"
+    },
+    {
+      "name": "user_delete_page_delete_confirm",
+      "value": "我已知晓注销后将永久删除我的数据"
     },
     {
       "name": "user_delete_page_delete_button",

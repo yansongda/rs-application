@@ -34,7 +34,7 @@ struct Login {
       }
       .width('100%')
       .height('100%')
-      .margin({ top: 50 })
+      .margin({ top: $r('app.integer.page_margin') })
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
     .hideTitleBar(true)

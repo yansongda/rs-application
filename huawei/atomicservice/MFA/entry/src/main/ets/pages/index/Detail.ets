@@ -61,7 +61,7 @@ struct Detail {
       }
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
-    .title($r('app.string.index_detail_page_name'))
+    .title($r('app.string.index_detail_page_title'))
     .onReady((context: NavDestinationContext) => {
       this.runtime = context.pathInfo.param as ItemRuntime;
       this.runtime.start();
