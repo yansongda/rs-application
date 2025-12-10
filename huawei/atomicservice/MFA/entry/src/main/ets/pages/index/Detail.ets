@@ -23,7 +23,7 @@ struct Detail {
             .height(2)
             .color($r('app.color.main'))
 
-          Text(this.runtime!.code ?? 'NaN')
+          Text(this.runtime?.code ?? 'NaN')
             .textAlign(TextAlign.Center)
             .fontSize(70)
             .margin({ top: 20 })
@@ -54,7 +54,7 @@ struct Detail {
           items: [
             new CardItem({
               title: $r('app.string.index_detail_page_config_period'),
-              value: (this.runtime?.config.period ?? '30').toString(),
+              value: (this.runtime?.config.period ?? '30').toString() + 's',
             }),
           ]
         })
@@ -64,8 +64,10 @@ struct Detail {
     .title($r('app.string.index_detail_page_name'))
     .onReady((context: NavDestinationContext) => {
       this.runtime = context.pathInfo.param as ItemRuntime;
+      this.runtime.start();
     })
     .onWillHide(() => {
+      this.runtime?.stop();
       this.runtime = undefined;
     });
   }

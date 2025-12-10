@@ -53,6 +53,7 @@ struct Delete {
               );
 
               this.user.config = new Config();
+              this.user.phone = undefined;
 
               this.pages.clear();
             })

@@ -1,14 +1,13 @@
 import { HashMap } from '@kit.ArkTS';
 import { IItem, IItemConfig } from '../types/Item';
 import { AppStorageV2 } from '@kit.ArkUI';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import { AppPagesName, LogDomain } from '../App';
+import { AppPagesName } from '../App';
 import { Toast } from '../utils/PromptAction';
 import { Totp } from '../api/Totp';
 
 @ObservedV2
 export class ItemRuntime {
-  constructor(item: IItem) {
+  constructor(item: IItem | ItemRuntime) {
     this._id = item.id;
     this._code = item.code;
     this._issuer = item.issuer;
@@ -105,8 +104,6 @@ export class ItemRuntime {
     this.stop();
 
     const allPathName: string[] = AppStorageV2.connect(NavPathStack)!.getAllPathName();
-
-    hilog.info(LogDomain.MODELS, 'models/runtime', 'all page path name: %{public}s', JSON.stringify(allPathName));
 
     if (AppPagesName.LOGIN.toString() === (allPathName[0] ?? 'undefined')) {
       return;

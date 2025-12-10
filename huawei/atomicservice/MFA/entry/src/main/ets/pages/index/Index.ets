@@ -1,4 +1,4 @@
-import { ItemsRuntime } from '../../models/Runtime';
+import { ItemRuntime, ItemsRuntime } from '../../models/Runtime';
 import {
   AdvancedDialogV2Button,
   AlertDialogV2,
@@ -8,47 +8,42 @@ import {
   SymbolGlyphModifier
 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Authorization, State } from '../../models/Auth';
+import { Authorization } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
 import { AppPagesName, LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
 import { scanBarcode } from '@kit.ScanKit';
+import { User } from '../../models/User';
+import { User as UserApi } from '../../api/User';
+
+@Builder
+export function builder() {
+  Index()
+}
 
 @ComponentV2
 export struct Index {
-  @Param
-  isShow: boolean = false;
+  @Local
+  authorization: Authorization =
+    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
   @Local
   private isRefreshing: boolean = false;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
-  @Local
-  private authorization: Authorization =
-    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+  private user: User =
+    PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
   @Monitor('authorization.accessToken')
-  onAuthorizationChange(): void {
+  async onAuthorizationChange(): Promise<void> {
     hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '监测到认证信息发生变化');
 
-    this.refresh();
-  }
+    const user = await UserApi.detail();
 
-  @Monitor('isShow')
-  onPageStateChange(change: IMonitor): void {
-    if (false === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面隐藏');
-
-      this.itemsRuntime.clear();
-    }
-
-    if (true === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
-
-      this.fetch();
-    }
+    this.user.phone = user.phone;
+    this.user.config = user.config;
   }
 
   build() {
@@ -121,14 +116,42 @@ export struct Index {
     }
     .width('100%')
     .height('100%')
+    .title(this.title())
+    .hideBackButton(true)
     .backgroundColor($r('sys.color.comp_background_focus'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .onActive(() => {
-      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, 'on active')
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
+
+      this.refresh();
     })
     .onHidden(() => {
-      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, 'on hidden')
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面隐藏');
+
+      this.itemsRuntime.clear();
     })
+  }
+
+  @Builder
+  title() {
+    Row() {
+      Image(this.user.config.avatar ?? $r('app.media.default_avatar'))
+        .width(30)
+        .height(30)
+        .autoResize(true)
+        .interpolation(ImageInterpolation.Medium)
+        .margin({ right: 10 })
+        .borderRadius(10)
+        .onClick(() => {
+          this.pages.pushPathByName(AppPagesName.USER_DETAIL, null);
+        })
+
+      Text($r("app.string.app_name_short")).fontWeight(FontWeight.Bold).fontSize(30)
+    }
+    .width('100%')
+    .height('100%')
+    .margin({ left: 10 })
+    .alignItems(VerticalAlign.Center)
   }
 
   @Builder
@@ -213,7 +236,9 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(ri.item.valueOf()))
+            const detail = new ItemRuntime(this.itemsRuntime.get(ri.item.valueOf()));
+
+            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, detail)
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -336,20 +361,13 @@ export struct Index {
     })
   }
 
-  private async fetch(): Promise<void> {
-    if (this.authorization.state() !== State.NORMAL) {
-      return;
-    }
+  private async refresh(): Promise<void> {
+    this.itemsRuntime.clear();
 
     const items =
       await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.all(),
-        () => this.fetchFailedDialog(() => this.fetch()));
+        () => this.fetchFailedDialog(() => this.refresh()));
 
     this.itemsRuntime = new ItemsRuntime(items.values());
-  }
-
-  private refresh() {
-    this.itemsRuntime.clear();
-    this.fetch();
   }
 }

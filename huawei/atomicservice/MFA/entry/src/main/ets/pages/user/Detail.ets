@@ -48,9 +48,10 @@ struct Detail {
   build() {
     NavDestination() {
       Column({ space: $r('app.integer.column_space') }) {
-        Image(this.user.config.avatar)
-          .alt($r('app.media.default_avatar'))
+        Image(this.user.config.avatar ?? $r('app.media.default_avatar'))
           .width('25%')
+          .autoResize(false)
+          .interpolation(ImageInterpolation.High)
           .borderRadius(10)
           .onClick(async () => {
             const credential =
@@ -119,7 +120,7 @@ struct Detail {
       () => this.editConfirmDialog(() => this.editAvatar(avatarUri)),
     );
 
-    this.user.config!.avatar = avatarUri;
+    this.user.config.avatar = avatarUri;
   }
 
   private async editNickName(nickName: string): Promise<void> {
@@ -129,7 +130,7 @@ struct Detail {
       () => this.editConfirmDialog(() => this.editNickName(nickName)),
     );
 
-    this.user.config!.nickname = nickName;
+    this.user.config.nickname = nickName;
     this.cardNickname.value = nickName;
   }
 }

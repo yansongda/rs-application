@@ -9,6 +9,7 @@
 ### optimized
 
 - optimize: 优化各类操作体验与提示文案
+- optimize: 使用 api20 新特性优化首页导航 navigation 逻辑
 
 ### changed
 

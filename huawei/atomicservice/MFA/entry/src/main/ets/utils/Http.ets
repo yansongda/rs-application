@@ -66,8 +66,6 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   if ([1005, 1006].includes(responseCode)) {
     const allPathName = pages().getAllPathName();
 
-    hilog.info(LogDomain.UTILS, 'utils/http', 'all page path name: %{public}s', JSON.stringify(allPathName));
-
     if (AppPagesName.LOGIN.toString() !== (allPathName[0] ?? 'undefined')) {
       pages()
         .pushPathByName(AppPagesName.LOGIN,
@@ -78,8 +76,6 @@ http.interceptors.response.use((response: AxiosResponse): AxiosResponse => {
   // token 过期
   if ([1000, 1001, 1002, 1004].includes(responseCode)) {
     const allPathName = pages().getAllPathName();
-
-    hilog.info(LogDomain.UTILS, 'utils/http', 'all page path name: %{public}s', JSON.stringify(allPathName));
 
     if (AppPagesName.LOGIN.toString() !== (allPathName[0] ?? 'undefined')) {
       pages().pushPathByName(AppPagesName.LOGIN, { forceAuthorizationState: State.NEED_REFRESH } as LoginPageParams);
