@@ -3,9 +3,9 @@ import { AppStorageV2 } from '@kit.ArkUI';
 interface ICardItem {
   title: Resource | string;
   value: Resource | string;
-  jump?: string | CallableFunction;
-  jumpParams?: object;
-  jumpAfterCallback?: boolean;
+  eventClick?: string | CallableFunction;
+  eventClickParams?: object;
+  eventClickAfterCallback?: boolean;
 }
 
 @ObservedV2
@@ -13,16 +13,16 @@ export class CardItem {
   title: Resource | string;
   @Trace
   value: Resource | string;
-  jump?: string | CallableFunction;
-  jumpParams?: object;
-  jumpAfterCallback: boolean = true;
+  eventClick?: string | CallableFunction;
+  eventClickParams?: object;
+  eventClickAfterCallback: boolean = true;
 
   constructor(item: ICardItem) {
     this.title = item.title;
     this.value = item.value;
-    this.jump = item.jump;
-    this.jumpParams = item.jumpParams;
-    this.jumpAfterCallback = item.jumpAfterCallback ?? false;
+    this.eventClick = item.eventClick;
+    this.eventClickParams = item.eventClickParams;
+    this.eventClickAfterCallback = item.eventClickAfterCallback ?? false;
   }
 
   callback(result: IJumpCallbackResult) {
@@ -89,7 +89,7 @@ export struct Card {
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-          if (item.jump) {
+          if (item.eventClick) {
             Text() {
               SymbolSpan($r('sys.symbol.chevron_right'))
             }
@@ -101,9 +101,9 @@ export struct Card {
       }
     }
     .onClick(() => {
-      if ('string' === typeof item.jump) {
-        this.pages.pushPathByName(item.jump, item.jumpParams, (popInfo: PopInfo) => {
-          if (!item.jumpAfterCallback) {
+      if ('string' === typeof item.eventClick) {
+        this.pages.pushPathByName(item.eventClick, item.eventClickParams, (popInfo: PopInfo) => {
+          if (!item.eventClickAfterCallback) {
             return;
           }
 
@@ -111,8 +111,8 @@ export struct Card {
         });
       }
 
-      if ('function' === typeof item.jump) {
-        item.jump();
+      if ('function' === typeof item.eventClick) {
+        item.eventClick();
       }
     })
   }

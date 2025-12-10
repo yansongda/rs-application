@@ -105,6 +105,10 @@
       "value": "手动创建"
     },
     {
+      "name": "index_create_page_create_button",
+      "value": "创建"
+    },
+    {
       "name": "index_edit_issuer_page_title",
       "value": "设置发行方"
     },

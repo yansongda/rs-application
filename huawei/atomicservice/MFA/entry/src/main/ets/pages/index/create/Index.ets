@@ -1,5 +1,4 @@
-import { AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
-import { User } from '../../../models/User';
+import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { Card, CardItem } from '../../../components/Card';
 import { AppPagesName } from '../../../App';
 
@@ -12,8 +11,6 @@ export function builder() {
 @ComponentV2
 struct Index {
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
-  private user: User =
-    PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
 
   build() {
     NavDestination() {
@@ -24,12 +21,12 @@ struct Index {
             new CardItem({
               title: $r('app.string.index_detail_page_issuer'),
               value: 'NaN',
-              jump: AppPagesName.INDEX_EDIT_ISSUER,
+              eventClick: AppPagesName.INDEX_EDIT_ISSUER,
             }),
             new CardItem({
               title: $r('app.string.index_detail_page_username'),
               value: 'NaN',
-              jump: AppPagesName.INDEX_EDIT_USERNAME,
+              eventClick: AppPagesName.INDEX_EDIT_USERNAME,
             }),
           ]
         })
@@ -44,7 +41,7 @@ struct Index {
           ]
         })
 
-        Button($r('app.string.ok'))
+        Button($r('app.string.index_create_page_create_button'))
           .width('100%')
           .margin({ bottom: 30 })
           .onClick(async () => {
@@ -65,8 +62,6 @@ struct Index {
       }
       .margin({ top: $r('app.integer.page_margin_smaller') })
       .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
-      .width('100%')
-      .height('100%')
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title($r('app.string.index_create_page_title'))

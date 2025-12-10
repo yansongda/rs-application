@@ -21,7 +21,7 @@ struct Detail {
   private cardNickname: CardItem = new CardItem({
     title: $r('app.string.user_detail_page_nickname'),
     value: this.user.config.nickname ?? $r('app.string.models_user_default_nickname'),
-    jump: async () => {
+    eventClick: async () => {
       const credential =
         await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
 
@@ -35,9 +35,11 @@ struct Detail {
   private cardSlogan: CardItem = new CardItem({
     title: $r('app.string.user_detail_page_slogan'),
     value: this.user.config.slogan ?? $r('app.string.models_user_default_slogan'),
-    jump: AppPagesName.USER_EDIT_SLOGAN,
-    jumpParams: { slogan: this.user.config.slogan ?? $r('app.string.models_user_default_slogan') } as ISloganPageParams,
-    jumpAfterCallback: true,
+    eventClick: AppPagesName.USER_EDIT_SLOGAN,
+    eventClickParams: {
+      slogan: this.user.config.slogan ?? $r('app.string.models_user_default_slogan')
+    } as ISloganPageParams,
+    eventClickAfterCallback: true,
   });
   @Local
   private cardPhone: CardItem = new CardItem({
@@ -83,7 +85,7 @@ struct Detail {
             new CardItem({
               title: $r('app.string.user_detail_page_delete_account'),
               value: '',
-              jump: AppPagesName.USER_DELETE,
+              eventClick: AppPagesName.USER_DELETE,
             })
           ]
         })

@@ -35,16 +35,16 @@ struct Detail {
             new CardItem({
               title: $r('app.string.index_detail_page_issuer'),
               value: this.runtime?.issuer ?? 'NaN',
-              jump: AppPagesName.INDEX_EDIT_ISSUER,
-              jumpParams: this.runtime,
-              jumpAfterCallback: true,
+              eventClick: AppPagesName.INDEX_EDIT_ISSUER,
+              eventClickParams: this.runtime,
+              eventClickAfterCallback: true,
             }),
             new CardItem({
               title: $r('app.string.index_detail_page_username'),
               value: this.runtime?.username ?? 'NaN',
-              jump: AppPagesName.INDEX_EDIT_USERNAME,
-              jumpParams: this.runtime,
-              jumpAfterCallback: true,
+              eventClick: AppPagesName.INDEX_EDIT_USERNAME,
+              eventClickParams: this.runtime,
+              eventClickAfterCallback: true,
             }),
           ]
         })
