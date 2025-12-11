@@ -1,53 +1,17 @@
 import { AppStorageV2 } from '@kit.ArkUI';
 import { Header } from './Header';
 
-export interface ICardItemEventClick {
-  action: string | CallableFunction;
-  params?: object;
-  isCallback?: boolean;
-}
-
-export interface ICardItem {
-  title: Resource | string;
-  value: Resource | string;
-  eventClick?: ICardItemEventClick;
-}
-
-@ObservedV2
-export class CardItem {
-  title: Resource | string;
-  @Trace
-  value: Resource | string;
-  eventClick?: ICardItemEventClick;
-
-  constructor(item: ICardItem) {
-    this.title = item.title;
-    this.value = item.value;
-    this.eventClick = item.eventClick;
-  }
-
-  callback(result: IJumpCallbackResult) {
-    this.value = result.value;
-  }
-}
-
-export interface IJumpCallbackResult {
-  value: string;
-}
-
 @ComponentV2
 export struct Card {
   @Require @Param
   items: CardItem[];
   @Param
-  title: Resource | string | undefined = undefined;
+  title?: ResourceStr = undefined;
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
   build() {
-    Column() {
-      if (this.title) {
-        Header({ title: this.title })
-      }
+    Column({ space: $r('app.integer.column_space_smaller') }) {
+      Header({ title: this.title })
 
       List({ space: 10 }) {
         ListItemGroup({ style: ListItemGroupStyle.CARD }) {
@@ -74,7 +38,7 @@ export struct Card {
         Row() {
           Text(item.value)
             .textAlign(TextAlign.End)
-            .width('90%')
+            .width(item.eventClick ? '90%' : '100%')
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -115,4 +79,113 @@ export struct Card {
       }
     })
   }
+}
+
+export interface ICardItemEventClick {
+  action: string | CallableFunction;
+  params?: object;
+  isCallback?: boolean;
+}
+
+export interface ICardItem {
+  title: ResourceStr;
+  value: ResourceStr;
+  eventClick?: ICardItemEventClick;
+}
+
+@ObservedV2
+export class CardItem {
+  title: ResourceStr;
+  @Trace
+  value: ResourceStr;
+  eventClick?: ICardItemEventClick;
+
+  constructor(item: ICardItem) {
+    this.title = item.title;
+    this.value = item.value;
+    this.eventClick = item.eventClick;
+  }
+
+  callback(result: IJumpCallbackResult) {
+    this.value = result.value;
+  }
+}
+
+export interface IJumpCallbackResult {
+  value: string;
+}
+
+@ComponentV2
+export struct CardInput {
+  @Require @Param
+  items: CardInputItem[];
+  @Param
+  title?: ResourceStr = undefined;
+
+  build() {
+    Column({ space: $r('app.integer.column_space_smaller') }) {
+      Header({ title: this.title })
+
+      List({ space: 10 }) {
+        ListItemGroup({ style: ListItemGroupStyle.CARD }) {
+          ForEach(this.items, (item: CardInputItem) => {
+            this.listItem(item)
+          }, (item: CardInputItem, index: number) => index + item.title.toString())
+        }
+        .divider({ strokeWidth: 1 })
+      }
+      .width('100%')
+      .height(LayoutPolicy.fixAtIdealSize)
+    }
+  }
+
+  @Builder
+  listItem(item: CardInputItem) {
+    ListItem({ style: ListItemStyle.CARD }) {
+      Row() {
+        Text(item.title)
+          .fontWeight(FontWeight.Bold)
+          .textAlign(TextAlign.Start)
+          .width($r('app.string.index_detail_page_block_item_title_width'))
+
+        TextInput({
+          placeholder: item.placeholder,
+          text: item.value!!
+        })
+          .width($r('app.string.index_detail_page_block_item_content_width'))
+          .type(item.options?.type ?? InputType.Normal)
+          .maxLength(item.options?.maxLength ?? Infinity)
+          .textAlign(TextAlign.End)
+          .backgroundColor(Color.White)
+      }
+    }
+  }
+}
+
+@ObservedV2
+export class CardInputItem {
+  title: ResourceStr;
+  placeholder?: ResourceStr;
+  @Trace
+  value: ResourceStr;
+  options?: ICardInputItemOptions;
+
+  constructor(item: ICardInputItem) {
+    this.title = item.title;
+    this.placeholder = item.placeholder;
+    this.value = item.value;
+    this.options = item.options;
+  }
+}
+
+export interface ICardInputItem {
+  title: ResourceStr;
+  placeholder?: ResourceStr;
+  value: ResourceStr;
+  options?: ICardInputItemOptions;
+}
+
+export interface ICardInputItemOptions {
+  type?: InputType;
+  maxLength?: number;
 }

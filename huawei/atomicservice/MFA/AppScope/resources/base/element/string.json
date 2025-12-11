@@ -47,6 +47,10 @@
     {
       "name": "more",
       "value": "更多"
+    },
+    {
+      "name": "please_input",
+      "value": "请输入..."
     }
   ]
 }
