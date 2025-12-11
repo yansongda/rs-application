@@ -6,7 +6,6 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { Dialog } from '../../utils/PromptAction';
 import { User as UserApi } from '../../api/User';
 import { AppPagesName, LogDomain } from '../../App';
-import { ISloganPageParams } from './edit/Slogan';
 
 @Builder
 export function builder() {
@@ -17,35 +16,6 @@ export function builder() {
 struct Detail {
   private user: User =
     PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
-  @Local
-  private cardNickname: CardItem = new CardItem({
-    title: $r('app.string.user_detail_page_nickname'),
-    value: this.user.config.nickname ?? $r('app.string.models_user_default_nickname'),
-    eventClick: async () => {
-      const credential =
-        await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
-
-      hilog.info(LogDomain.PAGES, AppPagesName.USER_DETAIL, '授权获取的用户信息: %{public}s',
-        JSON.stringify(credential));
-
-      this.editNickName(credential.nickName!);
-    }
-  });
-  @Local
-  private cardSlogan: CardItem = new CardItem({
-    title: $r('app.string.user_detail_page_slogan'),
-    value: this.user.config.slogan ?? $r('app.string.models_user_default_slogan'),
-    eventClick: AppPagesName.USER_EDIT_SLOGAN,
-    eventClickParams: {
-      slogan: this.user.config.slogan ?? $r('app.string.models_user_default_slogan')
-    } as ISloganPageParams,
-    eventClickAfterCallback: true,
-  });
-  @Local
-  private cardPhone: CardItem = new CardItem({
-    title: $r('app.string.user_detail_page_phone'),
-    value: '敬请期待',
-  });
 
   build() {
     NavDestination() {
@@ -67,15 +37,40 @@ struct Detail {
 
         Card({
           items: [
-            this.cardNickname,
-            this.cardSlogan
+            new CardItem({
+              title: $r('app.string.user_detail_page_nickname'),
+              value: this.user.config.nickname ?? $r('app.string.models_user_default_nickname'),
+              eventClick: {
+                action: async () => {
+                  const credential =
+                    await Authorization.authenticateWithHuaweiID(['profile'], this.getUIContext().getHostContext());
+
+                  hilog.info(LogDomain.PAGES, AppPagesName.USER_DETAIL, '授权获取的用户信息: %{public}s',
+                    JSON.stringify(credential));
+
+                  return await this.editNickName(credential.nickName!);
+                },
+                isCallback: true,
+              }
+            }),
+            new CardItem({
+              title: $r('app.string.user_detail_page_slogan'),
+              value: this.user.config.slogan ?? $r('app.string.models_user_default_slogan'),
+              eventClick: {
+                action: AppPagesName.USER_EDIT_SLOGAN,
+                isCallback: true,
+              },
+            }),
           ]
         })
 
         Card({
           title: $r('app.string.user_page_information'),
           items: [
-            this.cardPhone,
+            new CardItem({
+              title: $r('app.string.user_detail_page_phone'),
+              value: '敬请期待',
+            }),
           ]
         })
 
@@ -85,7 +80,7 @@ struct Detail {
             new CardItem({
               title: $r('app.string.user_detail_page_delete_account'),
               value: '',
-              eventClick: AppPagesName.USER_DELETE,
+              eventClick: { action: AppPagesName.USER_DELETE },
             })
           ]
         })
@@ -125,7 +120,7 @@ struct Detail {
     this.user.config.avatar = avatarUri;
   }
 
-  private async editNickName(nickName: string): Promise<void> {
+  private async editNickName(nickName: string): Promise<string> {
     await Dialog.execute(
       () => this.loadingDialog(),
       () => UserApi.editNickname(nickName),
@@ -133,6 +128,7 @@ struct Detail {
     );
 
     this.user.config.nickname = nickName;
-    this.cardNickname.value = nickName;
+
+    return nickName;
   }
 }

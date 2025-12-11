@@ -1,11 +1,16 @@
 import { AppStorageV2 } from '@kit.ArkUI';
+import { Header } from './Header';
 
-interface ICardItem {
+export interface ICardItemEventClick {
+  action: string | CallableFunction;
+  params?: object;
+  isCallback?: boolean;
+}
+
+export interface ICardItem {
   title: Resource | string;
   value: Resource | string;
-  eventClick?: string | CallableFunction;
-  eventClickParams?: object;
-  eventClickAfterCallback?: boolean;
+  eventClick?: ICardItemEventClick;
 }
 
 @ObservedV2
@@ -13,16 +18,12 @@ export class CardItem {
   title: Resource | string;
   @Trace
   value: Resource | string;
-  eventClick?: string | CallableFunction;
-  eventClickParams?: object;
-  eventClickAfterCallback: boolean = true;
+  eventClick?: ICardItemEventClick;
 
   constructor(item: ICardItem) {
     this.title = item.title;
     this.value = item.value;
     this.eventClick = item.eventClick;
-    this.eventClickParams = item.eventClickParams;
-    this.eventClickAfterCallback = item.eventClickAfterCallback ?? false;
   }
 
   callback(result: IJumpCallbackResult) {
@@ -45,7 +46,7 @@ export struct Card {
   build() {
     Column() {
       if (this.title) {
-        this.header(this.title);
+        Header({ title: this.title })
       }
 
       List({ space: 10 }) {
@@ -59,18 +60,6 @@ export struct Card {
       .width('100%')
       .height(LayoutPolicy.fixAtIdealSize)
     }
-  }
-
-  @Builder
-  header(text: Resource | string) {
-    Text(text)
-      .fontColor(Color.Grey)
-      .textAlign(TextAlign.Start)
-      .width('100%')
-      .margin({
-        left: $r('app.integer.components_card_header_margin_left'),
-        bottom: $r('app.integer.components_card_header_margin_bottom')
-      })
   }
 
   @Builder
@@ -100,10 +89,14 @@ export struct Card {
         .width($r('app.string.index_detail_page_block_item_content_width'))
       }
     }
-    .onClick(() => {
-      if ('string' === typeof item.eventClick) {
-        this.pages.pushPathByName(item.eventClick, item.eventClickParams, (popInfo: PopInfo) => {
-          if (!item.eventClickAfterCallback) {
+    .onClick(async () => {
+      if ('undefined' === typeof item.eventClick) {
+        return;
+      }
+
+      if ('string' === typeof item.eventClick.action) {
+        this.pages.pushPathByName(item.eventClick.action, item.eventClick.params, (popInfo: PopInfo) => {
+          if (!item.eventClick?.isCallback) {
             return;
           }
 
@@ -111,8 +104,14 @@ export struct Card {
         });
       }
 
-      if ('function' === typeof item.eventClick) {
-        item.eventClick();
+      if ('function' === typeof item.eventClick.action) {
+        const result: string = await item.eventClick.action();
+
+        if (!item.eventClick?.isCallback) {
+          return;
+        }
+
+        item.callback({ value: result } as IJumpCallbackResult);
       }
     })
   }

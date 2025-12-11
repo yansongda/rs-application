@@ -35,16 +35,12 @@ struct Detail {
             new CardItem({
               title: $r('app.string.index_detail_page_issuer'),
               value: this.runtime?.issuer ?? 'NaN',
-              eventClick: AppPagesName.INDEX_EDIT_ISSUER,
-              eventClickParams: this.runtime,
-              eventClickAfterCallback: true,
+              eventClick: { action: AppPagesName.INDEX_EDIT_ISSUER, params: this.runtime, isCallback: true },
             }),
             new CardItem({
               title: $r('app.string.index_detail_page_username'),
               value: this.runtime?.username ?? 'NaN',
-              eventClick: AppPagesName.INDEX_EDIT_USERNAME,
-              eventClickParams: this.runtime,
-              eventClickAfterCallback: true,
+              eventClick: { action: AppPagesName.INDEX_EDIT_USERNAME, params: this.runtime, isCallback: true },
             }),
           ]
         })

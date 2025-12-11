@@ -1,6 +1,5 @@
 import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { Card, CardItem } from '../../../components/Card';
-import { AppPagesName } from '../../../App';
 
 @Builder
 export function builder() {
@@ -21,12 +20,10 @@ struct Index {
             new CardItem({
               title: $r('app.string.index_detail_page_issuer'),
               value: 'NaN',
-              eventClick: AppPagesName.INDEX_EDIT_ISSUER,
             }),
             new CardItem({
               title: $r('app.string.index_detail_page_username'),
               value: 'NaN',
-              eventClick: AppPagesName.INDEX_EDIT_USERNAME,
             }),
           ]
         })

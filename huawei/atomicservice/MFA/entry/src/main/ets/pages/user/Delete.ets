@@ -36,7 +36,7 @@ struct Delete {
 
         Flex({ direction: FlexDirection.ColumnReverse }) {
           Button($r('app.string.user_delete_page_delete_button'), { type: ButtonType.ROUNDED_RECTANGLE })
-            .opacity(this.isChecked ? 1 : 0.4)
+            .enabled(this.isChecked)
             .width('100%')
             .fontColor('#ff3b30')
             .backgroundColor('#e0e4e7')

@@ -4,16 +4,11 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { User as UserApi } from '../../../api/User';
 import { User } from '../../../models/User';
-import { application } from '@kit.AbilityKit';
 import { IJumpCallbackResult } from '../../../components/Card';
 
 @Builder
 export function builder() {
   EditSlogan()
-}
-
-export interface ISloganPageParams {
-  slogan: string | Resource,
 }
 
 @ComponentV2
@@ -81,22 +76,6 @@ struct EditSlogan {
     .mode(NavDestinationMode.DIALOG)
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title(this.titleBuilder())
-    .onReady((context: NavDestinationContext) => {
-      let slogan = (context.pathInfo.param as ISloganPageParams).slogan;
-
-      if ('object' === typeof slogan) {
-        try {
-          slogan = application.getApplicationContext().resourceManager.getStringSync(slogan.id)
-        } catch (error) {
-          slogan = '';
-        }
-      }
-
-      this.slogan = slogan;
-    })
-    .onWillHide(() => {
-      this.slogan = '';
-    });
   }
 
   @Builder

@@ -27,7 +27,7 @@ struct Index {
             new CardItem({
               title: $r('app.string.user_page_information'),
               value: '',
-              eventClick: AppPagesName.USER_DETAIL,
+              eventClick: { action: AppPagesName.USER_DETAIL },
             }),
           ]
         })
