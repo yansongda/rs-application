@@ -8,15 +8,13 @@ import { IJumpCallbackResult } from '../../../components/Card';
 
 @Builder
 export function builder() {
-  EditSlogan()
+  Slogan()
 }
 
 @ComponentV2
-struct EditSlogan {
+struct Slogan {
   @Local
   private title: Resource | undefined = $r('app.string.user_detail_edit_slogan_page_title');
-  @Local
-  private slogan: string = '';
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
   private user: User =
     PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
@@ -38,7 +36,7 @@ struct EditSlogan {
 
           TextInput({
             placeholder: $r('app.string.user_detail_edit_slogan_page_placeholder'),
-            text: this.slogan!!,
+            text: this.user.config.slogan!!,
           })
             .defaultFocus(true)
             .onFocus(() => {
@@ -54,17 +52,17 @@ struct EditSlogan {
             .width('100%')
             .margin({ bottom: 30 })
             .onClick(async () => {
-              hilog.info(LogDomain.PAGES, AppPagesName.USER_EDIT_SLOGAN, '修改后的值: %{public}s', this.slogan);
+              hilog.info(LogDomain.PAGES, AppPagesName.USER_EDIT_SLOGAN, '修改后的值: %{public}s',
+                this.user.config.slogan);
 
               try {
                 await Toast.execute(
-                  () => UserApi.editSlogan(this.slogan),
+                  () => UserApi.editSlogan(this.user.config.slogan ?? ''),
                   () => this.loadingDialog(),
                   $r('app.string.operation_success'),
                 );
 
-                this.user.config.slogan = this.slogan;
-                this.pages.pop({ value: this.slogan } as IJumpCallbackResult);
+                this.pages.pop({ value: this.user.config.slogan } as IJumpCallbackResult);
               } catch (e) {
               }
             })

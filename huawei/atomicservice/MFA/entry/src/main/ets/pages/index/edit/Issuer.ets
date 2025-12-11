@@ -8,11 +8,11 @@ import { IJumpCallbackResult } from '../../../components/Card';
 
 @Builder
 export function builder() {
-  EditIssuer()
+  Issuer()
 }
 
 @ComponentV2
-struct EditIssuer {
+struct Issuer {
   @Local
   private title: Resource | undefined = $r('app.string.index_edit_issuer_page_title');
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
