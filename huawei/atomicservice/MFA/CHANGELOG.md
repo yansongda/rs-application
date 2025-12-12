@@ -2,18 +2,18 @@
 
 ### added
 
-- feat: 「我的」页面增加
-- feat: 「首页」增加手动输入方式
-- feat: 「首页」增加下拉刷新功能
+- feat: 「我的」页面增加(#108)
+- feat: 「首页」增加手动输入方式(#108)
+- feat: 「首页」增加下拉刷新功能(#108)
 
 ### optimized
 
-- optimize: 优化各类操作体验与提示文案
-- optimize: 使用 api20 新特性优化首页导航 navigation 逻辑
+- optimize: 优化各类操作体验与提示文案(#108)
+- optimize: 使用 api20 新特性优化首页导航 navigation 逻辑(#108)
 
 ### changed
 
-- change(internal): 优化 string 常量命名
+- change(internal): 优化 string 常量命名(#108)
 
 ## v1.1.0
 
