@@ -21,7 +21,6 @@ export function builder() {
   Index()
 }
 
-@Preview
 @ComponentV2
 export struct Index {
   @Local
