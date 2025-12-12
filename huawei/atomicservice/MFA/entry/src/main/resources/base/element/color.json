@@ -31,10 +31,6 @@
     {
       "name": "totp_index_page_swipe_action_delete_background",
       "value": "#ffef4f4f"
-    },
-    {
-      "name": "main_container_background",
-      "value": "#F1F3F5"
     }
   ]
 }

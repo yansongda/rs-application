@@ -16,7 +16,7 @@ pub struct User {
     pub updated_at: DateTime<Local>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Config {
     pub avatar: Option<String>,
     pub nickname: Option<String>,
@@ -150,6 +150,29 @@ pub async fn update_phone(id: u64, phone: &str) -> application_kernel::result::R
         .await
         .map_err(|e| {
             error!("更新手机号失败: {:?}", e);
+
+            Error::InternalDatabaseUpdate(None)
+        });
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, id);
+
+    Ok(())
+}
+
+pub async fn flush(id: u64) -> application_kernel::result::Result<()> {
+    let sql = "update account.user set phone = ?, config = ? where id = ?";
+    let started_at = Instant::now();
+
+    let _ = sqlx::query(sql)
+        .bind(None::<&str>)
+        .bind(Json(&Config::default()))
+        .bind(id)
+        .execute(Pool::mysql("account")?)
+        .await
+        .map_err(|e| {
+            error!("清除用户个人设置失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
         });

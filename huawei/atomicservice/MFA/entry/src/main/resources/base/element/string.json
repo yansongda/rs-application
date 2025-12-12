@@ -2,11 +2,19 @@
   "string": [
     {
       "name": "permission_reason_camera",
-      "value": "使用相机来扫码从而添加认证信息"
+      "value": "用于扫描基于 TOTP 算法的 MFA 二维码，从而扫码即可为您添加双重认证服务"
     },
     {
       "name": "models_runtime_refresh_code_failed",
       "value": "更新验证码失败，请尝试重新加载"
+    },
+    {
+      "name": "components_card_input_item_title_width",
+      "value": "30%"
+    },
+    {
+      "name": "components_card_input_item_content_width",
+      "value": "70%"
     },
     {
       "name": "login_page_login",
@@ -17,100 +25,176 @@
       "value": "登录失败"
     },
     {
-      "name": "home_page_login_failed_content",
-      "value": "是否重试登录"
-    },
-    {
-      "name": "totp_index_page_add_name",
+      "name": "index_index_page_add_name",
       "value": "新增"
     },
     {
-      "name": "totp_index_page_add_failed_title",
+      "name": "index_index_page_add_failed_title",
       "value": "添加失败"
     },
     {
-      "name": "totp_index_page_data_empty",
+      "name": "index_index_page_data_empty",
       "value": "暂无数据"
     },
     {
-      "name": "totp_index_page_detail_name",
+      "name": "index_index_page_detail_name",
       "value": "详情"
     },
     {
-      "name": "totp_index_page_delete_name",
+      "name": "index_index_page_delete_name",
       "value": "删除"
     },
     {
-      "name": "totp_index_page_cancel_name",
+      "name": "index_index_page_cancel_name",
       "value": "取消"
     },
     {
-      "name": "totp_index_page_delete_title",
+      "name": "index_index_page_delete_title",
       "value": "确认删除?"
     },
     {
-      "name": "totp_index_page_delete_content",
+      "name": "index_index_page_delete_content",
       "value": "删除后将无法恢复，请谨慎操作"
     },
     {
-      "name": "totp_index_page_delete_failed_title",
+      "name": "index_index_page_delete_failed_title",
       "value": "删除失败"
     },
     {
-      "name": "totp_index_page_fetch_failed_title",
+      "name": "index_index_page_fetch_failed_title",
       "value": "加载失败"
     },
     {
-      "name": "totp_index_page_delete_failed_content",
+      "name": "index_index_page_delete_failed_content",
       "value": "是否重试加载数据"
     },
     {
-      "name": "totp_detail_page_name",
-      "value": "详情"
-    },
-    {
-      "name": "totp_detail_page_basic_information",
+      "name": "index_page_basic_information",
       "value": "基础信息"
     },
     {
-      "name": "totp_detail_page_issuer",
+      "name": "index_page_issuer",
       "value": "发行方"
     },
     {
-      "name": "totp_detail_page_username",
+      "name": "index_page_username",
       "value": "用户名"
     },
     {
-      "name": "totp_detail_page_block_item_title_width",
-      "value": "30%"
-    },
-    {
-      "name": "totp_detail_page_block_item_content_width",
-      "value": "70%"
-    },
-    {
-      "name": "totp_detail_page_config_information",
+      "name": "index_page_config_information",
       "value": "配置信息"
     },
     {
-      "name": "totp_detail_page_config_period",
+      "name": "index_page_config_period",
       "value": "更新周期"
     },
     {
-      "name": "totp_edit_issuer_page_title",
-      "value": "设置发行方"
-    },
-    {
-      "name": "totp_edit_issuer_page_placeholder",
+      "name": "index_page_edit_issuer_placeholder",
       "value": "请输入发行方"
     },
     {
-      "name": "totp_edit_username_page_title",
+      "name": "index_page_edit_username_placeholder",
+      "value": "请输入用户名"
+    },
+    {
+      "name": "index_page_edit_secret_placeholder",
+      "value": "请输入密钥"
+    },
+    {
+      "name": "index_detail_page_title",
+      "value": "详情"
+    },
+    {
+      "name": "index_create_page_title",
+      "value": "手动创建"
+    },
+    {
+      "name": "index_create_page_create_button",
+      "value": "创建"
+    },
+    {
+      "name": "index_create_page_secret",
+      "value": "密钥"
+    },
+    {
+      "name": "index_create_page_secret_error",
+      "value": "您输入的密钥不符合 MFA 规范，请重新输入"
+    },
+    {
+      "name": "index_create_page_info_error",
+      "value": "请输入用户名、发行方、密钥"
+    },
+    {
+      "name": "index_edit_issuer_page_title",
+      "value": "设置发行方"
+    },
+    {
+      "name": "index_edit_username_page_title",
       "value": "设置用户名"
     },
     {
-      "name": "totp_edit_username_page_placeholder",
-      "value": "请输入用户名"
+      "name": "user_index_page_name",
+      "value": "我的"
+    },
+    {
+      "name": "user_detail_page_name",
+      "value": "个人信息"
+    },
+    {
+      "name": "user_page_information",
+      "value": "个人信息"
+    },
+    {
+      "name": "user_detail_page_nickname",
+      "value": "昵称"
+    },
+    {
+      "name": "user_detail_page_slogan",
+      "value": "Slogan"
+    },
+    {
+      "name": "user_detail_page_phone",
+      "value": "手机号"
+    },
+    {
+      "name": "user_detail_page_edit_failed",
+      "value": "修改失败"
+    },
+    {
+      "name": "user_detail_page_delete_account",
+      "value": "注销服务"
+    },
+    {
+      "name": "user_detail_edit_slogan_page_title",
+      "value": "设置 Slogan"
+    },
+    {
+      "name": "user_detail_edit_slogan_page_placeholder",
+      "value": "请输入 Slogan"
+    },
+    {
+      "name": "user_delete_page_notice",
+      "value": "为了保证您的数据和财产安全，请仔细阅读以下内容。"
+    },
+    {
+      "name": "user_delete_page_operation",
+      "value": "注销服务后，我们将进行以下操作："
+    },
+    {
+      "name": "user_delete_page_operation_delete_profile",
+      "value": "· 永久删除您所有个人资料信息，且无法恢复"
+    },
+    {
+      "name": "user_delete_page_operation_delete_totp",
+      "value": "· 永久删除您当前账户关联的关于 MFA 的所有云端数据，且无法恢复"
+    },
+    {
+      "name": "user_delete_page_delete_confirm",
+      "value": "我已知晓注销后将永久删除我的数据"
+    },
+    {
+      "name": "user_delete_page_delete_button",
+      "value": "确认注销"
     }
   ]
 }

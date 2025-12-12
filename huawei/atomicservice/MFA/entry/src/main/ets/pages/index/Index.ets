@@ -1,100 +1,157 @@
-import { ItemsRuntime } from '../../models/Runtime';
-import { AdvancedDialogV2Button, AlertDialogV2, AppStorageV2, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
+import { ItemRuntime, ItemsRuntime } from '../../models/Runtime';
+import {
+  AdvancedDialogV2Button,
+  AlertDialogV2,
+  AppStorageV2,
+  LoadingDialogV2,
+  PersistenceV2,
+  SymbolGlyphModifier
+} from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { Authorization, State } from '../../models/Auth';
+import { Authorization } from '../../models/Auth';
 import { Dialog } from '../../utils/PromptAction';
 import { AppPagesName, LogDomain } from '../../App';
 import { Totp } from '../../api/Totp';
 import { scanBarcode } from '@kit.ScanKit';
+import { User } from '../../models/User';
+import { User as UserApi } from '../../api/User';
+
+@Builder
+export function builder() {
+  Index()
+}
 
 @ComponentV2
 export struct Index {
-  @Param
-  isShow: boolean = false;
-  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
+  @Local
+  authorization: Authorization =
+    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+  @Local
+  private isRefreshing: boolean = false;
   @Local
   private itemsRuntime: ItemsRuntime = new ItemsRuntime();
-  @Local
-  private authorization: Authorization =
-    PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() })!;
+  private user: User =
+    PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
   private scroller: ListScroller = new ListScroller();
   private swipeActionId?: string;
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
   @Monitor('authorization.accessToken')
-  onAuthorizationChange(): void {
+  async onAuthorizationChange(): Promise<void> {
     hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '监测到认证信息发生变化');
 
-    this.itemsRuntime.clear();
-    this.fetch();
-  }
+    const user = await UserApi.detail();
 
-  @Monitor('isShow')
-  onPageStateChange(change: IMonitor): void {
-    if (false === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面隐藏');
-
-      this.itemsRuntime.clear();
-    }
-
-    if (true === change.value()?.now) {
-      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
-
-      this.fetch();
-    }
+    this.user.phone = user.phone;
+    this.user.config = user.config;
   }
 
   build() {
-    Stack({ alignContent: Alignment.BottomEnd }) {
-      if (this.itemsRuntime.ids.size <= 0) {
-        this.empty()
-      } else {
-        this.main()
-      }
-
-      Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
-        Row() {
-          Text() {
-            SymbolSpan($r('sys.symbol.line_viewfinder'))
-              .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
-              .fontColor([Color.White])
+    NavDestination() {
+      Stack({ alignContent: Alignment.BottomEnd }) {
+        Refresh({ refreshing: this.isRefreshing!! }) {
+          if (this.itemsRuntime.ids.size <= 0) {
+            this.empty()
+          } else {
+            this.main()
           }
-          .margin({ right: 5 })
-
-          Text($r('app.string.totp_index_page_add_name'))
-            .fontSize($r('app.integer.totp_index_page_add_button_font_size'))
         }
-      }
-      .backgroundColor($r('app.color.main'))
-      .fontColor(Color.White)
-      .padding({
-        top: 10,
-        bottom: 10,
-        left: 10,
-        right: 10
-      })
-      .margin({ bottom: 50, right: 50 })
-      .onClick(() => {
-        scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
-          let uri = result.originalValue;
+        .onRefreshing(() => {
+          this.refresh();
 
-          hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
+          this.isRefreshing = false;
+        })
+        .refreshOffset(64)
+        .pullToRefresh(true)
 
-          try {
-            const data =
-              await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
-                () => Totp.create(uri));
-
-            this.itemsRuntime.add(data);
-          } catch (e) {
-            await Dialog.open(() => this.addFailedDialog(e.message));
+        Button({ type: ButtonType.Circle }) {
+          Row() {
+            Text() {
+              SymbolSpan($r('sys.symbol.plus'))
+                .fontSize(35)
+                .fontColor([Color.White])
+            }
           }
-        });
-      })
+        }
+        .backgroundColor($r('app.color.main'))
+        .fontColor(Color.White)
+        .padding({
+          top: $r('app.integer.page_padding'),
+          bottom: $r('app.integer.page_padding'),
+          left: $r('app.integer.page_padding'),
+          right: $r('app.integer.page_padding')
+        })
+        .margin({ bottom: 50, right: 50 })
+        .bindMenu([
+          {
+            value: '扫码添加',
+            symbolIcon: new SymbolGlyphModifier($r('sys.symbol.line_viewfinder')),
+            action: () => {
+              scanBarcode.startScanForResult(this.getUIContext().getHostContext()).then(async (result) => {
+                let uri = result.originalValue;
+
+                hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '扫码结果: %{public}s', uri);
+
+                try {
+                  const data =
+                    await Dialog.execute(() => this.loadingDialog($r('app.string.handling')),
+                      () => Totp.create(uri));
+
+                  this.itemsRuntime.add(data);
+                } catch (e) {
+                  await Dialog.open(() => this.addFailedDialog(e.message));
+                }
+              });
+            },
+          },
+          {
+            value: '输入添加',
+            symbolIcon: new SymbolGlyphModifier($r('sys.symbol.doc_plaintext_and_pencil')),
+            action: () => {
+              this.pages.pushPathByName(AppPagesName.INDEX_CREATE, null);
+            },
+          }
+        ])
+      }
     }
     .width('100%')
     .height('100%')
+    .title(this.title())
+    .hideBackButton(true)
     .backgroundColor($r('sys.color.comp_background_focus'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+    .onActive(() => {
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
+
+      this.refresh();
+    })
+    .onHidden(() => {
+      hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面隐藏');
+
+      this.itemsRuntime.clear();
+    })
+  }
+
+  @Builder
+  title() {
+    Row() {
+      Image(this.user.config.avatar ?? $r('app.media.default_avatar'))
+        .width(30)
+        .height(30)
+        .autoResize(true)
+        .interpolation(ImageInterpolation.Medium)
+        .margin({ right: 10 })
+        .borderRadius(10)
+        .onClick(() => {
+          this.pages.pushPathByName(AppPagesName.USER_DETAIL, null);
+        })
+
+      Text($r("app.string.app_name_short")).fontWeight(FontWeight.Bold).fontSize(30)
+    }
+    .width('100%')
+    .height('100%')
+    .margin({ left: 10 })
+    .alignItems(VerticalAlign.Center)
   }
 
   @Builder
@@ -105,10 +162,10 @@ export struct Index {
       }
       .fontSize(50)
 
-      Text($r('app.string.totp_index_page_data_empty'))
+      Text($r('app.string.index_index_page_data_empty'))
         .margin({ top: 10 })
     }
-    .margin({ top: 50 })
+    .margin({ top: $r('app.integer.page_margin') })
     .width('100%')
     .height('100%')
   }
@@ -150,7 +207,7 @@ export struct Index {
                 .width('60%')
               }
               .height(98)
-              .padding({ left: 8, right: 8 })
+              .padding({ left: $r('app.integer.page_padding_smaller'), right: $r('app.integer.page_padding_smaller') })
 
               Progress({
                 value: this.itemsRuntime.get(ri.item.valueOf()).progress ?? 30,
@@ -179,7 +236,8 @@ export struct Index {
             this.itemsRuntime.stop(ri.item.valueOf());
           })
           .onClick(() => {
-            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(ri.item.valueOf()))
+            this.pages.pushPathByName(AppPagesName.INDEX_DETAIL,
+              new ItemRuntime(this.itemsRuntime.get(ri.item.valueOf())))
           })
         })
         .virtualScroll({ totalCount: this.itemsRuntime.ids.size })
@@ -192,14 +250,14 @@ export struct Index {
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.totp_index_page_detail_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
+        Text($r("app.string.index_index_page_detail_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
       }
       .height('100%')
       .width(60)
       .type(ButtonType.Normal)
       .backgroundColor($r('app.color.totp_index_page_swipe_action_detail_background'))
       .onClick(() => {
-        this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, this.itemsRuntime.get(id));
+        this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, new ItemRuntime(this.itemsRuntime.get(id)));
 
         try {
           this.scroller.closeAllSwipeActions();
@@ -209,7 +267,7 @@ export struct Index {
       })
 
       Button() {
-        Text($r("app.string.totp_index_page_delete_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
+        Text($r("app.string.index_index_page_delete_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
       }
       .height('100%')
       .width(60)
@@ -233,7 +291,7 @@ export struct Index {
   @Builder
   addFailedDialog(content: string) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_add_failed_title'),
+      primaryTitle: $r('app.string.index_index_page_add_failed_title'),
       content,
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.ok'),
@@ -245,13 +303,13 @@ export struct Index {
   @Builder
   deleteDialog() {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_delete_title'),
-      content: $r('app.string.totp_index_page_delete_content'),
+      primaryTitle: $r('app.string.index_index_page_delete_title'),
+      content: $r('app.string.index_index_page_delete_content'),
       primaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.totp_index_page_cancel_name'),
+        content: $r('app.string.index_index_page_cancel_name'),
       }),
       secondaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.totp_index_page_delete_name'),
+        content: $r('app.string.index_index_page_delete_name'),
         role: ButtonRole.ERROR,
         action: async () => {
           if ('undefined' == typeof this.swipeActionId) {
@@ -259,10 +317,13 @@ export struct Index {
           }
 
           try {
-            await Totp.delete(this.swipeActionId);
+            const dialogId = await Dialog.open(() => this.loadingDialog());
 
+            await Totp.delete(this.swipeActionId);
             this.itemsRuntime.delete(this.swipeActionId);
             this.swipeActionId = undefined;
+
+            Dialog.close(dialogId);
           } catch (e) {
             await Dialog.open(() => this.deleteFailedDialog(e.message));
           }
@@ -274,7 +335,7 @@ export struct Index {
   @Builder
   deleteFailedDialog(content: string) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_delete_failed_title'),
+      primaryTitle: $r('app.string.index_index_page_delete_failed_title'),
       content,
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.ok'),
@@ -286,8 +347,8 @@ export struct Index {
   @Builder
   fetchFailedDialog(action: () => void) {
     AlertDialogV2({
-      primaryTitle: $r('app.string.totp_index_page_fetch_failed_title'),
-      content: $r('app.string.totp_index_page_delete_failed_content'),
+      primaryTitle: $r('app.string.index_index_page_fetch_failed_title'),
+      content: $r('app.string.index_index_page_delete_failed_content'),
       primaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.retry'),
         role: ButtonRole.ERROR,
@@ -299,14 +360,12 @@ export struct Index {
     })
   }
 
-  private async fetch(): Promise<void> {
-    if (this.authorization.state() !== State.NORMAL) {
-      return;
-    }
+  private async refresh(): Promise<void> {
+    this.itemsRuntime.clear();
 
     const items =
       await Dialog.execute(() => this.loadingDialog($r('app.string.loading')), () => Totp.all(),
-        () => this.fetchFailedDialog(() => this.fetch()));
+        () => this.fetchFailedDialog(() => this.refresh()));
 
     this.itemsRuntime = new ItemsRuntime(items.values());
   }

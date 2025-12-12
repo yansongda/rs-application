@@ -1,9 +1,9 @@
 use application_database::tool::short_url;
 use application_kernel::result::Result;
-use fasthash::murmur3;
+use murmurs::murmur3_x86_32;
 
 pub async fn create(url: &str) -> Result<short_url::ShortUrl> {
-    let short = base62::encode(murmur3::hash32(url.as_bytes()));
+    let short = base62::encode(murmur3_x86_32(url.as_bytes(), 0));
 
     let result = short_url::fetch(&short).await;
     if result.is_ok() {

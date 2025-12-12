@@ -1,0 +1,32 @@
+{
+  "integer": [
+    {
+      "name": "column_space",
+      "value": 20
+    },
+    {
+      "name": "column_space_smaller",
+      "value": 10
+    },
+    {
+      "name": "column_space_biggest",
+      "value": 40
+    },
+    {
+      "name": "page_padding",
+      "value": 10
+    },
+    {
+      "name": "page_padding_smaller",
+      "value": 8
+    },
+    {
+      "name": "page_margin",
+      "value": 50
+    },
+    {
+      "name": "page_margin_smaller",
+      "value": 30
+    }
+  ]
+}

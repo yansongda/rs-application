@@ -3,6 +3,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppStorageV2, PersistenceV2, UIContext, window } from '@kit.ArkUI';
 import { Authorization } from '../models/Auth';
 import { LogDomain } from '../App';
+import { User } from '../models/User';
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -15,6 +16,7 @@ export default class EntryAbility extends UIAbility {
       }
 
       PersistenceV2.globalConnect({ type: Authorization, defaultCreator: () => new Authorization() });
+      PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })
 
       try {
         AppStorageV2.connect(UIContext, () => windowStage.getMainWindowSync().getUIContext());
