@@ -1,6 +1,6 @@
-use murmurs::murmur3_x86_32;
 use application_database::tool::short_url;
 use application_kernel::result::Result;
+use murmurs::murmur3_x86_32;
 
 pub async fn create(url: &str) -> Result<short_url::ShortUrl> {
     let short = base62::encode(murmur3_x86_32(url.as_bytes(), 0));
