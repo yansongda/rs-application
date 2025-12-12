@@ -21,6 +21,7 @@ export function builder() {
   Index()
 }
 
+@Preview
 @ComponentV2
 export struct Index {
   @Local
@@ -114,8 +115,6 @@ export struct Index {
         ])
       }
     }
-    .width('100%')
-    .height('100%')
     .title(this.title())
     .hideBackButton(true)
     .backgroundColor($r('sys.color.comp_background_focus'))

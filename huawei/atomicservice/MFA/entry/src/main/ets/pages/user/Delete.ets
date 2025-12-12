@@ -74,7 +74,6 @@ struct Delete {
     }
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title($r('app.string.user_detail_page_delete_account'))
-    .mode(NavDestinationMode.DIALOG)
   }
 
   @Builder
