@@ -110,7 +110,7 @@ struct Index {
             .margin({ bottom: 30 })
             .onClick(async () => {
               if (!this.issuer || this.issuer.trim().length === 0 || !this.username ||
-                this.username.trim().length === 0) {
+                this.username.trim().length === 0 || !this.secret || this.secret.trim().length === 0) {
                 Toast.show({ message: $r('app.string.index_create_page_info_error') });
 
                 return;

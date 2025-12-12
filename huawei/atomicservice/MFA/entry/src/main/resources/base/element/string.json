@@ -122,7 +122,7 @@
     },
     {
       "name": "index_create_page_info_error",
-      "value": "请输入用户名或发行方"
+      "value": "请输入用户名、发行方、密钥"
     },
     {
       "name": "index_edit_issuer_page_title",
