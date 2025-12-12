@@ -118,7 +118,11 @@
     },
     {
       "name": "index_create_page_secret_error",
-      "value": "您的输入密钥不符合 MFA 规范，请重新输入"
+      "value": "您输入的密钥不符合 MFA 规范，请重新输入"
+    },
+    {
+      "name": "index_create_page_info_error",
+      "value": "请输入用户名或发行方"
     },
     {
       "name": "index_edit_issuer_page_title",

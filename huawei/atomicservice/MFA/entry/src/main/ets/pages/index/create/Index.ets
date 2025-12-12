@@ -109,6 +109,13 @@ struct Index {
             .width('100%')
             .margin({ bottom: 30 })
             .onClick(async () => {
+              if (!this.issuer || this.issuer.trim().length === 0 || !this.username ||
+                this.username.trim().length === 0) {
+                Toast.show({ message: $r('app.string.index_create_page_info_error') });
+
+                return;
+              }
+
               const uri =
                 `otpauth://totp/${this.issuer}:${this.username}?secret=${this.secret}&issuer=${this.issuer}&period=${this.period}`;
 
