@@ -30,26 +30,26 @@ struct Detail {
         }
 
         Card({
-          title: $r('app.string.index_detail_page_basic_information'),
+          title: $r('app.string.index_page_basic_information'),
           items: [
             new CardItem({
-              title: $r('app.string.index_detail_page_issuer'),
+              title: $r('app.string.index_page_issuer'),
               value: this.runtime?.issuer ?? 'NaN',
-              eventClick: { action: AppPagesName.INDEX_EDIT_ISSUER, params: this.runtime, isCallback: true },
+              eventClick: { action: AppPagesName.INDEX_EDIT_ISSUER, params: this.runtime },
             }),
             new CardItem({
-              title: $r('app.string.index_detail_page_username'),
+              title: $r('app.string.index_page_username'),
               value: this.runtime?.username ?? 'NaN',
-              eventClick: { action: AppPagesName.INDEX_EDIT_USERNAME, params: this.runtime, isCallback: true },
+              eventClick: { action: AppPagesName.INDEX_EDIT_USERNAME, params: this.runtime },
             }),
           ]
         })
 
         Card({
-          title: $r('app.string.index_detail_page_config_information'),
+          title: $r('app.string.index_page_config_information'),
           items: [
             new CardItem({
-              title: $r('app.string.index_detail_page_config_period'),
+              title: $r('app.string.index_page_config_period'),
               value: (this.runtime?.config.period ?? '30').toString() + 's',
             }),
           ]

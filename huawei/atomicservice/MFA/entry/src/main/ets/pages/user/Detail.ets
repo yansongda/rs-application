@@ -39,7 +39,7 @@ struct Detail {
           items: [
             new CardItem({
               title: $r('app.string.user_detail_page_nickname'),
-              value: this.user.config.nickname ?? $r('app.string.models_user_default_nickname'),
+              value: this.user.config.nickname ?? $r('app.string.default_nickname'),
               eventClick: {
                 action: async () => {
                   const credential =
@@ -50,15 +50,13 @@ struct Detail {
 
                   return await this.editNickName(credential.nickName!);
                 },
-                isCallback: true,
               }
             }),
             new CardItem({
               title: $r('app.string.user_detail_page_slogan'),
-              value: this.user.config.slogan ?? $r('app.string.models_user_default_slogan'),
+              value: this.user.config.slogan ?? $r('app.string.default_slogan'),
               eventClick: {
                 action: AppPagesName.USER_EDIT_SLOGAN,
-                isCallback: true,
               },
             }),
           ]

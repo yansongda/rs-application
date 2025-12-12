@@ -34,7 +34,7 @@ struct Issuer {
           }
 
           TextInput({
-            placeholder: $r('app.string.index_edit_issuer_page_placeholder'),
+            placeholder: $r('app.string.index_page_edit_issuer_placeholder'),
             text: this.runtime!.issuer!!
           })
             .defaultFocus(true)

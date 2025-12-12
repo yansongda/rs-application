@@ -1,14 +1,15 @@
-import { LoadingDialogV2 } from '@kit.ArkUI';
+import { AppStorageV2, LoadingDialogV2 } from '@kit.ArkUI';
 import { CardInput, CardInputItem } from '../../../components/Card';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
+import { Toast } from '../../../utils/PromptAction';
+import { Totp } from '../../../api/Totp';
 
 @Builder
 export function builder() {
   Index()
 }
 
-@Preview
 @ComponentV2
 struct Index {
   @Local
@@ -20,43 +21,60 @@ struct Index {
   @Local
   private secret?: string = undefined;
   @Local
-  private secretError?: string = '';
+  private secretError?: ResourceStr = '';
+  private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
 
   build() {
     NavDestination() {
       Column({ space: $r('app.integer.column_space') }) {
         CardInput({
-          title: $r('app.string.index_detail_page_basic_information'),
+          title: $r('app.string.index_page_basic_information'),
           items: [
             new CardInputItem({
-              title: $r('app.string.index_detail_page_issuer'),
-              value: this.issuer!!,
-              placeholder: $r('app.string.please_input'),
-              options: { maxLength: 120 }
+              title: $r('app.string.index_page_issuer'),
+              value: this.issuer,
+              placeholder: $r('app.string.index_page_edit_issuer_placeholder'),
+              options: { maxLength: 120 },
+              callback: {
+                onChange: (value) => {
+                  this.issuer = value;
+                }
+              }
             }),
             new CardInputItem({
-              title: $r('app.string.index_detail_page_username'),
-              value: this.username!!,
-              placeholder: $r('app.string.please_input'),
-              options: { maxLength: 120 }
+              title: $r('app.string.index_page_username'),
+              value: this.username,
+              placeholder: $r('app.string.index_page_edit_username_placeholder'),
+              options: { maxLength: 120 },
+              callback: {
+                onChange: (value) => {
+                  this.username = value;
+                }
+              }
             }),
           ]
         })
 
         CardInput({
-          title: $r('app.string.index_detail_page_config_information'),
+          title: $r('app.string.index_page_config_information'),
           items: [
             new CardInputItem({
-              title: $r('app.string.index_detail_page_config_period'),
-              value: this.period!!,
-              options: { type: InputType.Number }
+              title: $r('app.string.index_page_config_period'),
+              value: this.period,
+              placeholder: $r('app.string.please_input'),
+              options: { type: InputType.Number },
+              callback: {
+                onChange: (value) => {
+                  this.period = value;
+                }
+              }
             }),
           ]
         })
 
         Column({ space: $r('app.integer.column_space') }) {
           Column({ space: $r('app.integer.column_space_smaller') }) {
-            Text('密钥')
+            Text($r('app.string.index_create_page_secret'))
               .fontColor(Color.Grey)
               .textAlign(TextAlign.Start)
               .width('100%')
@@ -65,16 +83,18 @@ struct Index {
               })
 
             TextArea({
-              placeholder: '请输入密钥',
-              text: this.secret!!,
+              placeholder: $r('app.string.index_page_edit_secret_placeholder'),
+              text: this.secret,
             })
+              .backgroundColor(Color.White)
               .minLines(3)
               .enableAutoFill(false)
-              .onChange(() => {
+              .onChange((value) => {
                 this.secretError = undefined;
+                this.secret = value.toUpperCase();
               })
-              .inputFilter('^[A-Za-f2-7]{1,}$', () => {
-                this.secretError = '您的输入不符合 MFA 规范，请重新输入';
+              .inputFilter('^[A-Za-z2-7]{1,}$', () => {
+                this.secretError = $r('app.string.index_create_page_secret_error');
               })
 
             if (this.secretError) {
@@ -89,19 +109,21 @@ struct Index {
             .width('100%')
             .margin({ bottom: 30 })
             .onClick(async () => {
-              hilog.info(LogDomain.PAGES, AppPagesName.INDEX_CREATE, '新建: %{public}s', this.issuer);
+              const uri =
+                `otpauth://totp/${this.issuer}:${this.username}?secret=${this.secret}&issuer=${this.issuer}&period=${this.period}`;
 
-              // try {
-              //   await Toast.execute(
-              //     () => UserApi.editSlogan(this.slogan),
-              //     () => this.loadingDialog(),
-              //     $r('app.string.operation_success'),
-              //   );
-              //
-              //   this.user.config.slogan = this.slogan;
-              //   this.pages.pop({ value: this.slogan } as IJumpCallbackResult);
-              // } catch (e) {
-              // }
+              hilog.info(LogDomain.PAGES, AppPagesName.INDEX_CREATE, '新建: %{public}s', uri);
+
+              try {
+                await Toast.execute(
+                  () => Totp.create(uri),
+                  () => this.loadingDialog(),
+                  $r('app.string.operation_success'),
+                );
+
+                this.pages.pop();
+              } catch (e) {
+              }
             })
         }
         .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })

@@ -9,12 +9,12 @@
       "value": "更新验证码失败，请尝试重新加载"
     },
     {
-      "name": "models_user_default_nickname",
-      "value": "华为用户"
+      "name": "components_card_input_item_title_width",
+      "value": "30%"
     },
     {
-      "name": "models_user_default_slogan",
-      "value": "让认证极致简单"
+      "name": "components_card_input_item_content_width",
+      "value": "70%"
     },
     {
       "name": "login_page_login",
@@ -69,36 +69,40 @@
       "value": "是否重试加载数据"
     },
     {
-      "name": "index_detail_page_title",
-      "value": "详情"
-    },
-    {
-      "name": "index_detail_page_basic_information",
+      "name": "index_page_basic_information",
       "value": "基础信息"
     },
     {
-      "name": "index_detail_page_issuer",
+      "name": "index_page_issuer",
       "value": "发行方"
     },
     {
-      "name": "index_detail_page_username",
+      "name": "index_page_username",
       "value": "用户名"
     },
     {
-      "name": "index_detail_page_block_item_title_width",
-      "value": "30%"
-    },
-    {
-      "name": "index_detail_page_block_item_content_width",
-      "value": "70%"
-    },
-    {
-      "name": "index_detail_page_config_information",
+      "name": "index_page_config_information",
       "value": "配置信息"
     },
     {
-      "name": "index_detail_page_config_period",
+      "name": "index_page_config_period",
       "value": "更新周期"
+    },
+    {
+      "name": "index_page_edit_issuer_placeholder",
+      "value": "请输入发行方"
+    },
+    {
+      "name": "index_page_edit_username_placeholder",
+      "value": "请输入用户名"
+    },
+    {
+      "name": "index_page_edit_secret_placeholder",
+      "value": "请输入密钥"
+    },
+    {
+      "name": "index_detail_page_title",
+      "value": "详情"
     },
     {
       "name": "index_create_page_title",
@@ -109,20 +113,20 @@
       "value": "创建"
     },
     {
+      "name": "index_create_page_secret",
+      "value": "密钥"
+    },
+    {
+      "name": "index_create_page_secret_error",
+      "value": "您的输入密钥不符合 MFA 规范，请重新输入"
+    },
+    {
       "name": "index_edit_issuer_page_title",
       "value": "设置发行方"
     },
     {
-      "name": "index_edit_issuer_page_placeholder",
-      "value": "请输入发行方"
-    },
-    {
       "name": "index_edit_username_page_title",
       "value": "设置用户名"
-    },
-    {
-      "name": "index_edit_username_page_placeholder",
-      "value": "请输入用户名"
     },
     {
       "name": "user_index_page_name",

@@ -34,7 +34,7 @@ struct Username {
           }
 
           TextInput({
-            placeholder: $r('app.string.index_edit_username_page_placeholder'),
+            placeholder: $r('app.string.index_page_edit_username_placeholder'),
             text: this.runtime!.username!!
           })
             .defaultFocus(true)
