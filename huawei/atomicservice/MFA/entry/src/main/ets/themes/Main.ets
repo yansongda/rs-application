@@ -1,13 +1,19 @@
 import { CustomColors } from '@kit.ArkUI';
 
-class MainTheme implements CustomTheme {
+export class MainTheme implements CustomTheme {
   colors?: CustomColors;
+  darkColors?: CustomColors;
 
-  constructor(colors: CustomColors) {
+  constructor(colors: CustomColors, darkColors?: CustomColors) {
     this.colors = colors;
+    this.darkColors = darkColors;
   }
 }
 
-class MainLightColors implements CustomColors {
+export class MainLightColors implements CustomColors {
   brand = "#5bb43b";
+}
+
+export class MainDarkColors implements CustomColors {
+  brand = "#ff5b963b";
 }

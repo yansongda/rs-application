@@ -73,7 +73,7 @@ export struct Index {
             }
           }
         }
-        .backgroundColor($r('app.color.main'))
+        .backgroundColor($r('sys.color.brand'))
         .fontColor(Color.White)
         .padding({
           top: $r('app.integer.page_padding'),
@@ -213,7 +213,7 @@ export struct Index {
                 type: ProgressType.Linear,
               })
                 .height(2)
-                .color($r('app.color.main'))
+                .color($r('sys.color.brand'))
             }
           }
           .borderRadius(10)
