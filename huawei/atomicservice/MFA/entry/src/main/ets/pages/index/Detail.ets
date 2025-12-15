@@ -60,10 +60,14 @@ struct Detail {
     .title($r('app.string.index_detail_page_title'))
     .onReady((context: NavDestinationContext) => {
       this.runtime = context.pathInfo.param as ItemRuntime;
-      this.runtime.start();
+    })
+    .onActive(() => {
+      this.runtime?.start();
+    })
+    .onInactive(() => {
+      this.runtime?.stop();
     })
     .onWillHide(() => {
-      this.runtime?.stop();
       this.runtime = undefined;
     });
   }
