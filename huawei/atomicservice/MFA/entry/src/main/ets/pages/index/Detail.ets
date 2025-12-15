@@ -67,8 +67,8 @@ struct Detail {
     .onInactive(() => {
       this.runtime?.stop();
     })
-    .onWillHide(() => {
+    .onHidden(() => {
       this.runtime = undefined;
-    });
+    })
   }
 }
