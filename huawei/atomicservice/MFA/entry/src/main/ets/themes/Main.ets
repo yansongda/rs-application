@@ -8,12 +8,16 @@ export class MainTheme implements CustomTheme {
     this.colors = colors;
     this.darkColors = darkColors;
   }
+
+  static create() {
+    return new MainTheme(new MainLightColors(), new MainDarkColors());
+  }
 }
 
-export class MainLightColors implements CustomColors {
-  brand = "#5bb43b";
+class MainLightColors implements CustomColors {
+  brand = $r('app.color.brand');
 }
 
-export class MainDarkColors implements CustomColors {
-  brand = "#ff5b963b";
+class MainDarkColors implements CustomColors {
+  brand = $r('app.color.brand');
 }

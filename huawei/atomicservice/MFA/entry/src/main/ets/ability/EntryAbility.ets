@@ -4,7 +4,7 @@ import { AppStorageV2, PersistenceV2, ThemeControl, UIContext, window } from '@k
 import { Authorization } from '../models/Auth';
 import { LogDomain } from '../App';
 import { User } from '../models/User';
-import { MainDarkColors, MainLightColors, MainTheme } from '../themes/Main';
+import { MainTheme } from '../themes/Main';
 
 export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
@@ -27,7 +27,7 @@ export default class EntryAbility extends UIAbility {
           JSON.stringify(err));
       }
 
-      ThemeControl.setDefaultTheme(new MainTheme(new MainLightColors(), new MainDarkColors()));
+      ThemeControl.setDefaultTheme(MainTheme.create());
     });
   }
 

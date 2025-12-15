@@ -36,7 +36,7 @@ struct Login {
       .height('100%')
       .margin({ top: $r('app.integer.page_margin') })
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .hideTitleBar(true)
     .onReady(async (context: NavDestinationContext) => {
       const loginState = [State.EMPTY_AUTHORIZATION, State.REFRESH_TOKEN_EXPIRED];

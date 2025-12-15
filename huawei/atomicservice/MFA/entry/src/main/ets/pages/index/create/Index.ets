@@ -4,6 +4,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
 import { Toast } from '../../../utils/PromptAction';
 import { Totp } from '../../../api/Totp';
+import { Header } from '../../../components/Header';
 
 @Builder
 export function builder() {
@@ -74,19 +75,13 @@ struct Index {
 
         Column({ space: $r('app.integer.column_space') }) {
           Column({ space: $r('app.integer.column_space_smaller') }) {
-            Text($r('app.string.index_create_page_secret'))
-              .fontColor(Color.Grey)
-              .textAlign(TextAlign.Start)
-              .width('100%')
-              .margin({
-                left: 30,
-              })
+            Header({ title: $r('app.string.index_create_page_secret'), textMargin: { left: 30 } })
 
             TextArea({
               placeholder: $r('app.string.index_page_edit_secret_placeholder'),
               text: this.secret,
             })
-              .backgroundColor(Color.White)
+              .backgroundColor($r('sys.color.background_primary'))
               .minLines(3)
               .enableAutoFill(false)
               .onChange((value) => {
@@ -99,7 +94,7 @@ struct Index {
 
             if (this.secretError) {
               Text(this.secretError)
-                .fontColor(Color.Red)
+                .fontColor($r('sys.color.warning'))
                 .textAlign(TextAlign.Start)
                 .alignSelf(ItemAlign.Start)
             }
@@ -136,7 +131,7 @@ struct Index {
         .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
       }
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .title($r('app.string.index_create_page_title'))
   }
 

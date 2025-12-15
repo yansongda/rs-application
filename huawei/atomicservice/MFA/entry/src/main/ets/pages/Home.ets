@@ -25,7 +25,7 @@ struct Home {
         .titleMode(NavigationTitleMode.Mini)
         .mode(NavigationMode.Stack)
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
   }
 }

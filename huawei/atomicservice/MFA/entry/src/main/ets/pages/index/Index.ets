@@ -69,12 +69,12 @@ export struct Index {
             Text() {
               SymbolSpan($r('sys.symbol.plus'))
                 .fontSize(35)
-                .fontColor([Color.White])
+                .fontColor([$r('sys.color.font_on_primary')])
             }
           }
         }
-        .backgroundColor($r('sys.color.brand'))
-        .fontColor(Color.White)
+        .backgroundColor($r('app.color.brand'))
+        .fontColor($r('sys.color.font_on_primary'))
         .padding({
           top: $r('app.integer.page_padding'),
           bottom: $r('app.integer.page_padding'),
@@ -116,7 +116,7 @@ export struct Index {
     }
     .title(this.title())
     .hideBackButton(true)
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .onActive(() => {
       hilog.info(LogDomain.PAGES, AppPagesName.INDEX, '页面显示');
@@ -180,7 +180,7 @@ export struct Index {
                   Column() {
                     Text(this.itemsRuntime.get(ri.item.valueOf()).issuer)
                       .fontSize(30)
-                      .fontColor($r('app.color.totp_index_page_issuer_font'))
+                      .fontColor($r('sys.color.font_secondary'))
                       .textAlign(TextAlign.Center)
                       .maxLines(1)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -189,7 +189,7 @@ export struct Index {
                   Column() {
                     Text(this.itemsRuntime.get(ri.item.valueOf()).username)
                       .fontSize(12)
-                      .fontColor($r('app.color.totp_index_page_username_font'))
+                      .fontColor($r('sys.color.font_tertiary'))
                       .textAlign(TextAlign.Center)
                       .maxLines(2)
                       .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -213,12 +213,12 @@ export struct Index {
                 type: ProgressType.Linear,
               })
                 .height(2)
-                .color($r('sys.color.brand'))
+                .color($r('app.color.brand'))
             }
           }
           .borderRadius(10)
           .height(100)
-          .backgroundColor($r('app.color.totp_index_page_item_background'))
+          .backgroundColor($r('sys.color.background_primary'))
           .swipeAction({
             end: {
               builder: () => {
@@ -248,12 +248,13 @@ export struct Index {
   swipeAction(id: string) {
     Row() {
       Button() {
-        Text($r("app.string.index_index_page_detail_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
+        Text($r("app.string.index_index_page_detail_name"))
+          .fontColor($r('sys.color.font_on_primary'))
       }
       .height('100%')
       .width(60)
       .type(ButtonType.Normal)
-      .backgroundColor($r('app.color.totp_index_page_swipe_action_detail_background'))
+      .backgroundColor($r('app.color.brand'))
       .onClick(() => {
         this.pages.pushPathByName(AppPagesName.INDEX_DETAIL, new ItemRuntime(this.itemsRuntime.get(id)));
 
@@ -265,12 +266,12 @@ export struct Index {
       })
 
       Button() {
-        Text($r("app.string.index_index_page_delete_name")).fontColor($r('app.color.totp_index_page_swipe_action_font'))
+        Text($r("app.string.index_index_page_delete_name")).fontColor($r('sys.color.font_on_primary'))
       }
       .height('100%')
       .width(60)
       .type(ButtonType.Normal)
-      .backgroundColor($r('app.color.totp_index_page_swipe_action_delete_background'))
+      .backgroundColor($r('sys.color.warning'))
       .onClick(() => {
         this.swipeActionId = id;
 

@@ -147,7 +147,7 @@ export struct CardInput {
           .type(item.options?.type ?? InputType.Normal)
           .maxLength(item.options?.maxLength ?? Infinity)
           .textAlign(TextAlign.End)
-          .backgroundColor(Color.White)
+          .backgroundColor($r('sys.color.background_primary'))
           .onChange((value) => {
             if (item.callback?.onChange) {
               item.callback.onChange(value);

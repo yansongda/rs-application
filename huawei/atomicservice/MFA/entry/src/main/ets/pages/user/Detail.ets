@@ -84,7 +84,7 @@ struct Detail {
         })
       }
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .title($r('app.string.user_detail_page_name'))
   }
 
