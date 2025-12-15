@@ -38,8 +38,7 @@ struct Delete {
           Button($r('app.string.user_delete_page_delete_button'), { type: ButtonType.ROUNDED_RECTANGLE })
             .enabled(this.isChecked)
             .width('100%')
-            .fontColor('#ff3b30')
-            .backgroundColor('#e0e4e7')
+            .backgroundColor($r('sys.color.warning'))
             .onClick(async () => {
               if (!this.isChecked) {
                 return;
@@ -72,7 +71,7 @@ struct Delete {
       }
       .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .title($r('app.string.user_detail_page_delete_account'))
   }
 

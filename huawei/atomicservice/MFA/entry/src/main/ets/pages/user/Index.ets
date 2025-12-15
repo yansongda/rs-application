@@ -33,7 +33,7 @@ struct Index {
         })
       }
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .title($r('app.string.user_index_page_name'))
     .mode(NavDestinationMode.DIALOG)
   }

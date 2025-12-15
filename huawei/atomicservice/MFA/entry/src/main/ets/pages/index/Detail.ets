@@ -21,7 +21,7 @@ struct Detail {
             type: ProgressType.Linear
           })
             .height(2)
-            .color($r('app.color.main'))
+            .color($r('app.color.brand'))
 
           Text(this.runtime?.code ?? 'NaN')
             .textAlign(TextAlign.Center)
@@ -56,7 +56,7 @@ struct Detail {
         })
       }
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .title($r('app.string.index_detail_page_title'))
     .onReady((context: NavDestinationContext) => {
       this.runtime = context.pathInfo.param as ItemRuntime;

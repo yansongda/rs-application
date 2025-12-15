@@ -1,17 +1,17 @@
 @ComponentV2
 export struct Header {
   @Require @Param
-  title: Resource | string | undefined;
+  title?: ResourceStr;
+  @Param
+  textMargin?: Margin = { left: 45 };
 
   build() {
     if (this.title) {
       Text(this.title)
-        .fontColor(Color.Grey)
+        .fontColor($r('sys.color.font_tertiary'))
         .textAlign(TextAlign.Start)
         .width('100%')
-        .margin({
-          left: 45,
-        })
+        .margin(this.textMargin)
     }
   }
 }

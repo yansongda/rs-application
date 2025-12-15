@@ -73,7 +73,7 @@ struct Issuer {
     }
     .mode(NavDestinationMode.DIALOG)
     .systemTransition(NavigationSystemTransitionType.SLIDE_RIGHT)
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .title(this.titleBuilder())
     .onReady((context: NavDestinationContext) => {
       this.runtime = context.pathInfo.param as ItemRuntime;
