@@ -34,9 +34,9 @@ struct Login {
       }
       .width('100%')
       .height('100%')
-      .margin({ top: 50 })
+      .margin({ top: $r('app.integer.page_margin') })
     }
-    .backgroundColor($r('sys.color.comp_background_focus'))
+    .backgroundColor($r('sys.color.background_secondary'))
     .hideTitleBar(true)
     .onReady(async (context: NavDestinationContext) => {
       const loginState = [State.EMPTY_AUTHORIZATION, State.REFRESH_TOKEN_EXPIRED];
@@ -66,8 +66,8 @@ struct Login {
   loginConfirmDialog(action: () => void) {
     AlertDialogV2({
       primaryTitle: $r('app.string.home_page_login_failed_title'),
-      content: $r('app.string.home_page_login_failed_content'),
-      primaryButton: new AdvancedDialogV2Button({
+      content: $r('app.string.is_retry'),
+      secondaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.retry'),
         role: ButtonRole.ERROR,
         action

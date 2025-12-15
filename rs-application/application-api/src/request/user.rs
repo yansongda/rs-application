@@ -17,7 +17,7 @@ impl Validator for EditAvatarRequest {
             .as_deref()
             .ok_or(Error::ParamsUserAvatarLengthInvalid(None))?;
 
-        if !avatar.starts_with("data:image/jpeg;base64,") {
+        if !avatar.starts_with("data:image/jpeg;base64,") && !avatar.starts_with("http") {
             return Err(Error::ParamsUserAvatarLengthInvalid(None));
         }
 

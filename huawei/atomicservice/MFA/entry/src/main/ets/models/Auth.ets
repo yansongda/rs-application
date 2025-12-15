@@ -4,6 +4,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { App, LogDomain } from '../App';
 import { dateformat } from '@developers/dateformat';
 import { AccessToken } from '../api/AccessToken';
+import { Context } from '@kit.AbilityKit';
 
 export enum State {
   EMPTY_AUTHORIZATION = 0,
@@ -45,6 +46,65 @@ export class Authorization {
     return this._expiredAt;
   }
 
+  static async authenticateWithHuaweiID(scopes?: string[], context?: Context): Promise<authentication.AuthorizationWithHuaweiIDCredential> {
+    const request =
+      new authentication.HuaweiIDProvider().createAuthorizationWithHuaweiIDRequest();
+
+    request.scopes = scopes;
+    request.forceAuthorization = true;
+    request.supportAtomicService = true;
+    request.state = util.generateRandomUUID();
+
+    let authenticateWithHuaweiIDResponse: authentication.AuthorizationWithHuaweiIDResponse;
+
+    try {
+      authenticateWithHuaweiIDResponse =
+        await (new authentication.AuthenticationController(context)).executeRequest(request);
+    } catch (error) {
+      // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
+      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', JSON.stringify(error))
+
+      return Promise.reject();
+    }
+
+    if (authenticateWithHuaweiIDResponse.state && request.state !== authenticateWithHuaweiIDResponse.state) {
+      hilog.error(LogDomain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
+        authenticateWithHuaweiIDResponse.state, request.state);
+
+      return Promise.reject();
+    }
+
+    return authenticateWithHuaweiIDResponse.data!;
+  }
+
+  static async loginWithHuaweiID(): Promise<authentication.LoginWithHuaweiIDCredential> {
+    const request = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
+
+    request.forceLogin = false;
+    request.state = util.generateRandomUUID();
+
+    let loginWithHuaweiIDResponse: authentication.LoginWithHuaweiIDResponse;
+
+    try {
+      loginWithHuaweiIDResponse =
+        await (new authentication.AuthenticationController()).executeRequest(request);
+    } catch (error) {
+      // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
+      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', JSON.stringify(error))
+
+      return Promise.reject();
+    }
+
+    if (loginWithHuaweiIDResponse.state && request.state !== loginWithHuaweiIDResponse.state) {
+      hilog.error(LogDomain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
+        loginWithHuaweiIDResponse.state, request.state);
+
+      return Promise.reject();
+    }
+
+    return loginWithHuaweiIDResponse.data!;
+  }
+
   state(): State {
     if (!this._accessToken || !this._refreshToken || !this._expiredAt) {
       return State.EMPTY_AUTHORIZATION;
@@ -64,7 +124,7 @@ export class Authorization {
   }
 
   async login(): Promise<Authorization> {
-    const credential = await this.loginWithHuaweiID();
+    const credential = await Authorization.loginWithHuaweiID();
 
     hilog.info(LogDomain.MODELS, 'models/auth', '认证信息, credential: %{public}s, client_id: %{public}s',
       JSON.stringify(credential));
@@ -100,32 +160,5 @@ export class Authorization {
     this._expiredAt = dateformat.now().add(response.expired_in, 'second').toDate() as Date;
 
     return this;
-  }
-
-  private async loginWithHuaweiID(): Promise<authentication.LoginWithHuaweiIDCredential> {
-    const loginRequest = new authentication.HuaweiIDProvider().createLoginWithHuaweiIDRequest();
-    loginRequest.forceLogin = false;
-    loginRequest.state = util.generateRandomUUID();
-
-    let loginWithHuaweiIDResponse: authentication.LoginWithHuaweiIDResponse;
-
-    try {
-      loginWithHuaweiIDResponse =
-        await (new authentication.AuthenticationController()).executeRequest(loginRequest);
-    } catch (error) {
-      // 对于元服务来说，不太可能出现异常，因为元服务必须是登录状态。
-      hilog.error(LogDomain.MODELS, 'models/auth', '元服务登录出错: %{public}s', error.message)
-
-      return Promise.reject();
-    }
-
-    if (loginWithHuaweiIDResponse.state && loginRequest.state !== loginWithHuaweiIDResponse.state) {
-      hilog.error(LogDomain.MODELS, 'models/auth', '登录失败，state 不同: %{public}s != %{public}s',
-        loginWithHuaweiIDResponse.state, loginRequest.state);
-
-      return Promise.reject();
-    }
-
-    return loginWithHuaweiIDResponse.data!;
   }
 }

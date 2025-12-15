@@ -51,6 +51,10 @@
     ],
     "metadata": [
       {
+        "name": "configColorModeChangePerformanceInArkUI",
+        "value": "true"
+      },
+      {
         "name": "client_id",
         "value": "6917576589568238756"
       },

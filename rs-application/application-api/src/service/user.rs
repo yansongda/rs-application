@@ -1,5 +1,6 @@
 use application_database::account::access_token;
 use application_database::account::user;
+use application_database::tool::totp;
 use application_kernel::result::{Error, Result};
 
 pub async fn detail(id: u64) -> Result<user::User> {
@@ -28,4 +29,12 @@ pub async fn update_slogan(access_token: access_token::AccessToken, slogan: &str
 // todo: 对相同手机号进行账号数据合并
 pub async fn update_phone(access_token: access_token::AccessToken, phone: &str) -> Result<()> {
     user::update_phone(access_token.user_id, phone).await
+}
+
+pub async fn delete(access_token: access_token::AccessToken) -> Result<()> {
+    // todo: 1、事务；2、并发
+    totp::delete_by_user(access_token.user_id).await?;
+    user::flush(access_token.user_id).await?;
+
+    Ok(())
 }

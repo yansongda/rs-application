@@ -25,11 +25,17 @@ export enum AppEnv {
 
 export enum AppPagesName {
   LOGIN = 'login',
+  GUIDE = 'guide',
   HOME = 'home',
   INDEX = 'index',
+  INDEX_CREATE = 'index/create',
   INDEX_DETAIL = 'index/detail',
   INDEX_EDIT_ISSUER = 'index/edit/issuer',
   INDEX_EDIT_USERNAME = 'index/edit/username',
+  USER = 'user',
+  USER_DETAIL = 'user/detail',
+  USER_DELETE = 'user/delete',
+  USER_EDIT_SLOGAN = 'user/edit/slogan',
 }
 
 export class App {

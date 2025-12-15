@@ -1,22 +1,23 @@
-import { Totp } from '../../../api/Totp';
 import { Toast } from '../../../utils/PromptAction';
-import { AppStorageV2, KeyboardAvoidMode, LoadingDialogV2 } from '@kit.ArkUI';
+import { AppStorageV2, KeyboardAvoidMode, LoadingDialogV2, PersistenceV2 } from '@kit.ArkUI';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppPagesName, LogDomain } from '../../../App';
-import { ItemRuntime } from '../../../models/Runtime';
+import { User as UserApi } from '../../../api/User';
+import { User } from '../../../models/User';
 import { IJumpCallbackResult } from '../../../components/Card';
 
 @Builder
 export function builder() {
-  Username()
+  Slogan()
 }
 
 @ComponentV2
-struct Username {
+struct Slogan {
   @Local
-  private title: Resource | undefined = $r('app.string.index_edit_username_page_title');
+  private title: Resource | undefined = $r('app.string.user_detail_edit_slogan_page_title');
   private pages: NavPathStack = AppStorageV2.connect(NavPathStack, () => new NavPathStack())!;
-  private runtime: ItemRuntime | undefined = undefined;
+  private user: User =
+    PersistenceV2.globalConnect({ type: User, defaultCreator: () => new User() })!;
 
   aboutToAppear(): void {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
@@ -27,19 +28,19 @@ struct Username {
       Flex({ direction: FlexDirection.Column }) {
         Column({ space: $r('app.integer.column_space_biggest') }) {
           if (!this.title) {
-            Text($r('app.string.index_edit_username_page_title'))
+            Text($r('app.string.user_detail_edit_slogan_page_title'))
               .fontWeight(FontWeight.Bold)
               .fontSize(30)
               .align(Alignment.Center)
           }
 
           TextInput({
-            placeholder: $r('app.string.index_page_edit_username_placeholder'),
-            text: this.runtime!.username!!
+            placeholder: $r('app.string.user_detail_edit_slogan_page_placeholder'),
+            text: this.user.config.slogan!!,
           })
             .defaultFocus(true)
             .onFocus(() => {
-              this.title = $r('app.string.index_edit_username_page_title');
+              this.title = $r('app.string.user_detail_edit_slogan_page_title');
             })
             .onBlur(() => {
               this.title = undefined;
@@ -51,18 +52,17 @@ struct Username {
             .width('100%')
             .margin({ bottom: 30 })
             .onClick(async () => {
-              const username = this.runtime?.username ?? '未知用户名';
-
-              hilog.info(LogDomain.PAGES, AppPagesName.INDEX_EDIT_USERNAME, '修改后的值: %{public}s', username);
+              hilog.info(LogDomain.PAGES, AppPagesName.USER_EDIT_SLOGAN, '修改后的值: %{public}s',
+                this.user.config.slogan);
 
               try {
                 await Toast.execute(
-                  () => Totp.editUsername(this.runtime?.id ?? 'unknown', username),
+                  () => UserApi.editSlogan(this.user.config.slogan ?? ''),
                   () => this.loadingDialog(),
                   $r('app.string.operation_success'),
-                )
+                );
 
-                this.pages.pop({ value: username } as IJumpCallbackResult);
+                this.pages.pop({ value: this.user.config.slogan } as IJumpCallbackResult);
               } catch (e) {
               }
             })
@@ -75,12 +75,6 @@ struct Username {
     .systemTransition(NavigationSystemTransitionType.SLIDE_RIGHT)
     .backgroundColor($r('sys.color.background_secondary'))
     .title(this.titleBuilder())
-    .onReady((context: NavDestinationContext) => {
-      this.runtime = context.pathInfo.param as ItemRuntime;
-    })
-    .onWillHide(() => {
-      this.runtime = undefined;
-    });
   }
 
   @Builder

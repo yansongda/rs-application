@@ -59,3 +59,9 @@ pub async fn edit_phone(
 
     Ok(Response::success(()))
 }
+
+pub async fn delete(Extension(access_token): Extension<AccessToken>) -> Resp<()> {
+    service::user::delete(access_token).await?;
+
+    Ok(Response::success(()))
+}

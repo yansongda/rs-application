@@ -13,12 +13,24 @@
       "value": "多因子双重认证（MFA）服务，目前支持 TOTP 算法，为您提供简单、可靠、纯粹的双重认证解决方案。"
     },
     {
+      "name": "default_nickname",
+      "value": "华为用户"
+    },
+    {
+      "name": "default_slogan",
+      "value": "让认证极致简单"
+    },
+    {
       "name": "loading",
       "value": "加载中..."
     },
     {
       "name": "handling",
       "value": "处理中..."
+    },
+    {
+      "name": "is_retry",
+      "value": "是否重试"
     },
     {
       "name": "retry",
@@ -35,6 +47,18 @@
     {
       "name": "operation_failed",
       "value": "操作失败"
+    },
+    {
+      "name": "operation_success",
+      "value": "操作成功"
+    },
+    {
+      "name": "more",
+      "value": "更多"
+    },
+    {
+      "name": "please_input",
+      "value": "请输入..."
     }
   ]
 }

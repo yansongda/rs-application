@@ -203,3 +203,24 @@ pub async fn delete(id: u64) -> Result<()> {
 
     Ok(())
 }
+
+pub async fn delete_by_user(user_id: u64) -> Result<()> {
+    let sql = "delete from tool.totp where user_id = ?";
+    let started_at = Instant::now();
+
+    sqlx::query(sql)
+        .bind(user_id)
+        .execute(Pool::mysql("tool")?)
+        .await
+        .map_err(|e| {
+            error!("根据 user_id 删除 Totp 失败: {:?}", e);
+
+            Error::InternalDatabaseDelete(None)
+        })?;
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+
+    info!(elapsed, sql, user_id);
+
+    Ok(())
+}
