@@ -72,6 +72,7 @@ struct Slogan {
       .padding({ left: $r('app.integer.page_padding'), right: $r('app.integer.page_padding') })
     }
     .mode(NavDestinationMode.DIALOG)
+    .systemTransition(NavigationSystemTransitionType.SLIDE_RIGHT)
     .backgroundColor($r('sys.color.comp_background_focus'))
     .title(this.titleBuilder())
   }
