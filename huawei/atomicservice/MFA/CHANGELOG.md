@@ -3,6 +3,7 @@
 ### optimized
 
 - optimize: 优化各个编辑页面返回时的效果(#110)
+- optimize: 优化登陆提示文案(#112)
 
 ### chore
 
