@@ -348,12 +348,12 @@ export struct Index {
       primaryTitle: $r('app.string.index_index_page_fetch_failed_title'),
       content: $r('app.string.index_index_page_delete_failed_content'),
       primaryButton: new AdvancedDialogV2Button({
+        content: $r('app.string.cancel'),
+      }),
+      secondaryButton: new AdvancedDialogV2Button({
         content: $r('app.string.retry'),
         role: ButtonRole.ERROR,
         action,
-      }),
-      secondaryButton: new AdvancedDialogV2Button({
-        content: $r('app.string.cancel'),
       }),
     })
   }
