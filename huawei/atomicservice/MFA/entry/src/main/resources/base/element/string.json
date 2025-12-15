@@ -18,11 +18,11 @@
     },
     {
       "name": "login_page_login",
-      "value": "正在登录..."
+      "value": "正在关联您的华为账号..."
     },
     {
       "name": "home_page_login_failed_title",
-      "value": "登录失败"
+      "value": "关联失败"
     },
     {
       "name": "index_index_page_add_name",
