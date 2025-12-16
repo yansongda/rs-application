@@ -29,7 +29,7 @@ struct Login {
   build() {
     NavDestination() {
       Column() {
-        Image($r('app.media.app_icon')).width('30%');
+        Image($r('app.media.icon')).width('30%');
         Text($r('app.string.login_page_login')).fontSize(20).margin({ top: 20 });
       }
       .width('100%')
