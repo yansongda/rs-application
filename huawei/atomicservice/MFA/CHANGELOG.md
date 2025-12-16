@@ -1,3 +1,9 @@
+## v1.3.1
+
+### chore
+
+- chore: 更新 app logo 与相关配置
+
 ## v1.3.0
 
 ### added
