@@ -1,4 +1,5 @@
-use application_api::App;
+use salvo::Server;
+use application_api_next::App;
 use application_kernel::logger::Logger;
 use tracing::info;
 
@@ -14,7 +15,5 @@ async fn main() {
 
     info!("Listening on {}", app.get_listen());
 
-    axum::serve(listener, app.get_router().clone())
-        .await
-        .unwrap();
+    Server::new(listener).serve(app.get_router()).await;
 }

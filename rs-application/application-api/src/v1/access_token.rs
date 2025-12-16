@@ -1,4 +1,4 @@
-use crate::extract::Json;
+use salvo::{handler, Request};
 use crate::request::Validator;
 use crate::request::access_token::{
     LoginRefreshRequest, LoginRefreshResponse, LoginRequest, LoginResponse,
@@ -6,9 +6,9 @@ use crate::request::access_token::{
 use crate::response::{Resp, Response};
 use crate::service;
 use application_database::account::access_token::AccessToken;
-use axum::Extension;
 
-pub async fn login(Json(request): Json<LoginRequest>) -> Resp<LoginResponse> {
+#[handler]
+pub async fn login(&self, request: &mut Request) -> Resp<LoginResponse> {
     let req = request.validate()?;
 
     let (refresh_token, access_token) = service::access_token::login(&req).await?;
