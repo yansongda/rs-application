@@ -1,3 +1,4 @@
+use salvo::Server;
 use application_api_next::App;
 use application_kernel::logger::Logger;
 use tracing::info;
@@ -14,5 +15,5 @@ async fn main() {
 
     info!("Listening on {}", app.get_listen());
 
-    Server::new(listener).serve(app.get_router().clone()).await;
+    Server::new(listener).serve(app.get_router()).await;
 }

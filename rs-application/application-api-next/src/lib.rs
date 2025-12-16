@@ -1,11 +1,18 @@
 use application_kernel::config::G_CONFIG;
-use salvo::Router;
+use salvo::{Router, Service};
 use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
+use salvo::catcher::Catcher;
+use salvo::cors::Cors;
+use salvo::http::Method;
+use salvo::prelude::RequestId;
+
+mod routes;
+mod response;
 
 pub struct App {
     listen: SocketAddr,
-    router: Router,
+    router: Service,
 }
 
 impl App {
@@ -20,7 +27,7 @@ impl App {
         &self.listen
     }
 
-    pub fn get_router(&self) -> &Router {
+    pub fn get_router(&self) -> &Service {
         &self.router
     }
 
@@ -31,7 +38,19 @@ impl App {
         SocketAddr::from((IpAddr::from_str(listen).unwrap(), port))
     }
 
-    fn router() -> Router {
+    fn router() -> Service {
+        let router = Router::new()
+            .push(routes::api_v1())
+            .push(routes::health());
+
+        let cors = Cors::new()
+            .allow_origin(["*"])
+            .allow_methods(vec![Method::GET, Method::POST, Method::DELETE])
+            .allow_headers("authorization")
+            .into_handler();
+
+        Service::new(router).hoop(cors).hoop(RequestId::new()).catcher(Catcher::default().hoop())
+
         // Router::new()
         //     .nest("/api/v1", routes::api_v1())
         //     .route("/health", get(|| async { "success" }))
