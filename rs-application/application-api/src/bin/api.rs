@@ -1,19 +1,16 @@
-use salvo::Server;
-use application_api_next::App;
+use application_api::App;
 use application_kernel::logger::Logger;
-use tracing::info;
+use salvo::prelude::TcpListener;
+use salvo::{Listener, Server};
 
 #[tokio::main]
 async fn main() {
     let _logger = Logger::non_blocking("api");
 
-    let app = App::init();
+    let listen = App::listen();
+    let service = App::router();
 
-    let listener = tokio::net::TcpListener::bind(app.get_listen())
-        .await
-        .unwrap();
+    let listener = TcpListener::new(listen).bind().await;
 
-    info!("Listening on {}", app.get_listen());
-
-    Server::new(listener).serve(app.get_router()).await;
+    Server::new(listener).serve(service).await;
 }

@@ -1,15 +1,16 @@
-use salvo::{handler, Request};
 use crate::request::Validator;
 use crate::request::access_token::{
     LoginRefreshRequest, LoginRefreshResponse, LoginRequest, LoginResponse,
 };
 use crate::response::{Resp, Response};
 use crate::service;
-use application_database::account::access_token::AccessToken;
+use salvo::{Request, handler};
 
 #[handler]
-pub async fn login(&self, request: &mut Request) -> Resp<LoginResponse> {
-    let req = request.validate()?;
+pub async fn login(request: &mut Request) -> Resp<LoginResponse> {
+    let params = request.parse_json::<LoginRequest>().await?;
+
+    let req = params.validate()?;
 
     let (refresh_token, access_token) = service::access_token::login(&req).await?;
 
@@ -20,8 +21,11 @@ pub async fn login(&self, request: &mut Request) -> Resp<LoginResponse> {
     }))
 }
 
-pub async fn login_refresh(Json(request): Json<LoginRefreshRequest>) -> Resp<LoginRefreshResponse> {
-    let req = request.validate()?;
+#[handler]
+pub async fn login_refresh(request: &mut Request) -> Resp<LoginRefreshResponse> {
+    let params = request.parse_json::<LoginRefreshRequest>().await?;
+
+    let req = params.validate()?;
 
     let (refresh_token, access_token) = service::access_token::login_refresh(&req).await?;
 
@@ -32,6 +36,7 @@ pub async fn login_refresh(Json(request): Json<LoginRefreshRequest>) -> Resp<Log
     }))
 }
 
-pub async fn valid(Extension(_): Extension<AccessToken>) -> Resp<()> {
+#[handler]
+pub async fn valid() -> Resp<()> {
     Ok(Response::success(()))
 }

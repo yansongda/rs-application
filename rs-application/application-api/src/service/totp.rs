@@ -5,13 +5,13 @@ use application_kernel::result::{Error, Result};
 use totp_rs::{Secret, TOTP};
 use tracing::error;
 
-pub async fn all(access_token: access_token::AccessToken) -> Result<Vec<DetailResponse>> {
+pub async fn all(access_token: &access_token::AccessToken) -> Result<Vec<DetailResponse>> {
     let totp = totp::all(access_token.user_id).await?;
 
     Ok(totp.into_iter().map(|t| t.into()).collect())
 }
 
-pub async fn detail(access_token: access_token::AccessToken, id: u64) -> Result<DetailResponse> {
+pub async fn detail(access_token: &access_token::AccessToken, id: u64) -> Result<DetailResponse> {
     let totp = totp::fetch(id).await?;
 
     totp.ensure_permission(access_token.user_id)?;
@@ -20,7 +20,7 @@ pub async fn detail(access_token: access_token::AccessToken, id: u64) -> Result<
 }
 
 pub async fn create(
-    access_token: access_token::AccessToken,
+    access_token: &access_token::AccessToken,
     uri: String,
 ) -> Result<DetailResponse> {
     let totp = TOTP::from_url_unchecked(uri.as_str()).map_err(|e| {
@@ -43,7 +43,7 @@ pub async fn create(
 }
 
 pub async fn edit_issuer(
-    access_token: access_token::AccessToken,
+    access_token: &access_token::AccessToken,
     params: EditIssuerRequestParams,
 ) -> Result<()> {
     let totp = totp::fetch(params.id).await?;
@@ -56,7 +56,7 @@ pub async fn edit_issuer(
 }
 
 pub async fn edit_username(
-    access_token: access_token::AccessToken,
+    access_token: &access_token::AccessToken,
     params: EditUsernameRequestParams,
 ) -> Result<()> {
     let totp = totp::fetch(params.id).await?;
@@ -68,7 +68,7 @@ pub async fn edit_username(
     Ok(())
 }
 
-pub async fn delete(access_token: access_token::AccessToken, id: u64) -> Result<()> {
+pub async fn delete(access_token: &access_token::AccessToken, id: u64) -> Result<()> {
     let totp = totp::fetch(id).await?;
 
     totp.ensure_permission(access_token.user_id)?;

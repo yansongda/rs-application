@@ -30,4 +30,3 @@ murmurs = { version = "~1.0.5" }
 base62 = { version = "~2.2.0" }
 url = { version = "~2.5.0" }
 totp-rs = { version = "~5.7.0", features = ["otpauth"] }
-rs-snowflake = { version = "~0.6.0", default-features = false }

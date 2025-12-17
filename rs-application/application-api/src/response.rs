@@ -1,7 +1,8 @@
+use application_kernel::result::Error;
+use salvo::http::ParseError;
 use salvo::{Scribe, writing::Json};
 use serde::{Deserialize, Serialize};
-
-use application_kernel::result::Error;
+use tracing::info;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Response<D: Serialize> {
@@ -50,5 +51,13 @@ impl Scribe for ApiErr {
 impl From<Error> for ApiErr {
     fn from(r: Error) -> Self {
         ApiErr(r)
+    }
+}
+
+impl From<ParseError> for ApiErr {
+    fn from(r: ParseError) -> Self {
+        info!("解析 Json 请求失败: {:?}", r);
+
+        ApiErr::from(Error::ParamsJsonInvalid(None))
     }
 }

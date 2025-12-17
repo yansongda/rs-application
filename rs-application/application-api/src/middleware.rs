@@ -1,17 +1,7 @@
 use crate::response::ApiErr;
 use application_database::account::access_token;
 use application_kernel::result::Error;
-use salvo::cors::Cors;
-use salvo::http::Method;
-use salvo::{cors::CorsHandler, handler, Depot, FlowCtrl, Request, Response};
-
-pub fn cors() -> CorsHandler {
-    Cors::new()
-        .allow_origin(["*"])
-        .allow_methods(vec![Method::GET, Method::POST, Method::DELETE])
-        .allow_headers("authorization")
-        .into_handler()
-}
+use salvo::{Depot, FlowCtrl, Request, Response, handler};
 
 #[handler]
 pub async fn authorization(
@@ -20,32 +10,32 @@ pub async fn authorization(
     response: &mut Response,
     ctrl: &mut FlowCtrl,
 ) {
-    let authorization_header = request.headers().get("Authorization");
-
-    if authorization_header.is_none() {
-        response.render(ApiErr(Error::AuthorizationHeaderMissing(None)));
-        ctrl.skip_rest();
+    macro_rules! abort {
+        ($error:expr) => {{
+            response.render(ApiErr($error));
+            ctrl.skip_rest();
+            return;
+        }};
     }
 
-    let auth = match authorization_header.unwrap().to_str() {
-        Ok(auth) => auth,
-        Err(_) => return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response(),
+    let auth = match request.headers().get("Authorization") {
+        Some(h) => match h.to_str() {
+            Ok(a) => a,
+            Err(_) => abort!(Error::AuthorizationInvalidFormat(None)),
+        },
+        None => abort!(Error::AuthorizationHeaderMissing(None)),
     };
 
     let token = auth.strip_prefix("Bearer ").unwrap_or(auth);
-
     let access_token = match access_token::fetch(token).await {
-        Ok(token) => token,
-        _ => return ApiErr(Error::AuthorizationAccessTokenInvalid(None)).into_response(),
+        Ok(t) if !t.is_expired() => t,
+        Ok(_) => abort!(Error::AuthorizationAccessTokenExpired(None)),
+        Err(_) => abort!(Error::AuthorizationAccessTokenInvalid(None)),
     };
 
-    if access_token.is_expired() {
-        return ApiErr(Error::AuthorizationAccessTokenExpired(None)).into_response();
-    }
+    depot.inject(access_token);
 
-    request.extensions_mut().insert(access_token);
-
-    ctrl.call_next(request, depot, response).await
+    ctrl.call_next(request, depot, response).await;
 }
 
 // pub async fn log_request(req: Request, next: Next) -> Response {
