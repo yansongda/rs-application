@@ -1,8 +1,9 @@
+use crate::middleware::request_logger;
 use application_kernel::config::G_CONFIG;
 use salvo::catcher::Catcher;
 use salvo::cors::{AllowOrigin, Cors};
 use salvo::http::Method;
-use salvo::prelude::{Logger, RequestId};
+use salvo::prelude::RequestId;
 use salvo::{Router, Service};
 use std::net::{IpAddr, SocketAddr};
 use std::str::FromStr;
@@ -29,7 +30,7 @@ impl App {
 
         Service::new(router)
             .hoop(RequestId::new())
-            .hoop(Logger::new())
+            .hoop(request_logger)
             .hoop(
                 Cors::new()
                     .allow_origin(AllowOrigin::any())

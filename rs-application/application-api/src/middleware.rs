@@ -1,7 +1,13 @@
 use crate::response::ApiErr;
 use application_database::account::access_token;
 use application_kernel::result::Error;
-use salvo::{Depot, FlowCtrl, Request, Response, handler};
+use futures_util::StreamExt;
+use salvo::http::header::AUTHORIZATION;
+use salvo::http::{mime, Mime};
+use salvo::{handler, Depot, FlowCtrl, Request, Response};
+use std::time::Instant;
+use tracing::{info, Instrument};
+use tracing_subscriber::registry::LookupSpan;
 
 #[handler]
 pub async fn authorization(
@@ -18,7 +24,7 @@ pub async fn authorization(
         }};
     }
 
-    let auth = match request.headers().get("Authorization") {
+    let auth = match request.headers().get(AUTHORIZATION) {
         Some(h) => match h.to_str() {
             Ok(a) => a,
             Err(_) => abort!(Error::AuthorizationInvalidFormat(None)),
@@ -38,98 +44,89 @@ pub async fn authorization(
     ctrl.call_next(request, depot, response).await;
 }
 
-// pub async fn log_request(req: Request, next: Next) -> Response {
-//     let (parts, body) = req.into_parts();
+#[handler]
+pub async fn request_logger(
+    request: &mut Request,
+    depot: &mut Depot,
+    response: &mut Response,
+    ctrl: &mut FlowCtrl,
+) {
+    let request_id = request
+        .headers()
+        .get("x-request-id")
+        .map_or_else(|| "unknown", |v| v.to_str().unwrap_or("unknown"));
 
-//     let content_type_header = parts.headers.get(CONTENT_TYPE);
-//     let content_type = content_type_header.and_then(|value| value.to_str().ok());
+    let span = tracing::info_span!("root", request_id);
 
-//     match content_type {
-//         Some(ct)
-//             if !ct.starts_with("application/json")
-//                 && !ct.starts_with("application/x-www-form-urlencoded") =>
-//         {
-//             info!(method = %parts.method,uri = %parts.uri,headers = ?parts.headers, "--> 接收到非 JSON 或表单请求");
+    span.with_subscriber(|(id, dispatch)| {
+        if let Some(sub) = dispatch.downcast_ref::<tracing_subscriber::Registry>()
+            && let Some(span_ref) = sub.span(id)
+        {
+            span_ref
+                .extensions_mut()
+                .insert(application_kernel::logger::TracingId(
+                    request_id.to_string(),
+                ));
+        }
+    });
 
-//             return next.run(Request::from_parts(parts, body)).await;
-//         }
-//         None => {
-//             info!(method = %parts.method, uri = %parts.uri, headers = ?parts.headers, "--> 接收到未知数据源请求");
-//             return next.run(Request::from_parts(parts, body)).await;
-//         }
-//         _ => {}
-//     }
+    let (message, body) = match request.content_type() {
+        Some(ct) if is_loggable_mime(&ct) => {
+            let body = request
+                .parse_body::<&str>()
+                .await
+                .unwrap_or("未解析出请求 body");
+            ("--> 接收到请求", body.to_string())
+        }
+        Some(_) => ("--> 接收到非 JSON 或表单请求", String::new()),
+        None => ("--> 接收到未知数据源请求", String::new()),
+    };
 
-//     let bytes = get_body_bytes(body).await;
+    async move {
+        info!(
+            message,
+            method = %request.method(),
+            uri = %request.uri(),
+            headers = ?request.headers(),
+            body,
+        );
 
-//     if let Err(e) = bytes {
-//         return ApiErr(e).into_response();
-//     }
+        let now = Instant::now();
 
-//     let bytes = bytes.unwrap();
+        ctrl.call_next(request, depot, response).await;
 
-//     if let Ok(body) = std::str::from_utf8(&bytes) {
-//         info!(
-//             method = %parts.method,
-//             uri = %parts.uri,
-//             headers = ?parts.headers,
-//             ?body,
-//             "--> 接收到请求"
-//         );
-//     }
+        let elapsed = now.elapsed().as_secs_f32();
 
-//     next.run(Request::from_parts(parts, Body::from(bytes)))
-//         .await
-// }
+        let body = match response.content_type() {
+            Some(ct) if is_loggable_mime(&ct) => {
+                let mut body = response.take_body();
+                let mut bytes = Vec::new();
 
-// pub async fn log_response(req: Request, next: Next) -> Response {
-//     let started_at = Instant::now();
+                while let Some(Ok(chunk)) = body.next().await {
+                    if let Ok(data) = chunk.into_data() {
+                        bytes.extend_from_slice(&data);
+                    }
+                }
 
-//     let response = next.run(req).await;
+                let res_body = String::from_utf8_lossy(&bytes).to_string();
 
-//     let (parts, body) = response.into_parts();
+                response.body(res_body.to_owned());
 
-//     let content_type_header = parts.headers.get(CONTENT_TYPE);
-//     let content_type = content_type_header.and_then(|value| value.to_str().ok());
+                res_body
+            }
+            _ => String::new(),
+        };
 
-//     if let Some(content_type) = content_type
-//         && !content_type.starts_with("application/json")
-//         && !content_type.starts_with("application/x-www-form-urlencoded")
-//     {
-//         info!(
-//             elapsed = started_at.elapsed().as_secs_f32(),
-//             "<-- 请求处理完成"
-//         );
+        info!(message = "<-- 请求处理完成", elapsed, body);
+    }
+    .instrument(span)
+    .await
+}
 
-//         return Response::from_parts(parts, body);
-//     }
-
-//     let bytes = get_body_bytes(body).await;
-
-//     if let Err(e) = bytes {
-//         return ApiErr(e).into_response();
-//     }
-
-//     let bytes = bytes.unwrap();
-
-//     if let Ok(body) = std::str::from_utf8(&bytes) {
-//         info!(
-//             elapsed = started_at.elapsed().as_secs_f32(),
-//             ?body,
-//             "<-- 请求处理完成"
-//         );
-//     }
-
-//     Response::from_parts(parts, Body::from(bytes))
-// }
-
-// async fn get_body_bytes<B>(body: B) -> Result<Bytes>
-// where
-//     B: axum::body::HttpBody<Data = Bytes>,
-//     B::Error: std::fmt::Display,
-// {
-//     match body.collect().await {
-//         Ok(collected) => Ok(collected.to_bytes()),
-//         Err(_) => Err(Error::InternalReadBodyFailed(None)),
-//     }
-// }
+fn is_loggable_mime(ct: &Mime) -> bool {
+    ct.to_string()
+        .contains(mime::APPLICATION_JSON.to_string().as_str())
+        || ct
+            .to_string()
+            .contains(mime::APPLICATION_WWW_FORM_URLENCODED.to_string().as_str())
+}
