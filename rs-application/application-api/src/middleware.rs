@@ -124,9 +124,5 @@ pub async fn request_logger(
 }
 
 fn is_loggable_mime(ct: &Mime) -> bool {
-    ct.to_string()
-        .contains(mime::APPLICATION_JSON.to_string().as_str())
-        || ct
-            .to_string()
-            .contains(mime::APPLICATION_WWW_FORM_URLENCODED.to_string().as_str())
+    ct.subtype() == mime::JSON || ct.subtype() == mime::WWW_FORM_URLENCODED
 }
