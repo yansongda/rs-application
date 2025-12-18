@@ -117,7 +117,7 @@ pub async fn request_logger(
             _ => String::new(),
         };
 
-        info!(message = "<-- 请求处理完成", elapsed, body);
+        info!(message = "<-- 请求处理完成", elapsed, ?response.headers, body);
     }
     .instrument(span)
     .await

@@ -1,6 +1,6 @@
 use crate::middleware::authorization;
 use crate::v1;
-use salvo::prelude::StatusCode;
+use salvo::prelude::{Json, StatusCode};
 use salvo::{Depot, FlowCtrl, Request, Response, Router, handler};
 
 #[handler]
@@ -12,11 +12,11 @@ pub fn catcher(_req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut Fl
         _ => return,
     };
 
-    res.render(crate::response::Response::<String>::new(
+    res.render(Json(crate::response::Response::<String>::new(
         Some(code),
         Some(msg.to_string()),
         None,
-    ));
+    )));
 
     ctrl.skip_rest();
 }
