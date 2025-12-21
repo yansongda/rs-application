@@ -3,10 +3,10 @@ use application_database::account::access_token;
 use application_kernel::result::Error;
 use futures_util::StreamExt;
 use salvo::http::header::AUTHORIZATION;
-use salvo::http::{mime, Mime};
-use salvo::{handler, Depot, FlowCtrl, Request, Response};
+use salvo::http::{Mime, mime};
+use salvo::{Depot, FlowCtrl, Request, Response, handler};
 use std::time::Instant;
-use tracing::{info, Instrument};
+use tracing::{Instrument, info};
 use tracing_subscriber::registry::LookupSpan;
 
 #[handler]
