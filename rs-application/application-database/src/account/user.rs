@@ -64,13 +64,13 @@ pub async fn insert(
             error!("插入用户失败: {:?}", e);
 
             Error::InternalDatabaseInsert(None)
-        });
+        })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
     info!(elapsed, sql, phone, ?config);
 
-    Ok(result?.last_insert_id())
+    Ok(result.last_insert_id())
 }
 
 pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result::Result<()> {
@@ -86,7 +86,7 @@ pub async fn update_avatar(id: u64, avatar: &str) -> application_kernel::result:
             error!("更新用户失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
-        });
+        })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
@@ -108,7 +108,7 @@ pub async fn update_nickname(id: u64, nickname: &str) -> application_kernel::res
             error!("更新昵称失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
-        });
+        })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
@@ -130,7 +130,7 @@ pub async fn update_slogan(id: u64, slogan: &str) -> application_kernel::result:
             error!("更新 Slogan 失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
-        });
+        })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
@@ -152,7 +152,7 @@ pub async fn update_phone(id: u64, phone: &str) -> application_kernel::result::R
             error!("更新手机号失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
-        });
+        })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
@@ -175,7 +175,7 @@ pub async fn flush(id: u64) -> application_kernel::result::Result<()> {
             error!("清除用户个人设置失败: {:?}", e);
 
             Error::InternalDatabaseUpdate(None)
-        });
+        })?;
 
     let elapsed = started_at.elapsed().as_secs_f32();
 
