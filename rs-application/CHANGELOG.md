@@ -2,7 +2,7 @@
 
 ### chore
 
-- chore: axum 替换为 salvo (#)
+- chore: axum 替换为 salvo (#114)
 
 ## v1.14.1
 
