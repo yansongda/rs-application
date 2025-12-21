@@ -1,135 +1,128 @@
-use application_database::account::access_token;
-use axum::body::{Body, Bytes};
-use http_body_util::BodyExt;
-use std::time::Instant;
-
 use crate::response::ApiErr;
-use application_kernel::result::{Error, Result};
-use axum::extract::Request;
-use axum::http::header::CONTENT_TYPE;
-use axum::middleware::Next;
-use axum::response::{IntoResponse, Response};
-use tracing::info;
+use application_database::account::access_token;
+use application_kernel::result::Error;
+use futures_util::StreamExt;
+use salvo::http::header::AUTHORIZATION;
+use salvo::http::{Mime, mime};
+use salvo::{Depot, FlowCtrl, Request, Response, handler};
+use std::time::Instant;
+use tracing::{Instrument, info};
+use tracing_subscriber::registry::LookupSpan;
 
-pub async fn authorization(mut request: Request, next: Next) -> Response {
-    let authorization = match request.headers().get("Authorization") {
-        Some(header) => header,
-        None => return ApiErr(Error::AuthorizationHeaderMissing(None)).into_response(),
-    };
+#[handler]
+pub async fn authorization(
+    request: &mut Request,
+    depot: &mut Depot,
+    response: &mut Response,
+    ctrl: &mut FlowCtrl,
+) {
+    macro_rules! abort {
+        ($error:expr) => {{
+            response.render(ApiErr($error));
+            ctrl.skip_rest();
+            return;
+        }};
+    }
 
-    let auth = match authorization.to_str() {
-        Ok(auth) => auth,
-        Err(_) => return ApiErr(Error::AuthorizationInvalidFormat(None)).into_response(),
+    let auth = match request.headers().get(AUTHORIZATION) {
+        Some(h) => match h.to_str() {
+            Ok(a) => a,
+            Err(_) => abort!(Error::AuthorizationInvalidFormat(None)),
+        },
+        None => abort!(Error::AuthorizationHeaderMissing(None)),
     };
 
     let token = auth.strip_prefix("Bearer ").unwrap_or(auth);
-
     let access_token = match access_token::fetch(token).await {
-        Ok(token) => token,
-        _ => return ApiErr(Error::AuthorizationAccessTokenInvalid(None)).into_response(),
+        Ok(t) if !t.is_expired() => t,
+        Ok(_) => abort!(Error::AuthorizationAccessTokenExpired(None)),
+        Err(_) => abort!(Error::AuthorizationAccessTokenInvalid(None)),
     };
 
-    if access_token.is_expired() {
-        return ApiErr(Error::AuthorizationAccessTokenExpired(None)).into_response();
-    }
+    depot.inject(access_token);
 
-    request.extensions_mut().insert(access_token);
-
-    next.run(request).await
+    ctrl.call_next(request, depot, response).await;
 }
 
-pub async fn log_request(req: Request, next: Next) -> Response {
-    let (parts, body) = req.into_parts();
+#[handler]
+pub async fn request_logger(
+    request: &mut Request,
+    depot: &mut Depot,
+    response: &mut Response,
+    ctrl: &mut FlowCtrl,
+) {
+    let request_id = request
+        .headers()
+        .get("x-request-id")
+        .map_or_else(|| "unknown", |v| v.to_str().unwrap_or("unknown"));
 
-    let content_type_header = parts.headers.get(CONTENT_TYPE);
-    let content_type = content_type_header.and_then(|value| value.to_str().ok());
+    let span = tracing::info_span!("root", request_id);
 
-    match content_type {
-        Some(ct)
-            if !ct.starts_with("application/json")
-                && !ct.starts_with("application/x-www-form-urlencoded") =>
+    span.with_subscriber(|(id, dispatch)| {
+        if let Some(sub) = dispatch.downcast_ref::<tracing_subscriber::Registry>()
+            && let Some(span_ref) = sub.span(id)
         {
-            info!(method = %parts.method,uri = %parts.uri,headers = ?parts.headers, "--> 接收到非 JSON 或表单请求");
-
-            return next.run(Request::from_parts(parts, body)).await;
+            span_ref
+                .extensions_mut()
+                .insert(application_kernel::logger::TracingId(
+                    request_id.to_string(),
+                ));
         }
-        None => {
-            info!(method = %parts.method, uri = %parts.uri, headers = ?parts.headers, "--> 接收到未知数据源请求");
-            return next.run(Request::from_parts(parts, body)).await;
+    });
+
+    let (message, body) = match request.content_type() {
+        Some(ct) if is_loggable_mime(&ct) => {
+            let body = request
+                .parse_body::<&str>()
+                .await
+                .unwrap_or("未解析出请求 body");
+            ("--> 接收到请求", body.to_string())
         }
-        _ => {}
-    }
+        Some(_) => ("--> 接收到非 JSON 或表单请求", String::new()),
+        None => ("--> 接收到未知数据源请求", String::new()),
+    };
 
-    let bytes = get_body_bytes(body).await;
-
-    if let Err(e) = bytes {
-        return ApiErr(e).into_response();
-    }
-
-    let bytes = bytes.unwrap();
-
-    if let Ok(body) = std::str::from_utf8(&bytes) {
+    async move {
         info!(
-            method = %parts.method,
-            uri = %parts.uri,
-            headers = ?parts.headers,
-            ?body,
-            "--> 接收到请求"
+            message,
+            method = %request.method(),
+            uri = %request.uri(),
+            headers = ?request.headers(),
+            body,
         );
-    }
 
-    next.run(Request::from_parts(parts, Body::from(bytes)))
-        .await
+        let now = Instant::now();
+
+        ctrl.call_next(request, depot, response).await;
+
+        let elapsed = now.elapsed().as_secs_f32();
+
+        let body = match response.content_type() {
+            Some(ct) if is_loggable_mime(&ct) => {
+                let mut body = response.take_body();
+                let mut bytes = Vec::new();
+
+                while let Some(Ok(chunk)) = body.next().await {
+                    if let Ok(data) = chunk.into_data() {
+                        bytes.extend_from_slice(&data);
+                    }
+                }
+
+                let res_body = String::from_utf8_lossy(&bytes).to_string();
+
+                response.body(res_body.to_owned());
+
+                res_body
+            }
+            _ => String::new(),
+        };
+
+        info!(message = "<-- 请求处理完成", elapsed, headers = ?response.headers, body);
+    }
+    .instrument(span)
+    .await
 }
 
-pub async fn log_response(req: Request, next: Next) -> Response {
-    let started_at = Instant::now();
-
-    let response = next.run(req).await;
-
-    let (parts, body) = response.into_parts();
-
-    let content_type_header = parts.headers.get(CONTENT_TYPE);
-    let content_type = content_type_header.and_then(|value| value.to_str().ok());
-
-    if let Some(content_type) = content_type
-        && !content_type.starts_with("application/json")
-        && !content_type.starts_with("application/x-www-form-urlencoded")
-    {
-        info!(
-            elapsed = started_at.elapsed().as_secs_f32(),
-            "<-- 请求处理完成"
-        );
-
-        return Response::from_parts(parts, body);
-    }
-
-    let bytes = get_body_bytes(body).await;
-
-    if let Err(e) = bytes {
-        return ApiErr(e).into_response();
-    }
-
-    let bytes = bytes.unwrap();
-
-    if let Ok(body) = std::str::from_utf8(&bytes) {
-        info!(
-            elapsed = started_at.elapsed().as_secs_f32(),
-            ?body,
-            "<-- 请求处理完成"
-        );
-    }
-
-    Response::from_parts(parts, Body::from(bytes))
-}
-
-async fn get_body_bytes<B>(body: B) -> Result<Bytes>
-where
-    B: axum::body::HttpBody<Data = Bytes>,
-    B::Error: std::fmt::Display,
-{
-    match body.collect().await {
-        Ok(collected) => Ok(collected.to_bytes()),
-        Err(_) => Err(Error::InternalReadBodyFailed(None)),
-    }
+fn is_loggable_mime(ct: &Mime) -> bool {
+    ct.subtype() == mime::JSON || ct.subtype() == mime::WWW_FORM_URLENCODED
 }

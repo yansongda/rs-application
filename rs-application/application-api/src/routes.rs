@@ -1,74 +1,91 @@
-use axum::routing::{get, post};
-use axum::{Router, middleware};
-use tower::ServiceBuilder;
-
 use crate::middleware::authorization;
 use crate::v1;
+use salvo::prelude::{Json, StatusCode};
+use salvo::{Depot, FlowCtrl, Request, Response, Router, handler};
 
-pub fn api_v1() -> Router {
-    Router::new()
-        .merge(api_v1_account())
-        .merge(api_v1_totp())
-        .merge(api_v1_short_url())
+#[handler]
+pub fn catcher(_req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
+    let (code, msg) = match res.status_code {
+        Some(StatusCode::NOT_FOUND) => (404, "Not Found"),
+        Some(StatusCode::METHOD_NOT_ALLOWED) => (405, "Method Not Allowed"),
+        _ => return,
+    };
+
+    res.render(Json(crate::response::Response::<String>::new(
+        Some(code),
+        Some(msg.to_string()),
+        None,
+    )));
+
+    ctrl.skip_rest();
 }
 
-fn api_v1_account() -> Router {
-    let unauthorized = Router::new().nest(
-        "/access-token",
-        Router::new()
-            .route("/login", post(v1::access_token::login))
-            .route("/login/refresh", post(v1::access_token::login_refresh)),
-    );
+pub fn health() -> Router {
+    #[handler]
+    async fn success() -> &'static str {
+        "success"
+    }
 
-    let authorized = Router::new()
-        .nest(
-            "/access-token",
-            Router::new().route("/valid", get(v1::access_token::valid)),
-        )
-        .nest(
-            "/users",
-            Router::new()
-                .route("/detail", post(v1::users::detail))
-                .route("/edit/avatar", post(v1::users::edit_avatar))
-                .route("/edit/nickname", post(v1::users::edit_nickname))
-                .route("/edit/slogan", post(v1::users::edit_slogan))
-                .route("/edit/phone", post(v1::users::edit_phone))
-                .route("/delete", post(v1::users::delete)),
-        )
-        .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)));
+    Router::with_path("/health").get(success)
+}
 
-    Router::new().merge(unauthorized).merge(authorized)
+pub fn api_v1() -> Router {
+    Router::with_path("/api/v1")
+        .push(api_v1_access_token())
+        .push(api_v1_users())
+        .push(api_v1_totp())
+        .push(api_v1_short_url())
+}
+
+fn api_v1_access_token() -> Router {
+    Router::with_path("/access-token")
+        .push(
+            Router::with_path("/login")
+                .post(v1::access_token::login)
+                .push(Router::with_path("/refresh").post(v1::access_token::login_refresh)),
+        )
+        .push(
+            Router::with_path("/valid")
+                .hoop(authorization)
+                .get(v1::access_token::valid),
+        )
+}
+
+fn api_v1_users() -> Router {
+    Router::with_path("/users")
+        .hoop(authorization)
+        .push(Router::with_path("/detail").post(v1::users::detail))
+        .push(
+            Router::with_path("/edit")
+                .push(Router::with_path("/avatar").post(v1::users::edit_avatar))
+                .push(Router::with_path("/nickname").post(v1::users::edit_nickname))
+                .push(Router::with_path("/slogan").post(v1::users::edit_slogan))
+                .push(Router::with_path("/phone").post(v1::users::edit_phone)),
+        )
+        .push(Router::with_path("/delete").post(v1::users::delete))
 }
 
 fn api_v1_totp() -> Router {
-    Router::new()
-        .nest(
-            "/totp",
-            Router::new()
-                .route("/all", post(v1::totp::all))
-                .route("/detail", post(v1::totp::detail))
-                .route("/create", post(v1::totp::create))
-                .route("/edit/username", post(v1::totp::edit_username))
-                .route("/edit/issuer", post(v1::totp::edit_issuer))
-                .route("/delete", post(v1::totp::delete)),
+    Router::with_path("/totp")
+        .hoop(authorization)
+        .push(Router::with_path("/all").post(v1::totp::all))
+        .push(Router::with_path("/detail").post(v1::totp::detail))
+        .push(Router::with_path("/create").post(v1::totp::create))
+        .push(
+            Router::with_path("/edit")
+                .push(Router::with_path("/username").post(v1::totp::edit_username))
+                .push(Router::with_path("/issuer").post(v1::totp::edit_issuer)),
         )
-        .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)))
+        .push(Router::with_path("/delete").post(v1::totp::delete))
 }
 
 fn api_v1_short_url() -> Router {
-    let unauthorized = Router::new().nest(
-        "/short-url",
-        Router::new()
-            .route("/detail", post(v1::short_url::detail))
-            .route("/redirect/{short}", get(v1::short_url::redirect)),
-    );
-
-    let authorized = Router::new()
-        .nest(
-            "/short-url",
-            Router::new().route("/create", post(v1::short_url::create)),
+    Router::with_path("/short-url")
+        .push(Router::with_path("/detail").post(v1::short_url::detail))
+        .push(Router::with_path("/redirect/{short}").get(v1::short_url::redirect))
+        .push(
+            Router::with_path("/create")
+                .hoop(authorization)
+                .post(v1::short_url::create),
         )
-        .layer(ServiceBuilder::new().layer(middleware::from_fn(authorization)));
-
-    Router::new().merge(unauthorized).merge(authorized)
 }

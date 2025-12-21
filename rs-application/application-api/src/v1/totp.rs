@@ -1,6 +1,5 @@
-use axum::Extension;
+use salvo::{Depot, Request, handler};
 
-use crate::extract::Json;
 use crate::request::Validator;
 use crate::request::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
@@ -11,61 +10,64 @@ use crate::response::Response;
 use crate::service;
 use application_database::account::access_token::AccessToken;
 
-pub async fn all(Extension(access_token): Extension<AccessToken>) -> Resp<Vec<DetailResponse>> {
+#[handler]
+pub async fn all(depot: &mut Depot) -> Resp<Vec<DetailResponse>> {
+    let access_token = depot.obtain::<AccessToken>().unwrap();
+
     Ok(Response::success(service::totp::all(access_token).await?))
 }
 
-pub async fn detail(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<DetailRequest>,
-) -> Resp<DetailResponse> {
-    let id = request.validate()?;
+#[handler]
+pub async fn detail(request: &mut Request, depot: &mut Depot) -> Resp<DetailResponse> {
+    let access_token = depot.obtain::<AccessToken>().unwrap();
+
+    let params = request.parse_json::<DetailRequest>().await?;
 
     Ok(Response::success(
-        service::totp::detail(access_token, id).await?,
+        service::totp::detail(access_token, params.validate()?).await?,
     ))
 }
 
-pub async fn create(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<CreateRequest>,
-) -> Resp<DetailResponse> {
-    let uri = request.validate()?;
+#[handler]
+pub async fn create(request: &mut Request, depot: &mut Depot) -> Resp<DetailResponse> {
+    let access_token = depot.obtain::<AccessToken>().unwrap();
+
+    let params = request.parse_json::<CreateRequest>().await?;
 
     Ok(Response::success(
-        service::totp::create(access_token, uri).await?,
+        service::totp::create(access_token, params.validate()?).await?,
     ))
 }
 
-pub async fn edit_issuer(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<EditIssuerRequest>,
-) -> Resp<()> {
-    let params = request.validate()?;
+#[handler]
+pub async fn edit_issuer(request: &mut Request, depot: &mut Depot) -> Resp<()> {
+    let access_token = depot.obtain::<AccessToken>().unwrap();
 
-    service::totp::edit_issuer(access_token, params).await?;
+    let params = request.parse_json::<EditIssuerRequest>().await?;
+
+    service::totp::edit_issuer(access_token, params.validate()?).await?;
 
     Ok(Response::success(()))
 }
 
-pub async fn edit_username(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<EditUsernameRequest>,
-) -> Resp<()> {
-    let params = request.validate()?;
+#[handler]
+pub async fn edit_username(request: &mut Request, depot: &mut Depot) -> Resp<()> {
+    let access_token = depot.obtain::<AccessToken>().unwrap();
 
-    service::totp::edit_username(access_token, params).await?;
+    let params = request.parse_json::<EditUsernameRequest>().await?;
+
+    service::totp::edit_username(access_token, params.validate()?).await?;
 
     Ok(Response::success(()))
 }
 
-pub async fn delete(
-    Extension(access_token): Extension<AccessToken>,
-    Json(request): Json<DeleteRequest>,
-) -> Resp<()> {
-    let id = request.validate()?;
+#[handler]
+pub async fn delete(request: &mut Request, depot: &mut Depot) -> Resp<()> {
+    let access_token = depot.obtain::<AccessToken>().unwrap();
 
-    service::totp::delete(access_token, id).await?;
+    let params = request.parse_json::<DeleteRequest>().await?;
+
+    service::totp::delete(access_token, params.validate()?).await?;
 
     Ok(Response::success(()))
 }

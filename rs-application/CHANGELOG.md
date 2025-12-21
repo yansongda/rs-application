@@ -1,3 +1,9 @@
+## v1.15.0
+
+### chore
+
+- chore: axum 替换为 salvo (#114)
+
 ## v1.14.1
 
 ### added
