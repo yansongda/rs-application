@@ -117,16 +117,12 @@ pub async fn request_logger(
             _ => String::new(),
         };
 
-        info!(message = "<-- 请求处理完成", elapsed, body);
+        info!(message = "<-- 请求处理完成", elapsed, headers = ?response.headers, body);
     }
     .instrument(span)
     .await
 }
 
 fn is_loggable_mime(ct: &Mime) -> bool {
-    ct.to_string()
-        .contains(mime::APPLICATION_JSON.to_string().as_str())
-        || ct
-            .to_string()
-            .contains(mime::APPLICATION_WWW_FORM_URLENCODED.to_string().as_str())
+    ct.subtype() == mime::JSON || ct.subtype() == mime::WWW_FORM_URLENCODED
 }

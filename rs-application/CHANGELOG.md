@@ -1,8 +1,12 @@
 ## v1.15.0
 
+### fixed
+
+- fix: 修复更新用户头像等配置时未处理数据库错误的问题 (#115)
+
 ### chore
 
-- chore: axum 替换为 salvo (#)
+- chore: axum 替换为 salvo (#114)
 
 ## v1.14.1
 
