@@ -1,3 +1,9 @@
+## v1.15.1-TBD
+
+### optimize
+
+- optimize: 使用并发执行优化用户注销流程 (#xxx)
+
 ## v1.15.0
 
 ### fixed
