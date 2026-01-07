@@ -30,7 +30,8 @@ pub fn logger_function(_attr: TokenStream, item: TokenStream) -> TokenStream {
             let result = async #block.await;
             let elapsed = started_at.elapsed().as_secs_f32();
 
-            tracing::info!(elapsed, ?params, ?result, "函数 {} 已执行", stringify!(#name));
+            let result_str = application_kernel::logger::truncate_for_log(&format!("{:?}", result));
+            tracing::info!(elapsed, params, result_str, "函数 {} 已执行", stringify!(#name));
 
             result
         }
