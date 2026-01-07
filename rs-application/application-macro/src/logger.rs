@@ -18,7 +18,7 @@ pub(crate) fn generate_param_logs(sig: &Signature) -> Vec<proc_macro2::TokenStre
                         let ident_str = ident.to_string();
 
                         quote! {
-                            params.push(application_kernel::logger::truncate_for_log(&format!("{}: {:?}", #ident_str, #ident)));
+                            params.push(format!("{}: {:?}", #ident_str, #ident));
                         }
                     } else {
                         // 跳过匿名和复杂模式参数
