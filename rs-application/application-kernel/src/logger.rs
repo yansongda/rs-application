@@ -20,7 +20,10 @@ pub fn truncate_for_log(s: &str) -> String {
         while end > 0 && !s.is_char_boundary(end) {
             end -= 1;
         }
-        format!("{}...", &s[..end])
+        let mut result = String::with_capacity(end + 3);
+        result.push_str(&s[..end]);
+        result.push_str("...");
+        result
     }
 }
 
