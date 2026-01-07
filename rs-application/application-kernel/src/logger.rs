@@ -20,7 +20,9 @@ pub fn truncate_for_log(s: &str) -> String {
         while end > 0 && !s.is_char_boundary(end) {
             end -= 1;
         }
-        let mut result = String::with_capacity(end + 3);
+        let prefix = "(仅展示前 1K 内容)";
+        let mut result = String::with_capacity(prefix.len() + end + 3);
+        result.push_str(prefix);
         result.push_str(&s[..end]);
         result.push_str("...");
         result
