@@ -94,6 +94,7 @@ dependencies = [
  "murmurs",
  "salvo",
  "serde",
+ "serde_json",
  "tokio",
  "totp-rs",
  "tracing",

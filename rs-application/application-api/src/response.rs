@@ -80,3 +80,87 @@ impl From<ParseError> for ApiErr {
         ApiErr::from(Error::ParamsJsonInvalid(None))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_response_success_serialization() {
+        let response = Response::success("test-request-id-123".to_string(), "test data");
+        let json = serde_json::to_value(&response).unwrap();
+        
+        assert_eq!(json["code"], 0);
+        assert_eq!(json["message"], "success");
+        assert_eq!(json["request_id"], "test-request-id-123");
+        assert_eq!(json["data"], "test data");
+    }
+
+    #[test]
+    fn test_response_new_with_request_id() {
+        let response = Response::<String>::new(
+            Some(404),
+            Some("Not Found".to_string()),
+            "test-request-id-456".to_string(),
+            None,
+        );
+        let json = serde_json::to_value(&response).unwrap();
+        
+        assert_eq!(json["code"], 404);
+        assert_eq!(json["message"], "Not Found");
+        assert_eq!(json["request_id"], "test-request-id-456");
+        assert_eq!(json["data"], serde_json::Value::Null);
+    }
+
+    #[test]
+    fn test_response_structure() {
+        let data = json!({
+            "id": 1,
+            "name": "test"
+        });
+        let response = Response::success("req-123".to_string(), data.clone());
+        let json = serde_json::to_value(&response).unwrap();
+        
+        // Verify the response structure matches the required format
+        assert!(json.get("code").is_some());
+        assert!(json.get("message").is_some());
+        assert!(json.get("request_id").is_some());
+        assert!(json.get("data").is_some());
+        
+        // Verify the order doesn't matter but all fields are present
+        let keys: Vec<&str> = json.as_object().unwrap().keys().map(|s| s.as_str()).collect();
+        assert_eq!(keys.len(), 4);
+        assert!(keys.contains(&"code"));
+        assert!(keys.contains(&"message"));
+        assert!(keys.contains(&"request_id"));
+        assert!(keys.contains(&"data"));
+    }
+
+    #[test]
+    fn test_json_format_example() {
+        // Test that the response format matches the issue requirement
+        let data = json!({"user_id": 1, "username": "test"});
+        let response = Response::success("xxxxx".to_string(), data);
+        let json_str = serde_json::to_string(&response).unwrap();
+        let json_value: serde_json::Value = serde_json::from_str(&json_str).unwrap();
+        
+        // Verify it matches the expected structure:
+        // {
+        //     "code": 0,
+        //     "message": "success",
+        //     "request_id": "xxxxx",
+        //     "data": xxx
+        // }
+        assert_eq!(json_value["code"], 0);
+        assert_eq!(json_value["message"], "success");
+        assert_eq!(json_value["request_id"], "xxxxx");
+        assert!(json_value["data"].is_object());
+        assert_eq!(json_value["data"]["user_id"], 1);
+        assert_eq!(json_value["data"]["username"], "test");
+        
+        // Print for manual verification
+        println!("\nActual JSON output:");
+        println!("{}", serde_json::to_string_pretty(&response).unwrap());
+    }
+}
