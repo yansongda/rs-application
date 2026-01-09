@@ -165,8 +165,11 @@ mod tests {
         assert_eq!(json_value["data"]["user_id"], 1);
         assert_eq!(json_value["data"]["username"], "test");
 
-        // Print for manual verification
-        println!("\nActual JSON output:");
-        println!("{}", serde_json::to_string_pretty(&response).unwrap());
+        // Print for manual verification (only in debug builds)
+        #[cfg(debug_assertions)]
+        {
+            println!("\nActual JSON output:");
+            println!("{}", serde_json::to_string_pretty(&response).unwrap());
+        }
     }
 }
