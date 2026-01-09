@@ -1,5 +1,9 @@
 ## v1.15.1-TBD
 
+### added
+
+- feat: API 响应体中增加 request_id (#121)
+
 ### optimize
 
 - optimize: 使用并发执行优化用户注销流程 (#118)
