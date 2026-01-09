@@ -25,8 +25,11 @@ pub fn catcher(req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut Flo
 
 pub fn health() -> Router {
     #[handler]
-    async fn success() -> &'static str {
-        "success"
+    async fn success(request: &mut Request) -> crate::response::Response<&'static str> {
+        crate::response::Response::success(
+            crate::response::get_request_id(request),
+            "success"
+        )
     }
 
     Router::with_path("/health").get(success)
