@@ -56,6 +56,10 @@ pub struct ApiErr(pub Error);
 
 impl Scribe for ApiErr {
     fn render(self, res: &mut salvo::Response) {
+        // Extract request_id from response headers.
+        // Salvo's RequestId middleware (configured in lib.rs with RequestId::new())
+        // adds the x-request-id header to both request and response headers.
+        // If for some reason the header is not present, we fall back to "unknown".
         let request_id = res
             .headers()
             .get("x-request-id")
