@@ -2,19 +2,18 @@ use crate::request::Validator;
 use crate::request::user::{
     DetailResponse, EditAvatarRequest, EditNicknameRequest, EditPhoneRequest, EditSloganRequest,
 };
-use crate::response::Resp;
-use crate::response::Response;
+use crate::response::{Resp, Response, get_request_id};
 use crate::service;
 use application_database::account::access_token::AccessToken;
 use salvo::{Depot, Request, handler};
 
 #[handler]
-pub async fn detail(depot: &mut Depot) -> Resp<DetailResponse> {
+pub async fn detail(request: &mut Request, depot: &mut Depot) -> Resp<DetailResponse> {
     let access_token = depot.obtain::<AccessToken>().unwrap();
 
     let user = service::user::detail(access_token.user_id).await?;
 
-    Ok(Response::success(user.into()))
+    Ok(Response::success(get_request_id(request), user.into()))
 }
 
 #[handler]
@@ -25,7 +24,7 @@ pub async fn edit_avatar(request: &mut Request, depot: &mut Depot) -> Resp<()> {
 
     service::user::update_avatar(access_token, params.validate()?.as_str()).await?;
 
-    Ok(Response::success(()))
+    Ok(Response::success(get_request_id(request), ()))
 }
 
 #[handler]
@@ -36,7 +35,7 @@ pub async fn edit_nickname(request: &mut Request, depot: &mut Depot) -> Resp<()>
 
     service::user::update_nickname(access_token, params.validate()?.as_str()).await?;
 
-    Ok(Response::success(()))
+    Ok(Response::success(get_request_id(request), ()))
 }
 
 #[handler]
@@ -47,7 +46,7 @@ pub async fn edit_slogan(request: &mut Request, depot: &mut Depot) -> Resp<()> {
 
     service::user::update_slogan(access_token, params.validate()?.as_str()).await?;
 
-    Ok(Response::success(()))
+    Ok(Response::success(get_request_id(request), ()))
 }
 
 #[handler]
@@ -58,14 +57,14 @@ pub async fn edit_phone(request: &mut Request, depot: &mut Depot) -> Resp<()> {
 
     service::user::update_phone(access_token, params.validate()?.as_str()).await?;
 
-    Ok(Response::success(()))
+    Ok(Response::success(get_request_id(request), ()))
 }
 
 #[handler]
-pub async fn delete(depot: &mut Depot) -> Resp<()> {
+pub async fn delete(request: &mut Request, depot: &mut Depot) -> Resp<()> {
     let access_token = depot.obtain::<AccessToken>().unwrap();
 
     service::user::delete(access_token).await?;
 
-    Ok(Response::success(()))
+    Ok(Response::success(get_request_id(request), ()))
 }

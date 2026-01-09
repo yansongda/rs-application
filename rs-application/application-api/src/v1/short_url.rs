@@ -1,8 +1,6 @@
 use crate::request::Validator;
 use crate::request::short_url::{CreateRequest, CreateResponse, DetailRequest, DetailResponse};
-use crate::response::Resp;
-use crate::response::Response;
-use crate::response::Result;
+use crate::response::{Resp, Response, Result, get_request_id};
 use crate::service;
 use salvo::prelude::Redirect;
 use salvo::{Request, handler};
@@ -13,7 +11,7 @@ pub async fn create(request: &mut Request) -> Resp<CreateResponse> {
 
     let short_url = service::short_url::create(params.validate()?.as_str()).await?;
 
-    Ok(Response::success(CreateResponse::from(short_url)))
+    Ok(Response::success(get_request_id(request), CreateResponse::from(short_url)))
 }
 
 #[handler]
@@ -22,7 +20,7 @@ pub async fn detail(request: &mut Request) -> Resp<DetailResponse> {
 
     let short_url = service::short_url::detail(params.validate()?.as_str()).await?;
 
-    Ok(Response::success(DetailResponse::from(short_url)))
+    Ok(Response::success(get_request_id(request), DetailResponse::from(short_url)))
 }
 
 #[handler]
