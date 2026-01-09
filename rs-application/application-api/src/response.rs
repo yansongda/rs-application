@@ -34,7 +34,11 @@ impl<D: Serialize> Response<D> {
     }
 }
 
-/// Helper function to extract request_id from response headers
+/// Extracts the `request_id` from the `x-request-id` response header.
+///
+/// The `x-request-id` header is expected to be set by Salvo's `RequestId`
+/// middleware. If the header is missing or cannot be parsed as a valid
+/// string, this function returns `"unknown"` as a fallback.
 fn extract_request_id(res: &salvo::Response) -> String {
     res.headers()
         .get("x-request-id")
