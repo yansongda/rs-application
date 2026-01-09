@@ -17,7 +17,8 @@ impl<D: Serialize> Response<D> {
         Response {
             code: code.unwrap_or(0),
             message: message.unwrap_or_else(|| "success".to_string()),
-            request_id: String::new(), // Will be filled in by Scribe::render()
+            // request_id is populated automatically in Scribe::render() from response headers
+            request_id: String::new(),
             data,
         }
     }
@@ -33,17 +34,19 @@ impl<D: Serialize> Response<D> {
     }
 }
 
+/// Helper function to extract request_id from response headers
+fn extract_request_id(res: &salvo::Response) -> String {
+    res.headers()
+        .get("x-request-id")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("unknown")
+        .to_string()
+}
+
 impl<D: Serialize + Send> Scribe for Response<D> {
     fn render(mut self, res: &mut salvo::Response) {
-        // Extract request_id from response headers and inject it into the Response
-        // Salvo's RequestId middleware adds the x-request-id header to response headers
-        self.request_id = res
-            .headers()
-            .get("x-request-id")
-            .and_then(|v| v.to_str().ok())
-            .unwrap_or("unknown")
-            .to_string();
-        
+        // Inject request_id from response headers (set by RequestId middleware)
+        self.request_id = extract_request_id(res);
         res.render(Json(self));
     }
 }
@@ -55,16 +58,9 @@ pub struct ApiErr(pub Error);
 
 impl Scribe for ApiErr {
     fn render(self, res: &mut salvo::Response) {
-        let request_id = res
-            .headers()
-            .get("x-request-id")
-            .and_then(|v| v.to_str().ok())
-            .unwrap_or("unknown")
-            .to_string();
-        
         let mut response = Response::<String>::error(self);
-        response.request_id = request_id;
-        
+        // Inject request_id using the shared helper function
+        response.request_id = extract_request_id(res);
         res.render(Json(response));
     }
 }
