@@ -13,38 +13,37 @@ pub struct Response<D: Serialize> {
 }
 
 impl<D: Serialize> Response<D> {
-    pub fn new(code: Option<u16>, message: Option<String>, request_id: String, data: Option<D>) -> Self {
+    pub fn new(code: Option<u16>, message: Option<String>, data: Option<D>) -> Self {
         Response {
             code: code.unwrap_or(0),
             message: message.unwrap_or_else(|| "success".to_string()),
-            request_id,
+            request_id: String::new(), // Will be filled in by Scribe::render()
             data,
         }
     }
 
-    pub fn success(request_id: String, data: D) -> Self {
-        Response::new(None, None, request_id, Some(data))
+    pub fn success(data: D) -> Self {
+        Response::new(None, None, Some(data))
     }
 
-    pub fn error(request_id: String, err: ApiErr) -> Self {
+    pub fn error(err: ApiErr) -> Self {
         let (code, message) = err.0.get_code_message();
 
-        Response::new(Some(code), Some(message.to_string()), request_id, None)
+        Response::new(Some(code), Some(message.to_string()), None)
     }
-}
-
-/// Helper function to extract request_id from salvo::Request
-pub fn get_request_id(request: &salvo::Request) -> String {
-    request
-        .headers()
-        .get("x-request-id")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("unknown")
-        .to_string()
 }
 
 impl<D: Serialize + Send> Scribe for Response<D> {
-    fn render(self, res: &mut salvo::Response) {
+    fn render(mut self, res: &mut salvo::Response) {
+        // Extract request_id from response headers and inject it into the Response
+        // Salvo's RequestId middleware adds the x-request-id header to response headers
+        self.request_id = res
+            .headers()
+            .get("x-request-id")
+            .and_then(|v| v.to_str().ok())
+            .unwrap_or("unknown")
+            .to_string();
+        
         res.render(Json(self));
     }
 }
@@ -56,10 +55,6 @@ pub struct ApiErr(pub Error);
 
 impl Scribe for ApiErr {
     fn render(self, res: &mut salvo::Response) {
-        // Extract request_id from response headers.
-        // Salvo's RequestId middleware (configured in lib.rs with RequestId::new())
-        // adds the x-request-id header to both request and response headers.
-        // If for some reason the header is not present, we fall back to "unknown".
         let request_id = res
             .headers()
             .get("x-request-id")
@@ -67,7 +62,10 @@ impl Scribe for ApiErr {
             .unwrap_or("unknown")
             .to_string();
         
-        res.render(Json(Response::<String>::error(request_id, self)));
+        let mut response = Response::<String>::error(self);
+        response.request_id = request_id;
+        
+        res.render(Json(response));
     }
 }
 
@@ -92,7 +90,8 @@ mod tests {
 
     #[test]
     fn test_response_success_serialization() {
-        let response = Response::success("test-request-id-123".to_string(), "test data");
+        let mut response = Response::success("test data");
+        response.request_id = "test-request-id-123".to_string();
         let json = serde_json::to_value(&response).unwrap();
         
         assert_eq!(json["code"], 0);
@@ -103,12 +102,12 @@ mod tests {
 
     #[test]
     fn test_response_new_with_request_id() {
-        let response = Response::<String>::new(
+        let mut response = Response::<String>::new(
             Some(404),
             Some("Not Found".to_string()),
-            "test-request-id-456".to_string(),
             None,
         );
+        response.request_id = "test-request-id-456".to_string();
         let json = serde_json::to_value(&response).unwrap();
         
         assert_eq!(json["code"], 404);
@@ -123,7 +122,8 @@ mod tests {
             "id": 1,
             "name": "test"
         });
-        let response = Response::success("req-123".to_string(), data.clone());
+        let mut response = Response::success(data.clone());
+        response.request_id = "req-123".to_string();
         let json = serde_json::to_value(&response).unwrap();
         
         // Verify the response structure matches the required format
@@ -145,7 +145,8 @@ mod tests {
     fn test_json_format_example() {
         // Test that the response format matches the issue requirement
         let data = json!({"user_id": 1, "username": "test"});
-        let response = Response::success("xxxxx".to_string(), data);
+        let mut response = Response::success(data);
+        response.request_id = "xxxxx".to_string();
         let json_str = serde_json::to_string(&response).unwrap();
         let json_value: serde_json::Value = serde_json::from_str(&json_str).unwrap();
         

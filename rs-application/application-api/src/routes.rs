@@ -4,19 +4,16 @@ use salvo::prelude::{Json, StatusCode};
 use salvo::{Depot, FlowCtrl, Request, Response, Router, handler};
 
 #[handler]
-pub fn catcher(req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
+pub fn catcher(_req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut FlowCtrl) {
     let (code, msg) = match res.status_code {
         Some(StatusCode::NOT_FOUND) => (404, "Not Found"),
         Some(StatusCode::METHOD_NOT_ALLOWED) => (405, "Method Not Allowed"),
         _ => return,
     };
 
-    let request_id = crate::response::get_request_id(req);
-
     res.render(Json(crate::response::Response::<String>::new(
         Some(code),
         Some(msg.to_string()),
-        request_id,
         None,
     )));
 
@@ -25,11 +22,8 @@ pub fn catcher(req: &Request, _depot: &Depot, res: &mut Response, ctrl: &mut Flo
 
 pub fn health() -> Router {
     #[handler]
-    async fn success(request: &mut Request) -> crate::response::Response<&'static str> {
-        crate::response::Response::success(
-            crate::response::get_request_id(request),
-            "success"
-        )
+    async fn success() -> &'static str {
+        "success"
     }
 
     Router::with_path("/health").get(success)

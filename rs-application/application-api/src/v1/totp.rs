@@ -5,15 +5,16 @@ use crate::request::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
     EditUsernameRequest,
 };
-use crate::response::{Resp, Response, get_request_id};
+use crate::response::Resp;
+use crate::response::Response;
 use crate::service;
 use application_database::account::access_token::AccessToken;
 
 #[handler]
-pub async fn all(request: &mut Request, depot: &mut Depot) -> Resp<Vec<DetailResponse>> {
+pub async fn all(depot: &mut Depot) -> Resp<Vec<DetailResponse>> {
     let access_token = depot.obtain::<AccessToken>().unwrap();
 
-    Ok(Response::success(get_request_id(request), service::totp::all(access_token).await?))
+    Ok(Response::success(service::totp::all(access_token).await?))
 }
 
 #[handler]
@@ -23,7 +24,6 @@ pub async fn detail(request: &mut Request, depot: &mut Depot) -> Resp<DetailResp
     let params = request.parse_json::<DetailRequest>().await?;
 
     Ok(Response::success(
-        get_request_id(request),
         service::totp::detail(access_token, params.validate()?).await?,
     ))
 }
@@ -35,7 +35,6 @@ pub async fn create(request: &mut Request, depot: &mut Depot) -> Resp<DetailResp
     let params = request.parse_json::<CreateRequest>().await?;
 
     Ok(Response::success(
-        get_request_id(request),
         service::totp::create(access_token, params.validate()?).await?,
     ))
 }
@@ -48,7 +47,7 @@ pub async fn edit_issuer(request: &mut Request, depot: &mut Depot) -> Resp<()> {
 
     service::totp::edit_issuer(access_token, params.validate()?).await?;
 
-    Ok(Response::success(get_request_id(request), ()))
+    Ok(Response::success(()))
 }
 
 #[handler]
@@ -59,7 +58,7 @@ pub async fn edit_username(request: &mut Request, depot: &mut Depot) -> Resp<()>
 
     service::totp::edit_username(access_token, params.validate()?).await?;
 
-    Ok(Response::success(get_request_id(request), ()))
+    Ok(Response::success(()))
 }
 
 #[handler]
@@ -70,5 +69,5 @@ pub async fn delete(request: &mut Request, depot: &mut Depot) -> Resp<()> {
 
     service::totp::delete(access_token, params.validate()?).await?;
 
-    Ok(Response::success(get_request_id(request), ()))
+    Ok(Response::success(()))
 }
