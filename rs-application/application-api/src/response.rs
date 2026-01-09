@@ -89,7 +89,7 @@ mod tests {
         let mut response = Response::success("test data");
         response.request_id = "test-request-id-123".to_string();
         let json = serde_json::to_value(&response).unwrap();
-        
+
         assert_eq!(json["code"], 0);
         assert_eq!(json["message"], "success");
         assert_eq!(json["request_id"], "test-request-id-123");
@@ -98,14 +98,10 @@ mod tests {
 
     #[test]
     fn test_response_new_with_request_id() {
-        let mut response = Response::<String>::new(
-            Some(404),
-            Some("Not Found".to_string()),
-            None,
-        );
+        let mut response = Response::<String>::new(Some(404), Some("Not Found".to_string()), None);
         response.request_id = "test-request-id-456".to_string();
         let json = serde_json::to_value(&response).unwrap();
-        
+
         assert_eq!(json["code"], 404);
         assert_eq!(json["message"], "Not Found");
         assert_eq!(json["request_id"], "test-request-id-456");
@@ -121,15 +117,20 @@ mod tests {
         let mut response = Response::success(data.clone());
         response.request_id = "req-123".to_string();
         let json = serde_json::to_value(&response).unwrap();
-        
+
         // Verify the response structure matches the required format
         assert!(json.get("code").is_some());
         assert!(json.get("message").is_some());
         assert!(json.get("request_id").is_some());
         assert!(json.get("data").is_some());
-        
+
         // Verify the order doesn't matter but all fields are present
-        let keys: Vec<&str> = json.as_object().unwrap().keys().map(|s| s.as_str()).collect();
+        let keys: Vec<&str> = json
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|s| s.as_str())
+            .collect();
         assert_eq!(keys.len(), 4);
         assert!(keys.contains(&"code"));
         assert!(keys.contains(&"message"));
@@ -145,7 +146,7 @@ mod tests {
         response.request_id = "xxxxx".to_string();
         let json_str = serde_json::to_string(&response).unwrap();
         let json_value: serde_json::Value = serde_json::from_str(&json_str).unwrap();
-        
+
         // Verify it matches the expected structure:
         // {
         //     "code": 0,
@@ -159,7 +160,7 @@ mod tests {
         assert!(json_value["data"].is_object());
         assert_eq!(json_value["data"]["user_id"], 1);
         assert_eq!(json_value["data"]["username"], "test");
-        
+
         // Print for manual verification
         println!("\nActual JSON output:");
         println!("{}", serde_json::to_string_pretty(&response).unwrap());
