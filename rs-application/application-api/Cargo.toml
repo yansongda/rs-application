@@ -22,7 +22,7 @@ serde = { workspace = true }
 
 tokio = { version = "~1.49.0", features = ["full"] }
 salvo = { version = "~0.88.0", features = ["cors", "request-id", "logging"] }
-futures-util = "0.3.31"
+futures-util = { version = "~0.3.31" }
 
 murmurs = { version = "~1.0.5" }
 base62 = { version = "~2.2.0" }
