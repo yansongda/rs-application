@@ -1,5 +1,6 @@
 use crate::response::ApiErr;
 use application_database::account::access_token;
+use application_kernel::logger::truncate_for_log;
 use application_kernel::result::Error;
 use futures_util::StreamExt;
 use salvo::http::header::AUTHORIZATION;
@@ -76,7 +77,7 @@ pub async fn request_logger(
                 .parse_body::<&str>()
                 .await
                 .unwrap_or("未解析出请求 body");
-            ("--> 接收到请求", body.to_string())
+            ("--> 接收到请求", truncate_for_log(body))
         }
         Some(_) => ("--> 接收到非 JSON 或表单请求", String::new()),
         None => ("--> 接收到未知数据源请求", String::new()),
@@ -112,7 +113,7 @@ pub async fn request_logger(
 
                 response.body(res_body.to_owned());
 
-                res_body
+                truncate_for_log(&res_body)
             }
             _ => String::new(),
         };

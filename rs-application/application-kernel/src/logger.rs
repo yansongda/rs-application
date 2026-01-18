@@ -8,6 +8,27 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::registry::{LookupSpan, Scope};
 use tracing_subscriber::util::SubscriberInitExt;
 
+const MAX_LOG_LENGTH: usize = 1024;
+
+/// Truncates a string to MAX_LOG_LENGTH bytes, adding "..." if truncated
+pub fn truncate_for_log(s: &str) -> String {
+    if s.len() <= MAX_LOG_LENGTH {
+        s.to_string()
+    } else {
+        // Find a valid UTF-8 boundary at or before MAX_LOG_LENGTH
+        let mut end = MAX_LOG_LENGTH;
+        while end > 0 && !s.is_char_boundary(end) {
+            end -= 1;
+        }
+        let prefix = "(仅展示前 1K 内容)";
+        let mut result = String::with_capacity(prefix.len() + end + 3);
+        result.push_str(prefix);
+        result.push_str(&s[..end]);
+        result.push_str("...");
+        result
+    }
+}
+
 pub struct Logger {
     _guard: WorkerGuard,
 }

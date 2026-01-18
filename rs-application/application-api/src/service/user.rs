@@ -32,9 +32,10 @@ pub async fn update_phone(access_token: &access_token::AccessToken, phone: &str)
 }
 
 pub async fn delete(access_token: &access_token::AccessToken) -> Result<()> {
-    // todo: 1、事务；2、并发
-    totp::delete_by_user(access_token.user_id).await?;
-    user::flush(access_token.user_id).await?;
+    tokio::try_join!(
+        totp::delete_by_user(access_token.user_id),
+        user::flush(access_token.user_id)
+    )?;
 
     Ok(())
 }
