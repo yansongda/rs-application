@@ -8,7 +8,7 @@ Rust edition 2024，最低版本 1.90.0。Web 框架：Salvo 0.88。数据库：
 ## 仓库结构
 
 ```
-rs-application/
+application-rs/
   application-api/       # HTTP API 二进制入口（src/bin/api.rs）
   application-kernel/    # 核心库：配置、日志、错误/结果类型
   application-database/  # 数据库访问层（MySQL、SQLx）
@@ -21,7 +21,7 @@ rs-application/
 
 ## 构建 / 检查 / 测试命令
 
-所有 Rust 命令必须在 `rs-application/` 目录下执行。
+所有 Rust 命令必须在 `application-rs/` 目录下执行。
 
 ```bash
 # 编译检查（快速，不生成二进制文件）

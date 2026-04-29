@@ -69,5 +69,5 @@ MFA/
 
 ## 联动开发说明
 
-- 涉及后端接口联动时，同时参考根目录 `AGENTS.md` 与 `rs-application/AGENTS.md`
+- 涉及后端接口联动时，同时参考根目录 `AGENTS.md` 与 `application-rs/AGENTS.md`
 - 仅修改华为前端时，不需要遵循 Rust 或微信小程序目录下的专属规范

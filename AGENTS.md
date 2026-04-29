@@ -4,7 +4,7 @@
 
 这是一个前后端同仓库维护的 monorepo：
 
-- `rs-application/`：Rust 后端 workspace
+- `application-rs/`：Rust 后端 workspace
 - `wechat/`：微信小程序前端
 - `huawei/atomicservice/MFA/`：华为元服务前端
 
@@ -12,7 +12,7 @@
 
 ## 子目录规则入口
 
-- 后端：`rs-application/AGENTS.md`
+- 后端：`application-rs/AGENTS.md`
 - 微信前端：`wechat/AGENTS.md`
 - 华为前端：`huawei/atomicservice/MFA/AGENTS.md`
 
@@ -30,6 +30,6 @@
 
 ## 开发建议
 
-- 后端相关命令必须在 `rs-application/` 目录下执行
+- 后端相关命令必须在 `application-rs/` 目录下执行
 - 微信前端使用 `pnpm`
 - 华为前端优先以工程内现有配置文件与脚本为准

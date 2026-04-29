@@ -57,7 +57,7 @@ impl<S, E> ResponseVariant<S, E> {
 
 static G_CLIENT: LazyLock<Client> = LazyLock::new(|| {
     Client::builder()
-        .user_agent("yansongda/rs-application")
+        .user_agent("yansongda/application-rs")
         .connect_timeout(Duration::from_secs(1))
         .timeout(Duration::from_secs(3))
         .build()

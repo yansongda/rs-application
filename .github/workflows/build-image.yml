@@ -3,24 +3,24 @@ name: Building Image
 on:
   push:
     tags:
-      - '*'
+      - "*"
   workflow_dispatch:
     inputs:
       name:
-        description: '构建镜像类型'
+        description: "构建镜像类型"
         required: true
         type: choice
         options:
           - application-api
-        default: 'application-api'
+        default: "application-api"
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_IMAGE_REPOSITORY: ghcr.io/${{ github.repository }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
-  DOCKERHUB_IMAGE_REPOSITORY: yansongda/rs-application
+  DOCKERHUB_IMAGE_REPOSITORY: yansongda/application-rs
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
-  ALIYUN_IMAGE_REPOSITORY: registry.cn-shenzhen.aliyuncs.com/yansongda-app/rs-application
+  ALIYUN_IMAGE_REPOSITORY: registry.cn-shenzhen.aliyuncs.com/yansongda-app/application-rs
 
 jobs:
   build-application-api:
@@ -29,12 +29,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: rs-application
+        working-directory: application-rs
     permissions:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Recognize tag
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -42,7 +42,7 @@ jobs:
           else
             tag=$GITHUB_REF_NAME
           fi
-          
+
           echo "Recognized tag: $tag"
           echo "tag=$tag" >> $GITHUB_ENV
       - name: Build the docker image

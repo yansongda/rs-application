@@ -58,5 +58,5 @@ pnpm biome:fix-unsafe
 
 ## 联动开发说明
 
-- 涉及后端接口联动时，同时参考 `rs-application/AGENTS.md`
+- 涉及后端接口联动时，同时参考 `application-rs/AGENTS.md`
 - 仅修改微信前端时，不需要遵循 Rust 后端的代码风格和构建命令

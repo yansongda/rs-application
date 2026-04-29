@@ -31,7 +31,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            name: "rs-application".to_string(),
+            name: "application-rs".to_string(),
             bin: HashMap::new(),
             databases: HashMap::new(),
             short_url: ShortUrl::default(),

@@ -1,4 +1,4 @@
-name="rs-application"
+name="application-rs"
 
 [bin.api]
 listen="0.0.0.0"
