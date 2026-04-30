@@ -20,20 +20,22 @@ impl Validator for LoginRequest {
     type Data = LoginRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
-            return Err(Error::ParamsLoginPlatformUnsupported(None));
-        }
+        let platform = self
+            .platform
+            .filter(|p| *p != Platform::Unsupported)
+            .ok_or(Error::ParamsLoginPlatformUnsupported(None))?;
 
-        if self.third_id.is_none() {
-            return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
-        }
+        let third_id = self
+            .third_id
+            .as_deref()
+            .ok_or(Error::ParamsLoginPlatformThirdIdFormatInvalid(None))?;
 
         if let Some(code) = &self.code
             && code.chars().count() > 8
         {
             return Ok(LoginRequestParams {
-                platform: self.platform.unwrap(),
-                third_id: self.third_id.as_ref().unwrap().to_owned(),
+                platform,
+                third_id: third_id.to_owned(),
                 code: code.to_string(),
             });
         }
@@ -66,20 +68,22 @@ impl Validator for LoginRefreshRequest {
     type Data = LoginRefreshRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.platform.is_none() || self.platform.unwrap() == Platform::Unsupported {
-            return Err(Error::ParamsLoginPlatformUnsupported(None));
-        }
+        let platform = self
+            .platform
+            .filter(|p| *p != Platform::Unsupported)
+            .ok_or(Error::ParamsLoginPlatformUnsupported(None))?;
 
-        if self.third_id.is_none() {
-            return Err(Error::ParamsLoginPlatformThirdIdFormatInvalid(None));
-        }
+        let third_id = self
+            .third_id
+            .as_deref()
+            .ok_or(Error::ParamsLoginPlatformThirdIdFormatInvalid(None))?;
 
         if let Some(refresh_token) = &self.refresh_token
             && refresh_token.chars().count() > 8
         {
             return Ok(LoginRefreshRequestParams {
-                platform: self.platform.unwrap(),
-                third_id: self.third_id.as_ref().unwrap().to_owned(),
+                platform,
+                third_id: third_id.to_owned(),
                 refresh_token: refresh_token.to_string(),
             });
         }

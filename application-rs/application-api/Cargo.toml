@@ -21,8 +21,8 @@ tracing-subscriber = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 
-tokio = { version = "~1.49.0", features = ["full"] }
-salvo = { version = "~0.88.0", features = ["cors", "request-id", "logging"] }
+tokio = { version = "~1.52.1", features = ["full"] }
+salvo = { version = "~0.93.0", features = ["cors", "request-id", "logging"] }
 futures-util = { version = "~0.3.31" }
 
 murmurs = { version = "~1.0.5" }

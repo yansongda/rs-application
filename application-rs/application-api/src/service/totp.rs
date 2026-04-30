@@ -8,7 +8,7 @@ use tracing::error;
 pub async fn all(access_token: &access_token::AccessToken) -> Result<Vec<DetailResponse>> {
     let totp = totp::all(access_token.user_id).await?;
 
-    Ok(totp.into_iter().map(|t| t.into()).collect())
+    totp.into_iter().map(|t| t.try_into()).collect()
 }
 
 pub async fn detail(access_token: &access_token::AccessToken, id: u64) -> Result<DetailResponse> {
@@ -16,7 +16,7 @@ pub async fn detail(access_token: &access_token::AccessToken, id: u64) -> Result
 
     totp.ensure_permission(access_token.user_id)?;
 
-    Ok(totp.into())
+    totp.try_into()
 }
 
 pub async fn create(
@@ -29,7 +29,7 @@ pub async fn create(
         Error::ParamsTotpParseFailed(None)
     })?;
 
-    Ok(totp::insert(totp::CreatedTotp {
+    totp::insert(totp::CreatedTotp {
         user_id: access_token.user_id,
         username: totp.account_name,
         issuer: totp.issuer,
@@ -39,7 +39,7 @@ pub async fn create(
         },
     })
     .await?
-    .into())
+    .try_into()
 }
 
 pub async fn edit_issuer(
