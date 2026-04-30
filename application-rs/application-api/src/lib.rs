@@ -19,10 +19,18 @@ pub struct App;
 
 impl App {
     pub fn listen() -> SocketAddr {
-        let listen = G_CONFIG.bin.get("api").unwrap().listen.as_str();
-        let port = G_CONFIG.bin.get("api").unwrap().port;
+        let api_config = G_CONFIG
+            .bin
+            .get("api")
+            .expect("配置中缺少 'api' 配置项");
 
-        SocketAddr::from((IpAddr::from_str(listen).unwrap(), port))
+        let listen = api_config.listen.as_str();
+        let port = api_config.port;
+
+        SocketAddr::from((
+            IpAddr::from_str(listen).expect("API 监听地址格式无效"),
+            port,
+        ))
     }
 
     pub fn router() -> Service {

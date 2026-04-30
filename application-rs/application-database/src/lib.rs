@@ -37,7 +37,8 @@ impl Pool {
     }
 
     fn connect_mysql(config: &Database) -> MySqlPool {
-        let connection_options = MySqlConnectOptions::from_str(config.url.as_str()).unwrap();
+        let connection_options =
+            MySqlConnectOptions::from_str(config.url.as_str()).expect("数据库 URL 格式无效");
 
         MySqlPoolOptions::new()
             .acquire_timeout(Duration::from_secs(config.acquire_timeout))

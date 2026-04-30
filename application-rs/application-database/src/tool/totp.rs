@@ -28,22 +28,30 @@ impl Totp {
         Err(Error::AuthorizationPermissionUngranted(None))
     }
 
-    pub fn generate_code(&self) -> String {
+    pub fn generate_code(&self) -> Result<String> {
         let config = &self.config;
+
+        let secret = Secret::Encoded(config.secret.to_owned())
+            .to_bytes()
+            .map_err(|e| {
+                error!("TOTP Secret 解码失败: {:?}", e);
+                Error::ParamsTotpUriFormatInvalid(None)
+            })?;
 
         let totp = TOTP::new_unchecked(
             Algorithm::SHA1,
             6,
             1,
             config.period,
-            Secret::Encoded(config.secret.to_owned())
-                .to_bytes()
-                .unwrap(),
+            secret,
             self.issuer.to_owned(),
             self.username.to_owned(),
         );
 
-        totp.generate_current().unwrap()
+        totp.generate_current().map_err(|e| {
+            error!("TOTP Code 生成失败: {:?}", e);
+            Error::InternalDatabaseQuery(None)
+        })
     }
 }
 

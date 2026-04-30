@@ -13,11 +13,9 @@ impl Validator for DetailRequest {
     type Data = u64;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.id.is_none() {
-            return Err(Error::ParamsTotpIdEmpty(None));
-        }
+        let id = self.id.as_deref().ok_or(Error::ParamsTotpIdEmpty(None))?;
 
-        Ok(self.to_owned().id.unwrap().parse::<u64>().unwrap())
+        id.parse::<u64>().map_err(|_| Error::ParamsTotpIdEmpty(None))
     }
 }
 
@@ -35,9 +33,11 @@ pub struct DetailResponseConfig {
     pub period: u64,
 }
 
-impl From<Totp> for DetailResponse {
-    fn from(totp: Totp) -> Self {
-        Self {
+impl TryFrom<Totp> for DetailResponse {
+    type Error = application_kernel::result::Error;
+
+    fn try_from(totp: Totp) -> application_kernel::result::Result<Self> {
+        Ok(Self {
             id: totp.id.to_string(),
             issuer: totp
                 .issuer
@@ -45,8 +45,8 @@ impl From<Totp> for DetailResponse {
                 .unwrap_or_else(|| "未知发行方".to_string()),
             username: totp.username.to_owned(),
             config: totp.config.deref().to_owned().into(),
-            code: totp.generate_code(),
-        }
+            code: totp.generate_code()?,
+        })
     }
 }
 
@@ -96,9 +96,12 @@ impl Validator for EditIssuerRequest {
     type Data = EditIssuerRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.id.is_none() {
-            return Err(Error::ParamsTotpIdEmpty(None));
-        }
+        let id = self
+            .id
+            .as_deref()
+            .ok_or(Error::ParamsTotpIdEmpty(None))?
+            .parse::<u64>()
+            .map_err(|_| Error::ParamsTotpIdEmpty(None))?;
 
         if let Some(issuer) = &self.issuer
             && issuer.chars().count() > 128
@@ -107,7 +110,7 @@ impl Validator for EditIssuerRequest {
         }
 
         Ok(Self::Data {
-            id: self.to_owned().id.unwrap().parse::<u64>().unwrap(),
+            id,
             issuer: self.issuer.to_owned().unwrap_or_default(),
         })
     }
@@ -129,9 +132,12 @@ impl Validator for EditUsernameRequest {
     type Data = EditUsernameRequestParams;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.id.is_none() {
-            return Err(Error::ParamsTotpIdEmpty(None));
-        }
+        let id = self
+            .id
+            .as_deref()
+            .ok_or(Error::ParamsTotpIdEmpty(None))?
+            .parse::<u64>()
+            .map_err(|_| Error::ParamsTotpIdEmpty(None))?;
 
         let username = self
             .username
@@ -143,7 +149,7 @@ impl Validator for EditUsernameRequest {
         }
 
         Ok(Self::Data {
-            id: self.to_owned().id.unwrap().parse::<u64>().unwrap(),
+            id,
             username: username.to_string(),
         })
     }
@@ -158,10 +164,8 @@ impl Validator for DeleteRequest {
     type Data = u64;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        if self.id.is_none() {
-            return Err(Error::ParamsTotpIdEmpty(None));
-        }
+        let id = self.id.as_deref().ok_or(Error::ParamsTotpIdEmpty(None))?;
 
-        Ok(self.to_owned().id.unwrap().parse::<u64>().unwrap())
+        id.parse::<u64>().map_err(|_| Error::ParamsTotpIdEmpty(None))
     }
 }
