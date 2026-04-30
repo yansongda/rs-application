@@ -15,7 +15,8 @@ impl Validator for DetailRequest {
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         let id = self.id.as_deref().ok_or(Error::ParamsTotpIdEmpty(None))?;
 
-        id.parse::<u64>().map_err(|_| Error::ParamsTotpIdEmpty(None))
+        id.parse::<u64>()
+            .map_err(|_| Error::ParamsTotpIdEmpty(None))
     }
 }
 
@@ -166,6 +167,7 @@ impl Validator for DeleteRequest {
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
         let id = self.id.as_deref().ok_or(Error::ParamsTotpIdEmpty(None))?;
 
-        id.parse::<u64>().map_err(|_| Error::ParamsTotpIdEmpty(None))
+        id.parse::<u64>()
+            .map_err(|_| Error::ParamsTotpIdEmpty(None))
     }
 }

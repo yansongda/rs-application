@@ -19,10 +19,7 @@ pub struct App;
 
 impl App {
     pub fn listen() -> SocketAddr {
-        let api_config = G_CONFIG
-            .bin
-            .get("api")
-            .expect("配置中缺少 'api' 配置项");
+        let api_config = G_CONFIG.bin.get("api").expect("配置中缺少 'api' 配置项");
 
         let listen = api_config.listen.as_str();
         let port = api_config.port;
