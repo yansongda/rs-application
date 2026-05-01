@@ -4,7 +4,7 @@ use std::sync::LazyLock;
 use std::time::Duration;
 
 use reqwest::{Client, Request};
-use serde::{de, de::DeserializeOwned, Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, de, de::DeserializeOwned};
 use serde_json::Value;
 use tracing::{info, warn};
 
