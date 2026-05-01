@@ -4,13 +4,14 @@ use std::sync::LazyLock;
 use std::time::Duration;
 
 use reqwest::{Client, Request};
-use serde::Deserialize;
+use serde::{de, de::DeserializeOwned, Deserialize, Deserializer};
+use serde_json::Value;
 use tracing::{info, warn};
 
 use application_kernel::result::{Error, Result};
 
 #[allow(dead_code)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug)]
 pub struct HttpResponse<S, E> {
     pub status: u16,
     pub headers: HashMap<String, String>,
@@ -19,23 +20,47 @@ pub struct HttpResponse<S, E> {
     pub inner: ResponseVariant<S, E>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
+impl<'de, S, E> Deserialize<'de> for HttpResponse<S, E>
+where
+    S: Debug + DeserializeOwned,
+    E: Debug + DeserializeOwned,
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct RawHttpResponse<S, E> {
+            status: u16,
+            headers: HashMap<String, String>,
+            body: String,
+            duration: f32,
+            inner: Value,
+            #[serde(skip)]
+            _marker: std::marker::PhantomData<(S, E)>,
+        }
+
+        let raw = RawHttpResponse::<S, E>::deserialize(deserializer)?;
+        let inner = serde_json::from_value::<ResponseVariant<S, E>>(raw.inner)
+            .map_err(de::Error::custom)?;
+
+        Ok(Self {
+            status: raw.status,
+            headers: raw.headers,
+            body: raw.body,
+            duration: raw.duration,
+            inner,
+        })
+    }
+}
+
+#[derive(Debug)]
 pub enum ResponseVariant<S, E> {
     Success(S),
     Error(E),
 }
 
 impl<S, E> ResponseVariant<S, E> {
-    pub fn parse(body: &str) -> Result<Self>
-    where
-        S: Debug + for<'de> Deserialize<'de>,
-        E: Debug + for<'de> Deserialize<'de>,
-    {
-        serde_json::from_str::<ResponseVariant<S, E>>(body)
-            .map_err(|_| Error::ThirdHttpResponseParse(None))
-    }
-
     pub fn is_success(&self) -> bool {
         matches!(self, ResponseVariant::Success(_))
     }
@@ -55,13 +80,54 @@ impl<S, E> ResponseVariant<S, E> {
     }
 }
 
+impl<'de, S, E> Deserialize<'de> for ResponseVariant<S, E>
+where
+    S: Debug + for<'d> Deserialize<'d>,
+    E: Debug + for<'d> Deserialize<'d>,
+{
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = Value::deserialize(deserializer)?;
+
+        // 判别逻辑 1：errcode == 0 → Success（微信）
+        if let Some(errcode) = value.get("errcode").and_then(|errcode| errcode.as_u64()) {
+            return if errcode == 0 {
+                serde_json::from_value::<S>(value)
+                    .map(ResponseVariant::Success)
+                    .map_err(de::Error::custom)
+            } else {
+                serde_json::from_value::<E>(value)
+                    .map(ResponseVariant::Error)
+                    .map_err(de::Error::custom)
+            };
+        }
+
+        // 判别逻辑 2：error 存在且非空 → Error（华为）
+        if let Some(error) = value.get("error").and_then(|error| error.as_str())
+            && !error.is_empty()
+        {
+            return serde_json::from_value::<E>(value)
+                .map(ResponseVariant::Error)
+                .map_err(de::Error::custom);
+        }
+
+        // 兜底：先尝试 Success，失败则尝试 Error
+        serde_json::from_value::<S>(value.clone())
+            .map(ResponseVariant::Success)
+            .or_else(|_| serde_json::from_value::<E>(value).map(ResponseVariant::Error))
+            .map_err(de::Error::custom)
+    }
+}
+
 static G_CLIENT: LazyLock<Client> = LazyLock::new(|| {
     Client::builder()
         .user_agent("yansongda/application-rs")
         .connect_timeout(Duration::from_secs(1))
         .timeout(Duration::from_secs(3))
         .build()
-        .unwrap()
+        .expect("HTTP 客户端初始化失败")
 });
 
 pub async fn request<S, E>(request: Request) -> Result<HttpResponse<S, E>>
@@ -94,20 +160,20 @@ where
         &headers, &body
     );
 
-    let result = HttpResponse {
-        status,
-        headers,
-        body: body.clone(),
-        duration: started_at.elapsed().as_secs_f32(),
-        inner: serde_json::from_str::<ResponseVariant<S, E>>(&body)
-            .map_err(|_| Error::ThirdHttpResponseParse(None))?,
-    };
+    let inner = serde_json::from_str::<ResponseVariant<S, E>>(&body)
+        .map_err(|_| Error::ThirdHttpResponseParse(None))?;
 
-    if !result.inner.is_success() {
+    if !inner.is_success() {
         return Err(Error::ThirdHttpResponseResult(None));
     }
 
-    Ok(result)
+    Ok(HttpResponse {
+        status,
+        headers,
+        body,
+        duration: started_at.elapsed().as_secs_f32(),
+        inner,
+    })
 }
 
 pub fn map_request_err(e: Error, platform: &str) -> Error {
