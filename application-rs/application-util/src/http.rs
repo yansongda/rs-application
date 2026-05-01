@@ -1,57 +1,19 @@
-use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::LazyLock;
 use std::time::Duration;
 
 use reqwest::{Client, Request};
-use serde::{Deserialize, Deserializer, de, de::DeserializeOwned};
+use serde::{Deserialize, Deserializer, de};
 use serde_json::Value;
 use tracing::{info, warn};
 
 use application_kernel::result::{Error, Result};
 
-#[allow(dead_code)]
 #[derive(Debug)]
 pub struct HttpResponse<S, E> {
     pub status: u16,
-    pub headers: HashMap<String, String>,
-    pub body: String,
     pub duration: f32,
     pub inner: ResponseVariant<S, E>,
-}
-
-impl<'de, S, E> Deserialize<'de> for HttpResponse<S, E>
-where
-    S: Debug + DeserializeOwned,
-    E: Debug + DeserializeOwned,
-{
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        #[derive(Deserialize)]
-        struct RawHttpResponse<S, E> {
-            status: u16,
-            headers: HashMap<String, String>,
-            body: String,
-            duration: f32,
-            inner: Value,
-            #[serde(skip)]
-            _marker: std::marker::PhantomData<(S, E)>,
-        }
-
-        let raw = RawHttpResponse::<S, E>::deserialize(deserializer)?;
-        let inner = serde_json::from_value::<ResponseVariant<S, E>>(raw.inner)
-            .map_err(de::Error::custom)?;
-
-        Ok(Self {
-            status: raw.status,
-            headers: raw.headers,
-            body: raw.body,
-            duration: raw.duration,
-            inner,
-        })
-    }
 }
 
 #[derive(Debug)]
@@ -130,50 +92,48 @@ static G_CLIENT: LazyLock<Client> = LazyLock::new(|| {
         .expect("HTTP 客户端初始化失败")
 });
 
-pub async fn request<S, E>(request: Request) -> Result<HttpResponse<S, E>>
+pub async fn request<S, E>(req: Request) -> Result<HttpResponse<S, E>>
 where
     S: Debug + for<'de> Deserialize<'de>,
     E: Debug + for<'de> Deserialize<'de>,
 {
-    info!("请求第三方服务接口 {:?}", request);
+    info!("请求第三方服务接口 {:?}", req);
 
     let started_at = std::time::Instant::now();
-    let response = G_CLIENT.execute(request).await.map_err(|e| {
+    let response = G_CLIENT.execute(req).await.map_err(|e| {
         warn!("请求第三方服务接口失败 {:?}", e);
         Error::ThirdHttpRequest(None)
     })?;
 
     let status = response.status().as_u16();
-    let headers = response
-        .headers()
-        .iter()
-        .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
-        .collect::<HashMap<String, String>>();
 
     let body = response.text().await.map_err(|e| {
         warn!("接收第三方服务接口响应失败 {:?}", e);
         Error::ThirdHttpResponse(None)
     })?;
 
-    info!(
-        "请求第三方服务接口结果： headers: {:?}, body: {:?}",
-        &headers, &body
-    );
+    info!("请求第三方服务接口结果： body: {:?}", &body);
 
     let inner = serde_json::from_str::<ResponseVariant<S, E>>(&body)
         .map_err(|_| Error::ThirdHttpResponseParse(None))?;
 
-    if !inner.is_success() {
-        return Err(Error::ThirdHttpResponseResult(None));
-    }
-
     Ok(HttpResponse {
         status,
-        headers,
-        body,
         duration: started_at.elapsed().as_secs_f32(),
         inner,
     })
+}
+
+pub async fn request_success<S, E>(req: Request) -> Result<S>
+where
+    S: Debug + for<'de> Deserialize<'de>,
+    E: Debug + for<'de> Deserialize<'de>,
+{
+    let response = request::<S, E>(req).await?;
+    response
+        .inner
+        .into_success()
+        .ok_or(Error::ThirdHttpResponseResult(None))
 }
 
 pub fn map_request_err(e: Error, platform: &str) -> Error {
