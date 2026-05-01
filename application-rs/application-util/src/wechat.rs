@@ -36,10 +36,10 @@ pub async fn login(code: &str, app_id: &str, app_secret: &str) -> Result<LoginRe
             Error::ThirdHttpRequest(Some("URL 格式无效".to_string()))
         })?;
 
-    let response =
-        http::request_success::<LoginResponse, LoginResponseError>(Request::new(Method::GET, url))
-            .await
-            .map_err(|e| map_request_err(e, "微信"))?;
-
-    Ok(response)
+    http::request::<LoginResponse, LoginResponseError>(Request::new(Method::GET, url))
+        .await
+        .map_err(|e| map_request_err(e, "微信"))?
+        .inner
+        .into_success()
+        .ok_or(Error::ThirdHttpResponseResult(None))
 }

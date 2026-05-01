@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::LazyLock;
 use std::time::Duration;
@@ -106,13 +107,21 @@ where
     })?;
 
     let status = response.status().as_u16();
+    let headers = response
+        .headers()
+        .iter()
+        .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
+        .collect::<HashMap<String, String>>();
 
     let body = response.text().await.map_err(|e| {
         warn!("接收第三方服务接口响应失败 {:?}", e);
         Error::ThirdHttpResponse(None)
     })?;
 
-    info!("请求第三方服务接口结果： body: {:?}", &body);
+    info!(
+        "请求第三方服务接口结果： headers: {:?}, body: {:?}",
+        &headers, &body
+    );
 
     let inner = serde_json::from_str::<ResponseVariant<S, E>>(&body)
         .map_err(|_| Error::ThirdHttpResponseParse(None))?;
@@ -122,18 +131,6 @@ where
         duration: started_at.elapsed().as_secs_f32(),
         inner,
     })
-}
-
-pub async fn request_success<S, E>(req: Request) -> Result<S>
-where
-    S: Debug + for<'de> Deserialize<'de>,
-    E: Debug + for<'de> Deserialize<'de>,
-{
-    let response = request::<S, E>(req).await?;
-    response
-        .inner
-        .into_success()
-        .ok_or(Error::ThirdHttpResponseResult(None))
 }
 
 pub fn map_request_err(e: Error, platform: &str) -> Error {

@@ -45,16 +45,15 @@ pub async fn token(code: &str, app_id: &str, client_secret: &str) -> Result<Toke
     )
     .form(&form);
 
-    let response = http::request_success::<TokenResponse, TokenResponseError>(
-        builder.build().map_err(|e| {
-            warn!("请求构建失败: {:?}", e);
-            Error::ThirdHttpRequest(Some("请求构建失败".to_string()))
-        })?,
-    )
+    http::request::<TokenResponse, TokenResponseError>(builder.build().map_err(|e| {
+        warn!("请求构建失败: {:?}", e);
+        Error::ThirdHttpRequest(Some("请求构建失败".to_string()))
+    })?)
     .await
-    .map_err(|e| map_request_err(e, "华为"))?;
-
-    Ok(response)
+    .map_err(|e| map_request_err(e, "华为"))?
+    .inner
+    .into_success()
+    .ok_or(Error::ThirdHttpResponseResult(None))
 }
 
 #[allow(dead_code)]
@@ -89,14 +88,13 @@ pub async fn token_info(access_token: &str) -> Result<TokenInfoResponse> {
     )
         .form(&form);
 
-    let response = http::request_success::<TokenInfoResponse, TokenInfoResponseError>(
-        builder.build().map_err(|e| {
-            warn!("请求构建失败: {:?}", e);
-            Error::ThirdHttpRequest(Some("请求构建失败".to_string()))
-        })?,
-    )
+    http::request::<TokenInfoResponse, TokenInfoResponseError>(builder.build().map_err(|e| {
+        warn!("请求构建失败: {:?}", e);
+        Error::ThirdHttpRequest(Some("请求构建失败".to_string()))
+    })?)
     .await
-    .map_err(|e| map_request_err(e, "华为"))?;
-
-    Ok(response)
+    .map_err(|e| map_request_err(e, "华为"))?
+    .inner
+    .into_success()
+    .ok_or(Error::ThirdHttpResponseResult(None))
 }
