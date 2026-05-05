@@ -1,5 +1,5 @@
 use reqwest::{Method, Request, Url};
-use tracing::warn;
+use tracing::error;
 
 use crate::http;
 use application_kernel::result::Error;
@@ -75,7 +75,7 @@ pub async fn login(code: &str, app_id: &str, app_secret: &str) -> Result<LoginRe
 
     let url = Url::parse_with_params("https://api.weixin.qq.com/sns/jscode2session", query)
         .map_err(|e| {
-            warn!("URL 解析失败: {:?}", e);
+            error!("URL 解析失败: {:?}", e);
             Error::ThirdHttpRequest(Some("URL 格式无效".to_string()))
         })?;
 

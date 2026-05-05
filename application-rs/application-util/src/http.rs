@@ -4,7 +4,7 @@ use std::time::Duration;
 
 use reqwest::{Client, Request};
 use serde::Deserialize;
-use tracing::{info, warn};
+use tracing::{error, info};
 
 use application_kernel::result::{Error, Result};
 
@@ -32,7 +32,7 @@ where
 
     let started_at = std::time::Instant::now();
     let response = G_CLIENT.execute(req).await.map_err(|e| {
-        warn!("请求第三方服务接口失败 {:?}", e);
+        error!("请求第三方服务接口失败 {:?}", e);
         Error::ThirdHttpRequest(None)
     })?;
 
@@ -44,7 +44,7 @@ where
         .collect::<HashMap<String, String>>();
 
     let body = response.text().await.map_err(|e| {
-        warn!("接收第三方服务接口响应失败 {:?}", e);
+        error!("接收第三方服务接口响应失败 {:?}", e);
         Error::ThirdHttpResponse(None)
     })?;
 

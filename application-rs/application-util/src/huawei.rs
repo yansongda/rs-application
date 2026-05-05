@@ -5,7 +5,7 @@ use application_kernel::result::Error;
 use application_kernel::result::Result;
 use serde::{Deserialize, Deserializer, de};
 use serde_json::Value;
-use tracing::warn;
+use tracing::error;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone)]
@@ -35,15 +35,16 @@ impl<'de> Deserialize<'de> for TokenResponse {
     {
         let value = Value::deserialize(deserializer)?;
 
-        if let Some(error) = value.get("error").and_then(|e| e.as_str())
-            && !error.is_empty()
-        {
-            let err: TokenResponseError =
-                serde_json::from_value(value).map_err(de::Error::custom)?;
-            return Err(de::Error::custom(format!(
-                "第三方错误: 华为 API 响应业务结果出错，请联系管理员: {}",
-                err.error_description
-            )));
+        // 检查 error 字段（数字类型）
+        if let Some(error) = value.get("error").and_then(|e| e.as_i64()) {
+            if error != 0 {
+                let err: TokenResponseError =
+                    serde_json::from_value(value).map_err(de::Error::custom)?;
+                return Err(de::Error::custom(format!(
+                    "第三方错误: 华为 API 响应业务结果出错，请联系管理员: {}",
+                    err.error_description
+                )));
+            }
         }
 
         serde_json::from_value::<RawTokenResponse>(value)
@@ -62,7 +63,7 @@ impl<'de> Deserialize<'de> for TokenResponse {
 #[allow(dead_code)]
 #[derive(Debug, Clone, Deserialize)]
 pub struct TokenResponseError {
-    pub error: String,
+    pub error: i64,
     pub error_description: String,
 }
 
@@ -79,7 +80,7 @@ pub async fn token(code: &str, app_id: &str, client_secret: &str) -> Result<Toke
         Request::new(
             Method::POST,
             Url::parse("https://oauth-login.cloud.huawei.com/oauth2/v3/token").map_err(|e| {
-                warn!("URL 解析失败: {:?}", e);
+                error!("URL 解析失败: {:?}", e);
                 Error::ThirdHttpRequest(Some("URL 格式无效".to_string()))
             })?,
         ),
@@ -87,7 +88,7 @@ pub async fn token(code: &str, app_id: &str, client_secret: &str) -> Result<Toke
     .form(&form);
 
     http::request::<TokenResponse>(builder.build().map_err(|e| {
-        warn!("请求构建失败: {:?}", e);
+        error!("请求构建失败: {:?}", e);
         Error::ThirdHttpRequest(Some("请求构建失败".to_string()))
     })?)
     .await
@@ -158,7 +159,7 @@ pub async fn token_info(access_token: &str) -> Result<TokenInfoResponse> {
         Request::new(
             Method::POST,
             Url::parse("https://oauth-api.cloud.huawei.com/rest.php?nsp_fmt=JSON&nsp_svc=huawei.oauth2.user.getTokenInfo").map_err(|e| {
-                warn!("URL 解析失败: {:?}", e);
+                error!("URL 解析失败: {:?}", e);
                 Error::ThirdHttpRequest(Some("URL 格式无效".to_string()))
             })?,
         ),
@@ -166,7 +167,7 @@ pub async fn token_info(access_token: &str) -> Result<TokenInfoResponse> {
         .form(&form);
 
     http::request::<TokenInfoResponse>(builder.build().map_err(|e| {
-        warn!("请求构建失败: {:?}", e);
+        error!("请求构建失败: {:?}", e);
         Error::ThirdHttpRequest(Some("请求构建失败".to_string()))
     })?)
     .await
@@ -200,7 +201,7 @@ mod tests {
     #[test]
     fn deserialize_token_response_error() {
         let value = serde_json::json!({
-            "error": "invalid_grant",
+            "error": 10001,
             "error_description": "bad code"
         });
 
