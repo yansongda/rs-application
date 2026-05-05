@@ -36,15 +36,15 @@ impl<'de> Deserialize<'de> for TokenResponse {
         let value = Value::deserialize(deserializer)?;
 
         // 检查 error 字段（数字类型）
-        if let Some(error) = value.get("error").and_then(|e| e.as_i64()) {
-            if error != 0 {
-                let err: TokenResponseError =
-                    serde_json::from_value(value).map_err(de::Error::custom)?;
-                return Err(de::Error::custom(format!(
-                    "第三方错误: 华为 API 响应业务结果出错，请联系管理员: {}",
-                    err.error_description
-                )));
-            }
+        if let Some(error) = value.get("error").and_then(|e| e.as_i64())
+            && error != 0
+        {
+            let err: TokenResponseError =
+                serde_json::from_value(value).map_err(de::Error::custom)?;
+            return Err(de::Error::custom(format!(
+                "第三方错误: 华为 API 响应业务结果出错，请联系管理员: {}",
+                err.error_description
+            )));
         }
 
         serde_json::from_value::<RawTokenResponse>(value)
