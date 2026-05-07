@@ -8,6 +8,81 @@ use std::sync::LazyLock;
 use std::time::Duration;
 use tracing::error;
 
+#[allow(unused_macros)]
+macro_rules! query_optional {
+    ($sql:expr, $pool:expr, $query:expr, $message:literal) => {{
+        let sql = $sql;
+        let started_at = std::time::Instant::now();
+        let result = $query
+            .fetch_optional($pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("{}: {:?}", $message, e);
+
+                application_kernel::result::Error::InternalDatabaseQuery(None)
+            })?;
+
+        let elapsed = started_at.elapsed().as_secs_f32();
+        tracing::info!(elapsed, sql);
+
+        result
+    }};
+    ($sql:expr, $pool:expr, $query:expr, $message:literal, $($fields:tt)+) => {{
+        let sql = $sql;
+        let started_at = std::time::Instant::now();
+        let result = $query
+            .fetch_optional($pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("{}: {:?}", $message, e);
+
+                application_kernel::result::Error::InternalDatabaseQuery(None)
+            })?;
+
+        let elapsed = started_at.elapsed().as_secs_f32();
+        tracing::info!(elapsed, sql, $($fields)+);
+
+        result
+    }};
+}
+
+#[allow(unused_macros)]
+macro_rules! execute_write {
+    ($sql:expr, $pool:expr, $query:expr, $message:literal, $error:expr) => {{
+        let sql = $sql;
+        let started_at = std::time::Instant::now();
+        let result = $query.execute($pool).await.map_err(|e| {
+            tracing::error!("{}: {:?}", $message, e);
+
+            $error
+        })?;
+
+        let elapsed = started_at.elapsed().as_secs_f32();
+        tracing::info!(elapsed, sql);
+
+        result
+    }};
+    ($sql:expr, $pool:expr, $query:expr, $message:literal, $error:expr, $($fields:tt)+) => {{
+        let sql = $sql;
+        let started_at = std::time::Instant::now();
+        let result = $query.execute($pool).await.map_err(|e| {
+            tracing::error!("{}: {:?}", $message, e);
+
+            $error
+        })?;
+
+        let elapsed = started_at.elapsed().as_secs_f32();
+        tracing::info!(elapsed, sql, $($fields)+);
+
+        result
+    }};
+}
+
+#[allow(unused_imports)]
+pub(crate) use execute_write;
+#[allow(unused_imports)]
+pub(crate) use query_optional;
+
 pub mod account;
 pub mod tool;
 

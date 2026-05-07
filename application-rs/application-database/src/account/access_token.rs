@@ -7,8 +7,6 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
-use std::time::Instant;
-use tracing::{error, info};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -89,21 +87,11 @@ pub struct HuaweiAccessTokenData {
 
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     let sql = "select * from account.access_token where access_token = ? limit 1";
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
+    let query = sqlx::query_as(sql).bind(access_token);
 
-    let result: Option<AccessToken> = sqlx::query_as(sql)
-        .bind(access_token)
-        .fetch_optional(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("查询 access_token 失败: {:?}", e);
-
-            Error::InternalDatabaseQuery(None)
-        })?;
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, access_token);
+    let result: Option<AccessToken> =
+        query_optional!(sql, pool, query, "查询 access_token 失败", access_token);
 
     if let Some(data) = result {
         return Ok(data);
@@ -114,21 +102,11 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
 
 pub async fn fetch_by_id(id: u64) -> Result<AccessToken> {
     let sql = "select * from account.access_token where id = ? limit 1";
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
+    let query = sqlx::query_as(sql).bind(id);
 
-    let result: Option<AccessToken> = sqlx::query_as(sql)
-        .bind(id)
-        .fetch_optional(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("查询 access_token 失败: {:?}", e);
-
-            Error::InternalDatabaseQuery(None)
-        })?;
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, id);
+    let result: Option<AccessToken> =
+        query_optional!(sql, pool, query, "查询 access_token 失败", id);
 
     if let Some(data) = result {
         return Ok(data);
@@ -139,22 +117,16 @@ pub async fn fetch_by_id(id: u64) -> Result<AccessToken> {
 
 pub async fn fetch_by_user_id(platform: &Platform, user_id: u64) -> Result<AccessToken> {
     let sql = "select * from account.access_token where user_id = ? and platform = ? limit 1";
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
+    let query = sqlx::query_as(sql).bind(user_id).bind(platform);
 
-    let result: Option<AccessToken> = sqlx::query_as(sql)
-        .bind(user_id)
-        .bind(platform)
-        .fetch_optional(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("通过 user_id 查询 access_token 失败: {:?}", e);
-
-            Error::InternalDatabaseQuery(None)
-        })?;
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, user_id);
+    let result: Option<AccessToken> = query_optional!(
+        sql,
+        pool,
+        query,
+        "通过 user_id 查询 access_token 失败",
+        user_id
+    );
 
     if let Some(data) = result {
         return Ok(data);
@@ -183,7 +155,6 @@ pub async fn insert(
 ) -> Result<AccessToken> {
     let sql = "insert into account.access_token (user_id, access_token, data, platform, third_id, expired_at) values (?, ?, ?, ?, ?, ?)";
     let access_token = Uuid::now_v7().to_string();
-    let started_at = Instant::now();
     let mut expired_at = Some(G_CONFIG.access_token.get_expired_at());
 
     // todo: 微信的 access_token 永不过期，后续需要处理
@@ -191,27 +162,28 @@ pub async fn insert(
         expired_at = None;
     }
 
-    let result = sqlx::query(sql)
+    let pool = Pool::mysql("account")?;
+    let query = sqlx::query(sql)
         .bind(user_id)
         .bind(&access_token)
         .bind(Json(&data))
         .bind(platform)
         .bind(third_id)
-        .bind(expired_at)
-        .execute(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("插入 access_token 失败: {:?}", e);
+        .bind(expired_at);
 
-            Error::InternalDatabaseInsert(None)
-        });
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, user_id, access_token, ?data);
+    let result = execute_write!(
+        sql,
+        pool,
+        query,
+        "插入 access_token 失败",
+        Error::InternalDatabaseInsert(None),
+        user_id,
+        access_token,
+        ?data
+    );
 
     Ok(AccessToken {
-        id: result?.last_insert_id(),
+        id: result.last_insert_id(),
         user_id,
         platform: platform.to_owned(),
         third_id: third_id.to_string(),
@@ -226,7 +198,6 @@ pub async fn insert(
 pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Result<AccessToken> {
     let sql =
         "update account.access_token set access_token = ?, data = ?, expired_at = ? where id = ?";
-    let started_at = Instant::now();
     let access_token_value = Uuid::now_v7().to_string();
     let mut expired_at = Some(G_CONFIG.access_token.get_expired_at());
 
@@ -235,22 +206,22 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
         expired_at = None;
     }
 
-    let _ = sqlx::query(sql)
+    let pool = Pool::mysql("account")?;
+    let query = sqlx::query(sql)
         .bind(&access_token_value)
         .bind(Json(&data))
         .bind(expired_at)
-        .bind(access_token.id)
-        .execute(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("更新 access_token 失败: {:?}", e);
+        .bind(access_token.id);
 
-            Error::InternalDatabaseUpdate(None)
-        });
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, access_token.id, ?data);
+    let _ = execute_write!(
+        sql,
+        pool,
+        query,
+        "更新 access_token 失败",
+        Error::InternalDatabaseUpdate(None),
+        access_token.id,
+        ?data
+    );
 
     access_token.access_token = access_token_value;
     access_token.data = Json(data);
@@ -258,4 +229,64 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
     access_token.updated_at = Local::now();
 
     Ok(access_token)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::Duration;
+
+    fn create_test_token(expired_at: Option<DateTime<Local>>) -> AccessToken {
+        let now = Local::now();
+
+        AccessToken {
+            id: 1,
+            user_id: 1,
+            platform: Platform::Wechat,
+            third_id: "third_id".to_string(),
+            access_token: "access_token".to_string(),
+            data: Json(AccessTokenData {
+                wechat: None,
+                huawei: None,
+            }),
+            expired_at,
+            created_at: now,
+            updated_at: now,
+        }
+    }
+
+    #[test]
+    fn test_access_token_is_expired_with_past_date() {
+        let token = create_test_token(Some(Local::now() - Duration::seconds(1)));
+
+        assert!(token.is_expired());
+    }
+
+    #[test]
+    fn test_access_token_is_expired_with_future_date() {
+        let token = create_test_token(Some(Local::now() + Duration::seconds(1)));
+
+        assert!(!token.is_expired());
+    }
+
+    #[test]
+    fn test_access_token_is_expired_with_no_expiry() {
+        let token = create_test_token(None);
+
+        assert!(!token.is_expired());
+    }
+
+    #[test]
+    fn test_get_expired_in_with_expiry() {
+        let token = create_test_token(Some(Local::now() + Duration::seconds(60)));
+
+        assert!(token.get_expired_in() > 0);
+    }
+
+    #[test]
+    fn test_get_expired_in_without_expiry() {
+        let token = create_test_token(None);
+
+        assert_eq!(token.get_expired_in(), G_CONFIG.access_token.expired_in);
+    }
 }

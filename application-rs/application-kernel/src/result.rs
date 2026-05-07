@@ -190,6 +190,58 @@ impl Error {
 
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{self:?}")
+        let (code, message) = self.get_code_message();
+        write!(f, "[{code}] {message}")
+    }
+}
+
+impl std::error::Error for Error {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_display() {
+        let err = Error::AuthorizationHeaderMissing(None);
+
+        assert_eq!(err.to_string(), "[1000] 认证失败: 缺少认证信息,请重新登录");
+    }
+
+    #[test]
+    fn test_error_display_with_custom_message() {
+        let err = Error::ParamsJsonInvalid(Some("自定义提示".to_string()));
+
+        assert_eq!(err.to_string(), "[2000] 自定义提示");
+    }
+
+    #[test]
+    fn test_error_code_ranges() {
+        let cases = [
+            (Error::AuthorizationAccessTokenInvalid(None), 1001),
+            (Error::ParamsUserNotFound(None), 2005),
+            (Error::ThirdHttpResponse(None), 9801),
+            (Error::InternalDatabaseDelete(None), 9905),
+        ];
+
+        for (err, expected_code) in cases {
+            assert_eq!(err.get_code_message().0, expected_code);
+        }
+    }
+
+    #[test]
+    fn test_error_is_clone() {
+        let err = Error::InternalDatabaseQuery(Some("查询失败".to_string()));
+        let cloned = err.clone();
+
+        assert_eq!(err, cloned);
+        assert_eq!(cloned.to_string(), "[9902] 查询失败");
+    }
+
+    #[test]
+    fn test_error_implements_std_error() {
+        fn assert_std_error<E: std::error::Error>() {}
+
+        assert_std_error::<Error>();
     }
 }
