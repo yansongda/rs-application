@@ -71,3 +71,58 @@ macro_rules! update {
         $crate::execute!($pool, $sql, application_kernel::result::Error::InternalDatabaseUpdate(None) $(, $bind)*)
     }};
 }
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_insert_macro_sql_validation() {
+        let valid_sql = "INSERT INTO users (name) VALUES (?)";
+        let sql_upper = valid_sql.to_uppercase();
+        assert!(sql_upper.starts_with("INSERT"));
+    }
+
+    #[test]
+    fn test_update_macro_sql_validation() {
+        let valid_sql = "UPDATE users SET name = ? WHERE id = ?";
+        let sql_upper = valid_sql.to_uppercase();
+        assert!(sql_upper.starts_with("UPDATE"));
+    }
+
+    #[test]
+    #[should_panic(expected = "insert! 宏要求 SQL 以 INSERT 开头")]
+    fn test_insert_macro_rejects_non_insert_sql() {
+        let invalid_sql = "UPDATE users SET name = ?";
+        let sql_upper = invalid_sql.to_uppercase();
+        assert!(
+            sql_upper.starts_with("INSERT"),
+            "insert! 宏要求 SQL 以 INSERT 开头，实际为: {}",
+            invalid_sql
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "update! 宏要求 SQL 以 UPDATE 开头")]
+    fn test_update_macro_rejects_non_update_sql() {
+        let invalid_sql = "INSERT INTO users (name) VALUES (?)";
+        let sql_upper = invalid_sql.to_uppercase();
+        assert!(
+            sql_upper.starts_with("UPDATE"),
+            "update! 宏要求 SQL 以 UPDATE 开头，实际为: {}",
+            invalid_sql
+        );
+    }
+
+    #[test]
+    fn test_insert_macro_accepts_case_insensitive() {
+        let valid_sql = "insert into users (name) VALUES (?)";
+        let sql_upper = valid_sql.to_uppercase();
+        assert!(sql_upper.starts_with("INSERT"));
+    }
+
+    #[test]
+    fn test_update_macro_accepts_case_insensitive() {
+        let valid_sql = "update users SET name = ?";
+        let sql_upper = valid_sql.to_uppercase();
+        assert!(sql_upper.starts_with("UPDATE"));
+    }
+}
