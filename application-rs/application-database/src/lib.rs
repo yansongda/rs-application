@@ -10,37 +10,21 @@ use tracing::error;
 
 #[allow(unused_macros)]
 macro_rules! query_optional {
-    ($sql:expr, $pool:expr, $query:expr, $message:literal) => {{
+    ($pool:expr, $sql:expr $(, $bind:expr)*) => {{
         let sql = $sql;
         let started_at = std::time::Instant::now();
-        let result = $query
+        let result = sqlx::query_as(sql)
+            $(.bind($bind))*
             .fetch_optional($pool)
             .await
             .map_err(|e| {
-                tracing::error!("{}: {:?}", $message, e);
+                tracing::error!("数据库查询失败: {:?}", e);
 
                 application_kernel::result::Error::InternalDatabaseQuery(None)
             })?;
 
         let elapsed = started_at.elapsed().as_secs_f32();
         tracing::info!(elapsed, sql);
-
-        result
-    }};
-    ($sql:expr, $pool:expr, $query:expr, $message:literal, $($fields:tt)+) => {{
-        let sql = $sql;
-        let started_at = std::time::Instant::now();
-        let result = $query
-            .fetch_optional($pool)
-            .await
-            .map_err(|e| {
-                tracing::error!("{}: {:?}", $message, e);
-
-                application_kernel::result::Error::InternalDatabaseQuery(None)
-            })?;
-
-        let elapsed = started_at.elapsed().as_secs_f32();
-        tracing::info!(elapsed, sql, $($fields)+);
 
         result
     }};
@@ -48,31 +32,21 @@ macro_rules! query_optional {
 
 #[allow(unused_macros)]
 macro_rules! execute_write {
-    ($sql:expr, $pool:expr, $query:expr, $message:literal, $error:expr) => {{
+    ($pool:expr, $sql:expr, $error:expr $(, $bind:expr)*) => {{
         let sql = $sql;
         let started_at = std::time::Instant::now();
-        let result = $query.execute($pool).await.map_err(|e| {
-            tracing::error!("{}: {:?}", $message, e);
+        let result = sqlx::query(sql)
+            $(.bind($bind))*
+            .execute($pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("数据库写入失败: {:?}", e);
 
-            $error
-        })?;
+                $error
+            })?;
 
         let elapsed = started_at.elapsed().as_secs_f32();
         tracing::info!(elapsed, sql);
-
-        result
-    }};
-    ($sql:expr, $pool:expr, $query:expr, $message:literal, $error:expr, $($fields:tt)+) => {{
-        let sql = $sql;
-        let started_at = std::time::Instant::now();
-        let result = $query.execute($pool).await.map_err(|e| {
-            tracing::error!("{}: {:?}", $message, e);
-
-            $error
-        })?;
-
-        let elapsed = started_at.elapsed().as_secs_f32();
-        tracing::info!(elapsed, sql, $($fields)+);
 
         result
     }};

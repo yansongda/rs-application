@@ -88,10 +88,8 @@ pub struct HuaweiAccessTokenData {
 pub async fn fetch(access_token: &str) -> Result<AccessToken> {
     let sql = "select * from account.access_token where access_token = ? limit 1";
     let pool = Pool::mysql("account")?;
-    let query = sqlx::query_as(sql).bind(access_token);
 
-    let result: Option<AccessToken> =
-        query_optional!(sql, pool, query, "查询 access_token 失败", access_token);
+    let result: Option<AccessToken> = query_optional!(pool, sql, access_token);
 
     if let Some(data) = result {
         return Ok(data);
@@ -103,10 +101,8 @@ pub async fn fetch(access_token: &str) -> Result<AccessToken> {
 pub async fn fetch_by_id(id: u64) -> Result<AccessToken> {
     let sql = "select * from account.access_token where id = ? limit 1";
     let pool = Pool::mysql("account")?;
-    let query = sqlx::query_as(sql).bind(id);
 
-    let result: Option<AccessToken> =
-        query_optional!(sql, pool, query, "查询 access_token 失败", id);
+    let result: Option<AccessToken> = query_optional!(pool, sql, id);
 
     if let Some(data) = result {
         return Ok(data);
@@ -118,15 +114,8 @@ pub async fn fetch_by_id(id: u64) -> Result<AccessToken> {
 pub async fn fetch_by_user_id(platform: &Platform, user_id: u64) -> Result<AccessToken> {
     let sql = "select * from account.access_token where user_id = ? and platform = ? limit 1";
     let pool = Pool::mysql("account")?;
-    let query = sqlx::query_as(sql).bind(user_id).bind(platform);
 
-    let result: Option<AccessToken> = query_optional!(
-        sql,
-        pool,
-        query,
-        "通过 user_id 查询 access_token 失败",
-        user_id
-    );
+    let result: Option<AccessToken> = query_optional!(pool, sql, user_id, platform);
 
     if let Some(data) = result {
         return Ok(data);
@@ -163,23 +152,17 @@ pub async fn insert(
     }
 
     let pool = Pool::mysql("account")?;
-    let query = sqlx::query(sql)
-        .bind(user_id)
-        .bind(&access_token)
-        .bind(Json(&data))
-        .bind(platform)
-        .bind(third_id)
-        .bind(expired_at);
 
     let result = execute_write!(
-        sql,
         pool,
-        query,
-        "插入 access_token 失败",
+        sql,
         Error::InternalDatabaseInsert(None),
         user_id,
-        access_token,
-        ?data
+        &access_token,
+        Json(&data),
+        platform,
+        third_id,
+        expired_at
     );
 
     Ok(AccessToken {
@@ -207,20 +190,15 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
     }
 
     let pool = Pool::mysql("account")?;
-    let query = sqlx::query(sql)
-        .bind(&access_token_value)
-        .bind(Json(&data))
-        .bind(expired_at)
-        .bind(access_token.id);
 
     let _ = execute_write!(
-        sql,
         pool,
-        query,
-        "更新 access_token 失败",
+        sql,
         Error::InternalDatabaseUpdate(None),
-        access_token.id,
-        ?data
+        &access_token_value,
+        Json(&data),
+        expired_at,
+        access_token.id
     );
 
     access_token.access_token = access_token_value;
