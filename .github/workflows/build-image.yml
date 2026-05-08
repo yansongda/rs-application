@@ -18,9 +18,9 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   GITHUB_IMAGE_REPOSITORY: ghcr.io/${{ github.repository }}
   DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
-  DOCKERHUB_IMAGE_REPOSITORY: yansongda/application-rs
+  DOCKERHUB_IMAGE_REPOSITORY: ${{ github.repository }}
   ALIYUN_IMAGE_TOKEN: ${{ secrets.ALIYUN_IMAGE_ACCESSTOKEN }}
-  ALIYUN_IMAGE_REPOSITORY: registry.cn-shenzhen.aliyuncs.com/yansongda-app/application-rs
+  ALIYUN_IMAGE_REPOSITORY: registry.cn-shenzhen.aliyuncs.com/yansongda-app/application
 
 jobs:
   build-application-api:
