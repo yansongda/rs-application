@@ -1,17 +1,14 @@
-## v1.16.0
+## [1.16.0] - 2026-05-08
 
-### fixed
+### Fixed
 
 - fix: 移除所有 unwrap() 调用，改用安全的错误处理 (#122) ([60bf0b0](https://github.com/yansongda/application/commit/60bf0b0))
 
-### changed
+### Changed
 
 - refactor: 代码库质量改进 (#124) ([b035d38](https://github.com/yansongda/application/commit/b035d38))
 - refactor(http): 移除 #[serde(untagged)]，改为自定义反序列化 (#123) ([c6fc467](https://github.com/yansongda/application/commit/c6fc467))
 - refactor: 重命名 rs-application/ 为 application-rs/ 以对齐 monorepo 目录规范 ([2fd71ce](https://github.com/yansongda/application/commit/2fd71ce))
-
-### docs
-
 - docs: add Chinese agent guide for repository workflows ([01bce0a](https://github.com/yansongda/application/commit/01bce0a))
 
 ## v1.15.1
