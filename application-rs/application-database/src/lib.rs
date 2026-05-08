@@ -8,6 +8,8 @@ use std::sync::LazyLock;
 use std::time::Duration;
 use tracing::error;
 
+mod macros;
+
 pub mod account;
 pub mod tool;
 
