@@ -1,6 +1,6 @@
 use crate::Pool;
 use crate::account::Platform;
-use crate::{execute, query_optional};
+use crate::{insert, query_optional, update};
 use application_kernel::config::G_CONFIG;
 use application_kernel::result::{Error, Result};
 use application_util::wechat::LoginResponse;
@@ -154,10 +154,9 @@ pub async fn insert(
 
     let pool = Pool::mysql("account")?;
 
-    let result = execute!(
+    let result = insert!(
         pool,
         sql,
-        Error::InternalDatabaseInsert(None),
         user_id,
         &access_token,
         Json(&data),
@@ -192,10 +191,9 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
 
     let pool = Pool::mysql("account")?;
 
-    let _ = execute!(
+    let _ = update!(
         pool,
         sql,
-        Error::InternalDatabaseUpdate(None),
         &access_token_value,
         Json(&data),
         expired_at,

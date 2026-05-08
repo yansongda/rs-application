@@ -39,3 +39,35 @@ macro_rules! execute {
         })?
     }};
 }
+
+#[macro_export]
+macro_rules! insert {
+    ($pool:expr, $sql:expr $(, $bind:expr)*) => {{
+        #[cfg(debug_assertions)]
+        {
+            let sql_upper = $sql.to_uppercase();
+            assert!(
+                sql_upper.starts_with("INSERT"),
+                "insert! 宏要求 SQL 以 INSERT 开头，实际为: {}",
+                $sql
+            );
+        }
+        $crate::execute!($pool, $sql, application_kernel::result::Error::InternalDatabaseInsert(None) $(, $bind)*)
+    }};
+}
+
+#[macro_export]
+macro_rules! update {
+    ($pool:expr, $sql:expr $(, $bind:expr)*) => {{
+        #[cfg(debug_assertions)]
+        {
+            let sql_upper = $sql.to_uppercase();
+            assert!(
+                sql_upper.starts_with("UPDATE"),
+                "update! 宏要求 SQL 以 UPDATE 开头，实际为: {}",
+                $sql
+            );
+        }
+        $crate::execute!($pool, $sql, application_kernel::result::Error::InternalDatabaseUpdate(None) $(, $bind)*)
+    }};
+}
