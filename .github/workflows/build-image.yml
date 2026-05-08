@@ -3,7 +3,7 @@ name: Building Image
 on:
   push:
     tags:
-      - "*"
+      - "**"
   workflow_dispatch:
     inputs:
       name:
