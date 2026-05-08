@@ -135,15 +135,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "application-macro"
-version = "1.15.1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "application-util"
 version = "1.15.1"
 dependencies = [
