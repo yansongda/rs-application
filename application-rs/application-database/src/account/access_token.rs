@@ -153,7 +153,7 @@ pub async fn insert(
 
     let pool = Pool::mysql("account")?;
 
-    let result = execute_write!(
+    let result = execute!(
         pool,
         sql,
         Error::InternalDatabaseInsert(None),
@@ -191,7 +191,7 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
 
     let pool = Pool::mysql("account")?;
 
-    let _ = execute_write!(
+    let _ = execute!(
         pool,
         sql,
         Error::InternalDatabaseUpdate(None),
