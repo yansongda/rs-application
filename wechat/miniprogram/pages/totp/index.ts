@@ -17,6 +17,10 @@ Page({
     dialogVisible: false,
     currentItemId: "0",
     items: [] as Item[],
+    isSortMode: false,
+    dragItems: [] as any[],
+    draggingIndex: -1,
+    dragCurrentY: 0,
   },
   onShow() {
     this.all();
@@ -117,5 +121,86 @@ Page({
   },
   dialogCancel() {
     this.setData({ dialogVisible: false, currentItemId: "0" });
+  },
+  enterSortMode() {
+    this.setData({
+      isSortMode: true,
+      dragItems: this.data.items.map((item, index) => ({
+        ...item,
+        y: index * 100,
+      })),
+    });
+  },
+  exitSortMode() {
+    this.setData({ isSortMode: false });
+  },
+  
+  onDragStart(e: any) {
+    const { index } = e.currentTarget.dataset;
+    this.setData({ draggingIndex: index });
+  },
+  onDragChange(e: any) {
+    if (e.detail.source === "touch") {
+      this.data.dragCurrentY = e.detail.y;
+    }
+  },
+  onDragEnd(e: any) {
+    const { index } = e.currentTarget.dataset;
+    if (this.data.draggingIndex !== index) return;
+
+    const y = this.data.dragCurrentY;
+    let newIndex = Math.round(y / 100);
+    newIndex = Math.max(0, Math.min(this.data.dragItems.length - 1, newIndex));
+
+    if (newIndex !== index) {
+      const newDragItems = [...this.data.dragItems];
+      const [movedItem] = newDragItems.splice(index, 1);
+      newDragItems.splice(newIndex, 0, movedItem);
+
+      newDragItems.forEach((item, i) => {
+        item.y = i * 100;
+      });
+
+      this.setData({ dragItems: newDragItems });
+    } else {
+      // Snap back if index didn't change
+      const newDragItems = [...this.data.dragItems];
+      newDragItems[index].y = index * 100;
+      this.setData({ dragItems: newDragItems });
+    }
+
+    this.setData({ draggingIndex: -1 });
+  },
+  saveSort() {
+    const reorderedItems = this.data.dragItems.map((di) => {
+      const { y, ...rest } = di;
+      return rest;
+    });
+    this.exitSortMode();
+    this.onSortChange({ detail: reorderedItems });
+  },
+
+  onSortChange(e: { detail: Item[] }) {
+    const originalItems = this.data.items.slice();
+    const reorderedItems = e.detail;
+    const sortItems = reorderedItems.map((item, index) => ({
+      id: item.id,
+      sort: reorderedItems.length - 1 - index,
+    }));
+
+    api
+      .sort(sortItems)
+      .then(() => {
+        this.setData({ items: reorderedItems });
+      })
+      .catch((err: HttpError) => {
+        this.setData({ items: originalItems });
+        Message.error({
+          content: `排序失败：${err.message}`,
+          duration: 5000,
+          offset: [20, 32],
+          context: this,
+        });
+      });
   },
 });

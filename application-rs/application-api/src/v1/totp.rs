@@ -10,6 +10,12 @@ use crate::response::Response;
 use crate::service;
 use application_database::account::access_token::AccessToken;
 use application_kernel::result::Error;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct SortRequest {
+    pub items: Vec<service::totp::SortItem>,
+}
 
 #[handler]
 pub async fn all(depot: &mut Depot) -> Resp<Vec<DetailResponse>> {
@@ -44,6 +50,19 @@ pub async fn create(request: &mut Request, depot: &mut Depot) -> Resp<DetailResp
     Ok(Response::success(
         service::totp::create(access_token, params.validate()?).await?,
     ))
+}
+
+#[handler]
+pub async fn sort(request: &mut Request, depot: &mut Depot) -> Resp<()> {
+    let access_token = depot
+        .obtain::<AccessToken>()
+        .map_err(|_| Error::AuthorizationAccessTokenInvalid(None))?;
+
+    let params = request.parse_json::<SortRequest>().await?;
+
+    service::totp::sort(access_token, params.items).await?;
+
+    Ok(Response::success(()))
 }
 
 #[handler]

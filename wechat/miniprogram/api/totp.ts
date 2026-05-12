@@ -13,6 +13,13 @@ import type {
   Item,
 } from "types/totp";
 
+interface SortRequest {
+  items: Array<{
+    id: string;
+    sort: number;
+  }>;
+}
+
 const all = async () => {
   try {
     return await http.post<Item[]>(PATH.ALL);
@@ -79,4 +86,14 @@ const deleteTotp = async (id: string) => {
   }
 };
 
-export default { all, detail, create, editIssuer, editUsername, deleteTotp };
+const sort = async (items: SortRequest["items"]) => {
+  try {
+    return await http.post<null>("/api/v1/totp/sort", { items } as SortRequest);
+  } catch (e: unknown) {
+    logger.error("排序 TOTP 失败", e);
+
+    throw new HttpError(CODE.HTTP_API_TOTP_ALL, error.getErrorMessage(e));
+  }
+};
+
+export default { all, detail, create, editIssuer, editUsername, deleteTotp, sort };

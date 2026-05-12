@@ -2,16 +2,24 @@ use crate::Pool;
 use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
+use sqlx::Acquire;
 use sqlx::FromRow;
 use sqlx::types::Json;
 use std::time::Instant;
 use totp_rs::{Algorithm, Secret, TOTP};
 use tracing::{error, info};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SortItem {
+    pub id: u64,
+    pub sort: u32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Totp {
     pub id: u64,
     pub user_id: u64,
+    pub sort: u32,
     pub username: String,
     pub issuer: Option<String>,
     pub config: Json<TotpConfig>,
@@ -64,13 +72,14 @@ pub struct TotpConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreatedTotp {
     pub user_id: u64,
+    pub sort: Option<u32>,
     pub username: String,
     pub issuer: Option<String>,
     pub config: TotpConfig,
 }
 
 pub async fn all(user_id: u64) -> Result<Vec<Totp>> {
-    let sql = "select * from tool.totp where user_id = ? order by id asc";
+    let sql = "select * from tool.totp where user_id = ? order by sort desc, id asc";
     let started_at = Instant::now();
 
     let result = sqlx::query_as(sql)
@@ -139,6 +148,7 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     Ok(Totp {
         id: result?.last_insert_id(),
         user_id: totp.user_id,
+        sort: 0,
         username: totp.username,
         issuer: totp.issuer,
         config: Json(totp.config),
@@ -229,6 +239,56 @@ pub async fn delete_by_user(user_id: u64) -> Result<()> {
     let elapsed = started_at.elapsed().as_secs_f32();
 
     info!(elapsed, sql, user_id);
+
+    Ok(())
+}
+
+pub async fn sort(user_id: u64, items: &[SortItem]) -> Result<()> {
+    let sql = "update tool.totp set sort = ? where id = ? and user_id = ?";
+    let started_at = Instant::now();
+    let pool = Pool::mysql("tool")?;
+    let mut transaction = pool.begin().await.map_err(|e| {
+        error!("开启 TOTP 排序事务失败: {:?}", e);
+
+        Error::InternalDatabaseUpdate(None)
+    })?;
+
+    for item in items {
+        let result = sqlx::query(sql)
+            .bind(item.sort)
+            .bind(item.id)
+            .bind(user_id)
+            .execute(transaction.acquire().await.map_err(|e| {
+                error!("获取 TOTP 排序事务连接失败: {:?}", e);
+
+                Error::InternalDatabaseUpdate(None)
+            })?)
+            .await
+            .map_err(|e| {
+                error!("批量更新 TOTP 排序失败: {:?}", e);
+
+                Error::InternalDatabaseUpdate(None)
+            })?;
+
+        if result.rows_affected() != 1 {
+            transaction.rollback().await.map_err(|e| {
+                error!("回滚 TOTP 排序事务失败: {:?}", e);
+
+                Error::InternalDatabaseUpdate(None)
+            })?;
+
+            return Err(Error::AuthorizationPermissionUngranted(None));
+        }
+    }
+
+    transaction.commit().await.map_err(|e| {
+        error!("提交 TOTP 排序事务失败: {:?}", e);
+
+        Error::InternalDatabaseUpdate(None)
+    })?;
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+    info!(elapsed, sql, user_id, item_count = items.len());
 
     Ok(())
 }
