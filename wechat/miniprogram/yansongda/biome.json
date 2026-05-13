@@ -6,7 +6,7 @@
     "useIgnoreFile": false
   },
   "files": {
-    "includes": ["miniprogram/**/*", "!miniprogram/miniprogram_npm/**/*"],
+    "includes": ["src/**/*", "!src/miniprogram_npm/**/*"],
     "ignoreUnknown": false
   },
   "formatter": {
