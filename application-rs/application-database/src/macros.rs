@@ -9,7 +9,36 @@ macro_rules! query_optional {
             .await;
 
         let elapsed = started_at.elapsed().as_secs_f32();
-        tracing::info!(elapsed, sql);
+
+        let mut binds: Vec<String> = Vec::new();
+        $(binds.push(format!("{:?}", $bind));)*
+
+        tracing::info!(elapsed, sql, ?binds);
+
+        result.map_err(|e| {
+            tracing::error!("数据库查询失败: {:?}", e);
+
+            application_kernel::result::Error::InternalDatabaseQuery(None)
+        })?
+    }};
+}
+
+#[macro_export]
+macro_rules! query_all {
+    ($pool:expr, $sql:expr $(, $bind:expr)*) => {{
+        let sql = $sql;
+        let started_at = std::time::Instant::now();
+        let result = sqlx::query_as(sql)
+            $(.bind($bind))*
+            .fetch_all($pool)
+            .await;
+
+        let elapsed = started_at.elapsed().as_secs_f32();
+
+        let mut binds: Vec<String> = Vec::new();
+        $(binds.push(format!("{:?}", $bind));)*
+
+        tracing::info!(elapsed, sql, ?binds);
 
         result.map_err(|e| {
             tracing::error!("数据库查询失败: {:?}", e);
@@ -30,7 +59,11 @@ macro_rules! execute {
             .await;
 
         let elapsed = started_at.elapsed().as_secs_f32();
-        tracing::info!(elapsed, sql);
+
+        let mut binds: Vec<String> = Vec::new();
+        $(binds.push(format!("{:?}", $bind));)*
+
+        tracing::info!(elapsed, sql, ?binds);
 
         result.map_err(|e| {
             tracing::error!("数据库写入失败: {:?}", e);
@@ -69,6 +102,22 @@ macro_rules! update {
             );
         }
         $crate::execute!($pool, $sql, application_kernel::result::Error::InternalDatabaseUpdate(None) $(, $bind)*)
+    }};
+}
+
+#[macro_export]
+macro_rules! delete {
+    ($pool:expr, $sql:expr $(, $bind:expr)*) => {{
+        #[cfg(debug_assertions)]
+        {
+            let sql_upper = $sql.to_uppercase();
+            assert!(
+                sql_upper.starts_with("DELETE"),
+                "delete! 宏要求 SQL 以 DELETE 开头，实际为: {}",
+                $sql
+            );
+        }
+        $crate::execute!($pool, $sql, application_kernel::result::Error::InternalDatabaseDelete(None) $(, $bind)*)
     }};
 }
 

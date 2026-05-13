@@ -1,13 +1,11 @@
-use crate::Pool;
 use crate::account::access_token;
 use crate::account::access_token::AccessToken;
+use crate::{Pool, insert, query_optional, update};
 use application_kernel::config::G_CONFIG;
 use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use std::time::Instant;
-use tracing::{error, info};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
@@ -39,21 +37,9 @@ pub async fn update_or_insert(access_token_id: u64) -> Result<RefreshToken> {
 
 pub async fn fetch(refresh_token: &str) -> Result<RefreshToken> {
     let sql = "select * from account.refresh_token where refresh_token = ? limit 1";
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
 
-    let result: Option<RefreshToken> = sqlx::query_as(sql)
-        .bind(refresh_token)
-        .fetch_optional(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("查询 refresh_token 失败: {:?}", e);
-
-            Error::InternalDatabaseQuery(None)
-        })?;
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, refresh_token);
+    let result: Option<RefreshToken> = query_optional!(pool, sql, refresh_token);
 
     if let Some(data) = result {
         return Ok(data);
@@ -64,21 +50,9 @@ pub async fn fetch(refresh_token: &str) -> Result<RefreshToken> {
 
 pub async fn fetch_by_access_token_id(access_token_id: u64) -> Result<RefreshToken> {
     let sql = "select * from account.refresh_token where access_token_id = ? limit 1";
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
 
-    let result: Option<RefreshToken> = sqlx::query_as(sql)
-        .bind(access_token_id)
-        .fetch_optional(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("查询 refresh_token 失败: {:?}", e);
-
-            Error::InternalDatabaseQuery(None)
-        })?;
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, access_token_id);
+    let result: Option<RefreshToken> = query_optional!(pool, sql, access_token_id);
 
     if let Some(data) = result {
         return Ok(data);
@@ -91,26 +65,12 @@ pub async fn insert(access_token_id: u64) -> Result<RefreshToken> {
     let sql = "insert into account.refresh_token (access_token_id, refresh_token, expired_at) values (?, ?, ?)";
     let refresh_token = Uuid::now_v7().to_string();
     let expired_at = G_CONFIG.access_token.get_refresh_expired_at();
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
 
-    let result = sqlx::query(sql)
-        .bind(access_token_id)
-        .bind(&refresh_token)
-        .bind(expired_at)
-        .execute(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("插入 refresh_token 失败: {:?}", e);
-
-            Error::InternalDatabaseInsert(None)
-        });
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, access_token_id);
+    let result = insert!(pool, sql, access_token_id, &refresh_token, expired_at);
 
     Ok(RefreshToken {
-        id: result?.last_insert_id(),
+        id: result.last_insert_id(),
         access_token_id,
         refresh_token,
         expired_at,
@@ -123,23 +83,15 @@ pub async fn update(mut refresh_token: RefreshToken) -> Result<RefreshToken> {
     let sql = "update account.refresh_token set refresh_token = ?, expired_at = ? where id = ?";
     let refresh_token_value = Uuid::now_v7().to_string();
     let expired_at = G_CONFIG.access_token.get_refresh_expired_at();
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
 
-    let _ = sqlx::query(sql)
-        .bind(&refresh_token_value)
-        .bind(expired_at)
-        .bind(refresh_token.id)
-        .execute(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("更新 refresh_token 失败: {:?}", e);
-
-            Error::InternalDatabaseUpdate(None)
-        });
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, refresh_token.id);
+    let _ = update!(
+        pool,
+        sql,
+        &refresh_token_value,
+        expired_at,
+        refresh_token.id
+    );
 
     refresh_token.refresh_token = refresh_token_value;
     refresh_token.expired_at = expired_at;
