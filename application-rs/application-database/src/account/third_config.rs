@@ -1,4 +1,4 @@
-use crate::Pool;
+use crate::{Pool, query_optional};
 use crate::account::Platform;
 
 use application_kernel::result::Error;
@@ -6,8 +6,6 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
-use std::time::Instant;
-use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct ThirdConfig {
@@ -42,22 +40,9 @@ pub async fn fetch(
     third_id: &str,
 ) -> application_kernel::result::Result<ThirdConfig> {
     let sql = "select * from account.third_config where platform = ? and third_id = ? limit 1";
-    let started_at = Instant::now();
+    let pool = Pool::mysql("account")?;
 
-    let result: Option<ThirdConfig> = sqlx::query_as(sql)
-        .bind(platform)
-        .bind(third_id)
-        .fetch_optional(Pool::mysql("account")?)
-        .await
-        .map_err(|e| {
-            error!("查询第三方平台配置信息失败: {:?}", e);
-
-            Error::InternalDatabaseQuery(None)
-        })?;
-
-    let elapsed = started_at.elapsed().as_secs_f32();
-
-    info!(elapsed, sql, third_id);
+    let result: Option<ThirdConfig> = query_optional!(pool, sql, platform, third_id);
 
     if let Some(config) = result {
         return Ok(config);
