@@ -18,14 +18,7 @@ pub async fn sort(request: &mut Request, depot: &mut Depot) -> Resp<()> {
         .map_err(|_| Error::AuthorizationAccessTokenInvalid(None))?;
 
     let params = request.parse_json::<SortRequest>().await?;
-    let items = params
-        .validate()?
-        .into_iter()
-        .map(|item| service::totp::SortItem {
-            id: item.id,
-            sort: item.sort,
-        })
-        .collect();
+    let items = params.validate()?;
 
     service::totp::sort(access_token, items).await?;
 

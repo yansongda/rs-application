@@ -1,12 +1,10 @@
-use std::time::Instant;
-
 use crate::{Pool, delete, insert, query_all, query_optional, update};
 use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
-use sqlx::Acquire;
 use sqlx::FromRow;
 use sqlx::types::Json;
+use std::time::Instant;
 use totp_rs::{Algorithm, Secret, TOTP};
 use tracing::error;
 use tracing::info;
@@ -162,48 +160,43 @@ pub async fn delete_by_user(user_id: u64) -> Result<()> {
 }
 
 pub async fn sort(user_id: u64, items: &[SortItem]) -> Result<()> {
-    let sql = "update tool.totp set sort = ? where id = ? and user_id = ?";
-    let started_at = Instant::now();
-    let pool = Pool::mysql("tool")?;
-    let mut transaction = pool.begin().await.map_err(|e| {
-        error!("开启 TOTP 排序事务失败: {:?}", e);
-
-        Error::InternalDatabaseUpdate(None)
-    })?;
-
-    for item in items {
-        let result = sqlx::query(sql)
-            .bind(item.sort)
-            .bind(item.id)
-            .bind(user_id)
-            .execute(transaction.acquire().await.map_err(|e| {
-                error!("获取 TOTP 排序事务连接失败: {:?}", e);
-
-                Error::InternalDatabaseUpdate(None)
-            })?)
-            .await
-            .map_err(|e| {
-                error!("批量更新 TOTP 排序失败: {:?}", e);
-
-                Error::InternalDatabaseUpdate(None)
-            })?;
-
-        if result.rows_affected() != 1 {
-            transaction.rollback().await.map_err(|e| {
-                error!("回滚 TOTP 排序事务失败: {:?}", e);
-
-                Error::InternalDatabaseUpdate(None)
-            })?;
-
-            return Err(Error::AuthorizationPermissionUngranted(None));
-        }
+    if items.is_empty() {
+        return Ok(());
     }
 
-    transaction.commit().await.map_err(|e| {
-        error!("提交 TOTP 排序事务失败: {:?}", e);
+    let started_at = Instant::now();
+    let pool = Pool::mysql("tool")?;
 
+    let mut sql = String::from("UPDATE tool.totp SET sort = CASE id ");
+    for _ in items {
+        sql.push_str("WHEN ? THEN ? ");
+    }
+    sql.push_str("ELSE sort END WHERE id IN (");
+    for i in 0..items.len() {
+        if i > 0 {
+            sql.push(',');
+        }
+        sql.push('?');
+    }
+    sql.push_str(") AND user_id = ?");
+
+    let mut query = sqlx::query(&sql);
+    for item in items {
+        query = query.bind(item.id).bind(item.sort);
+    }
+    for item in items {
+        query = query.bind(item.id);
+    }
+    query = query.bind(user_id);
+
+    let result = query.execute(pool).await.map_err(|e| {
+        error!("批量更新 TOTP 排序失败: {:?}", e);
         Error::InternalDatabaseUpdate(None)
     })?;
+
+    if result.rows_affected() != items.len() as u64 {
+        return Err(Error::AuthorizationPermissionUngranted(None));
+    }
 
     let elapsed = started_at.elapsed().as_secs_f32();
     info!(elapsed, sql, user_id, item_count = items.len());

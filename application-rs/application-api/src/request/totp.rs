@@ -174,11 +174,11 @@ impl Validator for DeleteRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SortRequest {
-    pub items: Vec<SortItem>,
+    pub items: Vec<SortRequestItem>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct SortItem {
+pub struct SortRequestItem {
     pub id: Option<String>,
     pub sort: u32,
 }
@@ -203,7 +203,10 @@ impl Validator for SortRequest {
                     .parse::<u64>()
                     .map_err(|_| Error::ParamsTotpIdEmpty(None))?;
 
-                Ok(SortItemParams { id, sort: item.sort })
+                Ok(SortItemParams {
+                    id,
+                    sort: item.sort,
+                })
             })
             .collect()
     }
