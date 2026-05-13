@@ -1,3 +1,9 @@
+## [1.17.0] - 2026-05-13
+
+### Added
+
+- feat(totp): 添加 TOTP 排序功能 (#128) ([aa93ed5](https://github.com/yansongda/application/commit/aa93ed5))
+
 ## [1.16.1] - 2026-05-13
 
 ### Changed

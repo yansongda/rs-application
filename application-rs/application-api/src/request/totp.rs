@@ -174,13 +174,13 @@ impl Validator for DeleteRequest {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SortRequest {
-    pub items: Vec<SortRequestItem>,
+    pub items: Option<Vec<SortRequestItem>>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct SortRequestItem {
     pub id: Option<String>,
-    pub sort: u32,
+    pub sort: Option<u32>,
 }
 
 #[derive(Debug, Clone)]
@@ -193,7 +193,13 @@ impl Validator for SortRequest {
     type Data = Vec<SortItemParams>;
 
     fn validate(&self) -> application_kernel::result::Result<Self::Data> {
-        self.items
+        let items = self.items.as_ref().ok_or(Error::ParamsTotpIdEmpty(None))?;
+
+        if items.is_empty() {
+            return Err(Error::ParamsTotpIdEmpty(None));
+        }
+
+        items
             .iter()
             .map(|item| {
                 let id = item
@@ -203,10 +209,9 @@ impl Validator for SortRequest {
                     .parse::<u64>()
                     .map_err(|_| Error::ParamsTotpIdEmpty(None))?;
 
-                Ok(SortItemParams {
-                    id,
-                    sort: item.sort,
-                })
+                let sort = item.sort.ok_or(Error::ParamsTotpIdEmpty(None))?;
+
+                Ok(SortItemParams { id, sort })
             })
             .collect()
     }
