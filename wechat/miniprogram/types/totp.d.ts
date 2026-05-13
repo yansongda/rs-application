@@ -2,6 +2,7 @@ import type { RequestData } from "./http";
 
 export interface Item {
   id: string;
+  sort: number;
   issuer: string;
   username: string;
   code: string;
