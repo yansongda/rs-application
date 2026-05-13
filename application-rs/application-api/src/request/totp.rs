@@ -171,3 +171,40 @@ impl Validator for DeleteRequest {
             .map_err(|_| Error::ParamsTotpIdEmpty(None))
     }
 }
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SortRequest {
+    pub items: Vec<SortItem>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SortItem {
+    pub id: Option<String>,
+    pub sort: u32,
+}
+
+#[derive(Debug, Clone)]
+pub struct SortItemParams {
+    pub id: u64,
+    pub sort: u32,
+}
+
+impl Validator for SortRequest {
+    type Data = Vec<SortItemParams>;
+
+    fn validate(&self) -> application_kernel::result::Result<Self::Data> {
+        self.items
+            .iter()
+            .map(|item| {
+                let id = item
+                    .id
+                    .as_deref()
+                    .ok_or(Error::ParamsTotpIdEmpty(None))?
+                    .parse::<u64>()
+                    .map_err(|_| Error::ParamsTotpIdEmpty(None))?;
+
+                Ok(SortItemParams { id, sort: item.sort })
+            })
+            .collect()
+    }
+}
