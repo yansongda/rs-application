@@ -12,7 +12,7 @@
 
 <view class="page">
   <view class="header" wx:if="{{items.length > 0}}">
-    <view class="header-title">验证码</view>
+    <view class="header-title">总计 {{items.length}} 个账号</view>
     <view class="header-action">
       <t-button wx:if="{{!isSortMode}}" size="small" theme="primary" variant="text" bind:tap="enterSortMode">编辑</t-button>
       <t-button wx:else size="small" theme="primary" variant="text" bind:tap="saveSort">完成</t-button>
@@ -20,6 +20,10 @@
   </view>
 
   <t-empty wx:if="{{items.length <= 0}}" icon="info-circle-filled" description="暂无数据" />
+
+  <view class="sort-tip" wx:if="{{isSortMode && items.length > 0}}">
+    <text class="sort-tip-text">长按并拖动可调整顺序</text>
+  </view>
 
   <movable-area class="items items-sort" wx:if="{{isSortMode && items.length > 0}}" style="height: {{dragItems.length * 100}}px; width: 100%;">
     <movable-view
@@ -44,9 +48,7 @@
           username="{{ item.username }}"
           code="{{ item.code }}"
         />
-        <view class="sort-mask">
-          <t-icon name="menu" size="24" color="#999" />
-        </view>
+        <view class="sort-mask" />
       </view>
     </movable-view>
   </movable-area>

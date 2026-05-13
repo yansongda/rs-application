@@ -18,8 +18,9 @@ Page({
     currentItemId: "0",
     items: [] as Item[],
     isSortMode: false,
-    dragItems: [] as any[],
+    dragItems: [] as Array<Item & { y: number }>[],
     draggingIndex: -1,
+    draggingId: "",
     dragCurrentY: 0,
   },
   onShow() {
@@ -134,17 +135,16 @@ Page({
   exitSortMode() {
     this.setData({ isSortMode: false });
   },
-  
-  onDragStart(e: any) {
+  onDragStart(e: WechatMiniprogram.TouchEvent) {
     const { index } = e.currentTarget.dataset;
     this.setData({ draggingIndex: index });
   },
-  onDragChange(e: any) {
+  onDragChange(e: WechatMiniprogram.MovableViewChange) {
     if (e.detail.source === "touch") {
       this.data.dragCurrentY = e.detail.y;
     }
   },
-  onDragEnd(e: any) {
+  onDragEnd(e: WechatMiniprogram.TouchEvent) {
     const { index } = e.currentTarget.dataset;
     if (this.data.draggingIndex !== index) return;
 
@@ -154,7 +154,7 @@ Page({
 
     if (newIndex !== index) {
       const newDragItems = [...this.data.dragItems];
-      const [movedItem] = newDragItems.splice(index, 1);
+      const [movedItem] = newDragItems.splice(index as number, 1);
       newDragItems.splice(newIndex, 0, movedItem);
 
       newDragItems.forEach((item, i) => {
@@ -163,9 +163,8 @@ Page({
 
       this.setData({ dragItems: newDragItems });
     } else {
-      // Snap back if index didn't change
       const newDragItems = [...this.data.dragItems];
-      newDragItems[index].y = index * 100;
+      newDragItems[index as number].y = (index as number) * 100;
       this.setData({ dragItems: newDragItems });
     }
 

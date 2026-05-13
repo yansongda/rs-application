@@ -96,4 +96,12 @@ const sort = async (items: SortRequest["items"]) => {
   }
 };
 
-export default { all, detail, create, editIssuer, editUsername, deleteTotp, sort };
+export default {
+  all,
+  detail,
+  create,
+  editIssuer,
+  editUsername,
+  deleteTotp,
+  sort,
+};
