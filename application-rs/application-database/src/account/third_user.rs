@@ -1,6 +1,6 @@
-use crate::{Pool, insert, query_optional};
 use crate::account::Platform;
 use crate::account::user::Config;
+use crate::{Pool, insert, query_optional};
 use application_kernel::result::Error;
 use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};

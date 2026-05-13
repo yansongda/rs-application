@@ -1,5 +1,5 @@
-use crate::{Pool, query_optional};
 use crate::account::Platform;
+use crate::{Pool, query_optional};
 
 use application_kernel::result::Error;
 use chrono::{DateTime, Local};

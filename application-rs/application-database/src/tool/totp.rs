@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use crate::{Pool, delete, insert, query_all, query_optional, update};
 use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
@@ -5,9 +7,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::Acquire;
 use sqlx::FromRow;
 use sqlx::types::Json;
-use std::time::Instant;
 use totp_rs::{Algorithm, Secret, TOTP};
-use tracing::{error, info};
+use tracing::error;
+use tracing::info;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SortItem {
@@ -102,7 +104,14 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     let sql = "insert into tool.totp (user_id, username, issuer, config) values (?, ?, ?, ?)";
     let pool = Pool::mysql("tool")?;
 
-    let result = insert!(pool, sql, totp.user_id, &totp.username, &totp.issuer, Json(&(totp.config)));
+    let result = insert!(
+        pool,
+        sql,
+        totp.user_id,
+        &totp.username,
+        &totp.issuer,
+        Json(&(totp.config))
+    );
 
     Ok(Totp {
         id: result.last_insert_id(),

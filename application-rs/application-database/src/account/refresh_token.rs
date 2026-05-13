@@ -1,6 +1,6 @@
-use crate::{Pool, insert, query_optional, update};
 use crate::account::access_token;
 use crate::account::access_token::AccessToken;
+use crate::{Pool, insert, query_optional, update};
 use application_kernel::config::G_CONFIG;
 use application_kernel::result::{Error, Result};
 use chrono::{DateTime, Local};
@@ -85,7 +85,13 @@ pub async fn update(mut refresh_token: RefreshToken) -> Result<RefreshToken> {
     let expired_at = G_CONFIG.access_token.get_refresh_expired_at();
     let pool = Pool::mysql("account")?;
 
-    let _ = update!(pool, sql, &refresh_token_value, expired_at, refresh_token.id);
+    let _ = update!(
+        pool,
+        sql,
+        &refresh_token_value,
+        expired_at,
+        refresh_token.id
+    );
 
     refresh_token.refresh_token = refresh_token_value;
     refresh_token.expired_at = expired_at;
