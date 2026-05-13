@@ -1,3 +1,9 @@
+## [1.16.1] - 2026-05-13
+
+### Changed
+
+- refactor(database): 统一数据库查询使用 macros.rs 宏 (#126) ([76c565b](https://github.com/yansongda/application/commit/76c565b))
+
 ## [1.16.0] - 2026-05-08
 
 ### Fixed
