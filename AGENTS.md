@@ -13,7 +13,7 @@
 ## 子目录规则入口
 
 - 后端：`application-rs/AGENTS.md`
-- 微信前端：`wechat/AGENTS.md`
+- 微信前端：`wechat/miniprogram/yansongda/AGENTS.md`
 - 华为前端：`huawei/atomicservice/MFA/AGENTS.md`
 
 ## 协作原则

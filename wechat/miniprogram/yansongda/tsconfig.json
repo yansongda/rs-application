@@ -17,22 +17,17 @@
     "strict": true,
     "strictPropertyInitialization": true,
     "lib": ["esnext"],
-    "types": [
-      "miniprogram-api-typings",
-    ],
+    "types": ["miniprogram-api-typings"],
     "baseUrl": ".",
     "outDir": "build",
     "paths": {
-      "tdesign-miniprogram/*":["miniprogram/miniprogram_npm/tdesign-miniprogram/*"],
-      "@api/*": ["miniprogram/api/*"],
-      "@utils/*": ["miniprogram/utils/*"],
-      "@constant/*": ["miniprogram/constant/*"],
-      "@models/*": ["miniprogram/models/*"],
-      "@components/*": ["miniprogram/components/*"],
-    }
+      "tdesign-miniprogram/*": ["src/miniprogram_npm/tdesign-miniprogram/*"],
+      "@api/*": ["src/api/*"],
+      "@utils/*": ["src/utils/*"],
+      "@constant/*": ["src/constant/*"],
+      "@models/*": ["src/models/*"],
+      "@components/*": ["src/components/*"],
+    },
   },
-  "exclude": [
-    "node_modules",
-    "build/**/*"
-  ]
+  "exclude": ["node_modules", "build/**/*"],
 }

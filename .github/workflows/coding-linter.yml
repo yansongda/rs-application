@@ -71,12 +71,12 @@ jobs:
         run: |
           cargo clippy -- -D warnings
 
-  lint-frontend:
+  lint-frontend-yansongda:
     name: Lint - Frontend
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: wechat
+        working-directory: wechat/miniprogram/yansongda
     steps:
       - name: Checkout sources
         uses: actions/checkout@v6
@@ -85,7 +85,7 @@ jobs:
         with:
           node-version: latest
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v6
         with:
           version: latest
           run_install: false
@@ -94,7 +94,7 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
       - name: Setup pnpm cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
