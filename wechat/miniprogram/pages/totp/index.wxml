@@ -11,12 +11,52 @@
 />
 
 <view class="page">
+  <view class="header" wx:if="{{items.length > 0}}">
+    <view class="header-title">总计 {{items.length}} 个账号</view>
+    <view class="header-action">
+      <t-button wx:if="{{!isSortMode}}" size="small" theme="primary" variant="text" bind:tap="enterSortMode">编辑</t-button>
+      <t-button wx:else size="small" theme="primary" variant="text" bind:tap="saveSort">完成</t-button>
+    </view>
+  </view>
+
   <t-empty wx:if="{{items.length <= 0}}" icon="info-circle-filled" description="暂无数据" />
 
-  <view class="items" wx:if="{{items.length > 0}}">
+  <view class="sort-tip" wx:if="{{isSortMode && items.length > 0}}">
+    <text class="sort-tip-text">长按并拖动可调整顺序</text>
+  </view>
+
+  <movable-area class="items items-sort" wx:if="{{isSortMode && items.length > 0}}" style="height: {{dragItems.length * 100}}px; width: 100%;">
+    <movable-view
+      wx:for="{{ dragItems }}"
+      wx:key="id"
+      y="{{item.y}}"
+      direction="vertical"
+      damping="40"
+      friction="2"
+      out-of-bounds="true"
+      style="width: 100%; height: 100px; z-index: {{draggingIndex === index ? 99 : 1}};"
+      bindchange="onDragChange"
+      bindtouchstart="onDragStart"
+      bindtouchend="onDragEnd"
+      data-index="{{index}}"
+    >
+      <view class="sort-item">
+        <app-totp-item
+          itemId="{{ item.id }}"
+          period="{{ item.config.period }}"
+          issuer="{{ item.issuer }}"
+          username="{{ item.username }}"
+          code="{{ item.code }}"
+        />
+        <view class="sort-mask" />
+      </view>
+    </movable-view>
+  </movable-area>
+
+  <view class="items" wx:if="{{!isSortMode && items.length > 0}}">
     <app-totp-item
       wx:for="{{ items }}"
-      wx:key="unique"
+      wx:key="id"
       wx:for-index="index"
       wx:for-item="item"
       itemId="{{ item.id }}"
@@ -30,5 +70,5 @@
     />
   </view>
 
-  <t-fab icon="add" bind:click="create" aria-label="增加" text="增加"></t-fab>
+  <t-fab wx:if="{{!isSortMode}}" icon="add" bind:click="create" aria-label="增加" text="增加"></t-fab>
 </view>
