@@ -3,13 +3,27 @@ use salvo::{Depot, Request, handler};
 use crate::request::Validator;
 use crate::request::totp::{
     CreateRequest, DeleteRequest, DetailRequest, DetailResponse, EditIssuerRequest,
-    EditUsernameRequest,
+    EditUsernameRequest, SortRequest,
 };
 use crate::response::Resp;
 use crate::response::Response;
 use crate::service;
 use application_database::account::access_token::AccessToken;
 use application_kernel::result::Error;
+
+#[handler]
+pub async fn sort(request: &mut Request, depot: &mut Depot) -> Resp<()> {
+    let access_token = depot
+        .obtain::<AccessToken>()
+        .map_err(|_| Error::AuthorizationAccessTokenInvalid(None))?;
+
+    let params = request.parse_json::<SortRequest>().await?;
+    let items = params.validate()?;
+
+    service::totp::sort(access_token, items).await?;
+
+    Ok(Response::success(()))
+}
 
 #[handler]
 pub async fn all(depot: &mut Depot) -> Resp<Vec<DetailResponse>> {

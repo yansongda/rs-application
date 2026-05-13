@@ -72,6 +72,7 @@ fn api_v1_totp() -> Router {
         .push(Router::with_path("/all").post(v1::totp::all))
         .push(Router::with_path("/detail").post(v1::totp::detail))
         .push(Router::with_path("/create").post(v1::totp::create))
+        .push(Router::with_path("/sort").post(v1::totp::sort))
         .push(
             Router::with_path("/edit")
                 .push(Router::with_path("/username").post(v1::totp::edit_username))

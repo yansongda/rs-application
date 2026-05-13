@@ -4,13 +4,22 @@ use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use sqlx::types::Json;
+use std::time::Instant;
 use totp_rs::{Algorithm, Secret, TOTP};
 use tracing::error;
+use tracing::info;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SortItem {
+    pub id: u64,
+    pub sort: u32,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Totp {
     pub id: u64,
     pub user_id: u64,
+    pub sort: u32,
     pub username: String,
     pub issuer: Option<String>,
     pub config: Json<TotpConfig>,
@@ -63,13 +72,14 @@ pub struct TotpConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreatedTotp {
     pub user_id: u64,
+    pub sort: Option<u32>,
     pub username: String,
     pub issuer: Option<String>,
     pub config: TotpConfig,
 }
 
 pub async fn all(user_id: u64) -> Result<Vec<Totp>> {
-    let sql = "select * from tool.totp where user_id = ? order by id asc";
+    let sql = "select * from tool.totp where user_id = ? order by sort desc, id asc";
     let pool = Pool::mysql("tool")?;
 
     Ok(query_all!(pool, sql, user_id))
@@ -104,6 +114,7 @@ pub async fn insert(totp: CreatedTotp) -> Result<Totp> {
     Ok(Totp {
         id: result.last_insert_id(),
         user_id: totp.user_id,
+        sort: 0,
         username: totp.username,
         issuer: totp.issuer,
         config: Json(totp.config),
@@ -144,6 +155,51 @@ pub async fn delete_by_user(user_id: u64) -> Result<()> {
     let pool = Pool::mysql("tool")?;
 
     let _ = delete!(pool, sql, user_id);
+
+    Ok(())
+}
+
+pub async fn sort(user_id: u64, items: &[SortItem]) -> Result<()> {
+    if items.is_empty() {
+        return Ok(());
+    }
+
+    let started_at = Instant::now();
+    let pool = Pool::mysql("tool")?;
+
+    let mut sql = String::from("UPDATE tool.totp SET sort = CASE id ");
+    for _ in items {
+        sql.push_str("WHEN ? THEN ? ");
+    }
+    sql.push_str("ELSE sort END WHERE id IN (");
+    for i in 0..items.len() {
+        if i > 0 {
+            sql.push(',');
+        }
+        sql.push('?');
+    }
+    sql.push_str(") AND user_id = ?");
+
+    let mut query = sqlx::query(&sql);
+    for item in items {
+        query = query.bind(item.id).bind(item.sort);
+    }
+    for item in items {
+        query = query.bind(item.id);
+    }
+    query = query.bind(user_id);
+
+    let result = query.execute(pool).await.map_err(|e| {
+        error!("批量更新 TOTP 排序失败: {:?}", e);
+        Error::InternalDatabaseUpdate(None)
+    })?;
+
+    if result.rows_affected() != items.len() as u64 {
+        return Err(Error::AuthorizationPermissionUngranted(None));
+    }
+
+    let elapsed = started_at.elapsed().as_secs_f32();
+    info!(elapsed, sql, user_id, item_count = items.len());
 
     Ok(())
 }

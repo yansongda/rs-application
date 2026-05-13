@@ -1,7 +1,10 @@
-use crate::request::totp::{DetailResponse, EditIssuerRequestParams, EditUsernameRequestParams};
+use crate::request::totp::{
+    DetailResponse, EditIssuerRequestParams, EditUsernameRequestParams, SortItemParams,
+};
 use application_database::account::access_token;
 use application_database::tool::totp;
 use application_kernel::result::{Error, Result};
+use std::collections::BTreeSet;
 use totp_rs::{Secret, TOTP};
 use tracing::error;
 
@@ -9,6 +12,29 @@ pub async fn all(access_token: &access_token::AccessToken) -> Result<Vec<DetailR
     let totp = totp::all(access_token.user_id).await?;
 
     totp.into_iter().map(|t| t.try_into()).collect()
+}
+
+pub async fn sort(
+    access_token: &access_token::AccessToken,
+    items: Vec<SortItemParams>,
+) -> Result<()> {
+    let owned = totp::all(access_token.user_id).await?;
+    let owned_ids: BTreeSet<u64> = owned.iter().map(|t| t.id).collect();
+    let item_ids: BTreeSet<u64> = items.iter().map(|i| i.id).collect();
+
+    if owned_ids.len() != items.len() || item_ids.len() != items.len() || owned_ids != item_ids {
+        return Err(Error::AuthorizationPermissionUngranted(None));
+    }
+
+    let db_items = items
+        .iter()
+        .map(|item| totp::SortItem {
+            id: item.id,
+            sort: item.sort,
+        })
+        .collect::<Vec<_>>();
+
+    totp::sort(access_token.user_id, &db_items).await
 }
 
 pub async fn detail(access_token: &access_token::AccessToken, id: u64) -> Result<DetailResponse> {
@@ -31,6 +57,7 @@ pub async fn create(
 
     totp::insert(totp::CreatedTotp {
         user_id: access_token.user_id,
+        sort: None,
         username: totp.account_name,
         issuer: totp.issuer,
         config: totp::TotpConfig {
