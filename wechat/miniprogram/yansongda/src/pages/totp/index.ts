@@ -22,6 +22,7 @@ Page({
     draggingIndex: -1,
     draggingId: "",
     dragCurrentY: 0,
+    isDragging: false,
   },
   onShow() {
     this.all();
@@ -137,7 +138,7 @@ Page({
   },
   onDragStart(e: WechatMiniprogram.TouchEvent) {
     const index = Number(e.currentTarget.dataset.index);
-    this.setData({ draggingIndex: index });
+    this.setData({ draggingIndex: index, isDragging: true });
   },
   onDragChange(e: WechatMiniprogram.MovableViewChange) {
     if (e.detail.source === "touch") {
@@ -146,7 +147,10 @@ Page({
   },
   onDragEnd(e: WechatMiniprogram.TouchEvent) {
     const index = Number(e.currentTarget.dataset.index);
-    if (this.data.draggingIndex !== index) return;
+    if (this.data.draggingIndex !== index) {
+      this.setData({ isDragging: false });
+      return;
+    }
 
     const y = this.data.dragCurrentY;
     let newIndex = Math.round(y / 100);
@@ -168,7 +172,7 @@ Page({
       this.setData({ dragItems: newDragItems });
     }
 
-    this.setData({ draggingIndex: -1 });
+    this.setData({ draggingIndex: -1, isDragging: false });
   },
   saveSort() {
     const reorderedItems = this.data.dragItems.map((di) => {

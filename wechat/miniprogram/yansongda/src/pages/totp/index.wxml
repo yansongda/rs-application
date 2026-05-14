@@ -25,33 +25,41 @@
     <text class="sort-tip-text">长按并拖动可调整顺序</text>
   </view>
 
-  <movable-area class="items items-sort" wx:if="{{isSortMode && items.length > 0}}" style="height: {{dragItems.length * 100}}px; width: 100%;">
-    <movable-view
-      wx:for="{{ dragItems }}"
-      wx:key="id"
-      y="{{item.y}}"
-      direction="vertical"
-      damping="40"
-      friction="2"
-      out-of-bounds="true"
-      style="width: 100%; height: 100px; z-index: {{draggingIndex === index ? 99 : 1}};"
-      bindchange="onDragChange"
-      bindtouchstart="onDragStart"
-      bindtouchend="onDragEnd"
-      data-index="{{index}}"
-    >
-      <view class="sort-item">
-        <app-totp-item
-          itemId="{{ item.id }}"
-          period="{{ item.config.period }}"
-          issuer="{{ item.issuer }}"
-          username="{{ item.username }}"
-          code="{{ item.code }}"
-        />
-        <view class="sort-mask" />
-      </view>
-    </movable-view>
-  </movable-area>
+  <scroll-view
+    wx:if="{{isSortMode && items.length > 0}}"
+    scroll-y="{{!isDragging}}"
+    class="items-scroll"
+    enhanced="true"
+    show-scrollbar="{{true}}"
+  >
+    <movable-area class="items items-sort" style="height: {{dragItems.length * 100}}px; width: 100%;">
+      <movable-view
+        wx:for="{{ dragItems }}"
+        wx:key="id"
+        y="{{item.y}}"
+        direction="vertical"
+        damping="40"
+        friction="2"
+        out-of-bounds="true"
+        style="width: 100%; height: 100px; z-index: {{draggingIndex === index ? 99 : 1}};"
+        bindchange="onDragChange"
+        bindtouchstart="onDragStart"
+        bindtouchend="onDragEnd"
+        data-index="{{index}}"
+      >
+        <view class="sort-item">
+          <app-totp-item
+            itemId="{{ item.id }}"
+            period="{{ item.config.period }}"
+            issuer="{{ item.issuer }}"
+            username="{{ item.username }}"
+            code="{{ item.code }}"
+          />
+          <view class="sort-mask" />
+        </view>
+      </movable-view>
+    </movable-area>
+  </scroll-view>
 
   <view class="items" wx:if="{{!isSortMode && items.length > 0}}">
     <app-totp-item

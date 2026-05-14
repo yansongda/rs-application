@@ -23,10 +23,14 @@
   padding-bottom: 100px;
 }
 
+.items-scroll {
+  flex: 1;
+  overflow: hidden;
+}
+
 .items-sort {
   padding-bottom: 0;
   position: relative;
-  overflow: hidden;
 }
 
 .sort-item {
