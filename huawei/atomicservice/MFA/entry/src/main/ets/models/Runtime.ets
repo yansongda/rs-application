@@ -217,7 +217,7 @@ export class ItemsRuntime {
   }
 
   isEmpty(): boolean {
-    return this._ids.length > 0;
+    return this._ids.length === 0;
   }
 
   clear() {

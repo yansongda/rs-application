@@ -31,11 +31,14 @@ export interface DeleteRequest {
 }
 
 export interface SortRequest {
-  items: Array<{
-    id: string;
-    sort: number;
-  }>;
+  items: Array<SortRequestItem>;
 }
+
+export interface SortRequestItem {
+  id: string;
+  sort: number;
+}
+
 
 export interface SortResponse {}
 
@@ -123,7 +126,7 @@ export class Totp {
     return Promise.reject(new HttpError(response.data.message));
   }
 
-  static async sort(items: Array<{ id: string; sort: number }>): Promise<void> {
+  static async sort(items: Array<SortRequestItem>): Promise<void> {
     const response: AxiosResponse<Response<SortResponse>> =
       await http.post<SortResponse, AxiosResponse<Response<SortResponse>>, SortRequest>('api/v1/totp/sort',
         {
