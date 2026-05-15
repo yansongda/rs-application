@@ -18,11 +18,10 @@ Page({
     currentItemId: "0",
     items: [] as Item[],
     isSortMode: false,
-    dragItems: [] as (Item & { y: number })[],
+    dragItems: [] as (Item & { y: number; translateY: number })[],
     draggingIndex: -1,
-    draggingId: "",
-    dragCurrentY: 0,
     isDragging: false,
+    touchStartY: 0,
   },
   onShow() {
     this.all();
@@ -130,30 +129,53 @@ Page({
       dragItems: this.data.items.map((item, index) => ({
         ...item,
         y: index * 100,
+        translateY: 0,
       })),
     });
   },
   exitSortMode() {
     this.setData({ isSortMode: false });
   },
-  onDragStart(e: WechatMiniprogram.TouchEvent) {
+  onTouchStart(e: WechatMiniprogram.TouchEvent) {
     const index = Number(e.currentTarget.dataset.index);
-    this.setData({ draggingIndex: index, isDragging: true });
+    const touch = e.touches[0];
+
+    this.setData({
+      draggingIndex: index,
+      touchStartY: touch.clientY,
+    });
+
+    setTimeout(() => {
+      if (this.data.draggingIndex === index) {
+        this.setData({ isDragging: true });
+      }
+    }, 350);
   },
-  onDragChange(e: WechatMiniprogram.MovableViewChange) {
-    if (e.detail.source === "touch") {
-      this.data.dragCurrentY = e.detail.y;
-    }
-  },
-  onDragEnd(e: WechatMiniprogram.TouchEvent) {
-    const index = Number(e.currentTarget.dataset.index);
-    if (this.data.draggingIndex !== index) {
-      this.setData({ isDragging: false });
+  onTouchMove(e: WechatMiniprogram.TouchEvent) {
+    const touch = e.touches[0];
+    const deltaY = touch.clientY - this.data.touchStartY;
+
+    if (!this.data.isDragging) {
+      if (Math.abs(deltaY) > 10) {
+        this.setData({ draggingIndex: -1 });
+      }
       return;
     }
 
-    const y = this.data.dragCurrentY;
-    let newIndex = Math.round(y / 100);
+    const newDragItems = [...this.data.dragItems];
+    newDragItems[this.data.draggingIndex].translateY = deltaY;
+    this.setData({ dragItems: newDragItems });
+  },
+  onTouchEnd(_e: WechatMiniprogram.TouchEvent) {
+    if (!this.data.isDragging) {
+      this.setData({ draggingIndex: -1 });
+      return;
+    }
+
+    const index = this.data.draggingIndex;
+    const item = this.data.dragItems[index];
+    const finalY = item.y + item.translateY;
+    let newIndex = Math.round(finalY / 100);
     newIndex = Math.max(0, Math.min(this.data.dragItems.length - 1, newIndex));
 
     if (newIndex !== index) {
@@ -163,12 +185,13 @@ Page({
 
       newDragItems.forEach((item, i) => {
         item.y = i * 100;
+        item.translateY = 0;
       });
 
       this.setData({ dragItems: newDragItems });
     } else {
       const newDragItems = [...this.data.dragItems];
-      newDragItems[index].y = index * 100;
+      newDragItems[index].translateY = 0;
       this.setData({ dragItems: newDragItems });
     }
 
@@ -176,8 +199,8 @@ Page({
   },
   saveSort() {
     const reorderedItems = this.data.dragItems.map((di) => {
-      const { y, ...rest } = di;
-      return rest;
+      const { y: _y, translateY: _t, ...rest } = di;
+      return rest as Item;
     });
     this.exitSortMode();
     this.onSortChange({ detail: reorderedItems });

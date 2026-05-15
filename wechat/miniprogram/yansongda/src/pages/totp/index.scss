@@ -6,7 +6,9 @@
 
 .page-sort {
   height: 100vh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .header {
@@ -28,20 +30,28 @@
   padding-bottom: 100px;
 }
 
-.items-scroll {
-  flex: 1;
-  overflow: hidden;
-}
-
 .items-sort {
   padding-bottom: 0;
   position: relative;
 }
 
-.sort-item {
-  position: relative;
-  width: 100%;
+.sort-row {
   height: 100px;
+  position: relative;
+}
+
+.sort-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.sort-item-dragging {
+  transition: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .sort-mask {
