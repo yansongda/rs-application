@@ -10,7 +10,7 @@
   bind:cancel="dialogCancel"
 />
 
-<view class="page">
+<view class="page {{isSortMode ? 'page-sort' : ''}}">
   <view class="header" wx:if="{{items.length > 0}}">
     <view class="header-title">总计 {{items.length}} 个账号</view>
     <view class="header-action">
