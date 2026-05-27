@@ -244,4 +244,71 @@ mod tests {
 
         assert_std_error::<Error>();
     }
+
+    #[test]
+    fn test_auth_access_token_expired_maps_to_1004() {
+        let err = Error::AuthorizationAccessTokenExpired(None);
+        let (code, message) = err.get_code_message();
+        assert_eq!(code, 1004);
+        assert!(message.contains("过期"));
+    }
+
+    #[test]
+    fn test_auth_refresh_token_invalid_maps_to_1005() {
+        let err = Error::AuthorizationRefreshTokenInvalid(None);
+        let (code, message) = err.get_code_message();
+        assert_eq!(code, 1005);
+        assert!(message.contains("不正确"));
+    }
+
+    #[test]
+    fn test_auth_refresh_token_expired_maps_to_1006() {
+        let err = Error::AuthorizationRefreshTokenExpired(None);
+        let (code, message) = err.get_code_message();
+        assert_eq!(code, 1006);
+        assert!(message.contains("过期"));
+    }
+
+    #[test]
+    fn test_auth_error_codes_are_distinguishable() {
+        let cases = [
+            (Error::AuthorizationAccessTokenExpired(None), 1004),
+            (Error::AuthorizationRefreshTokenInvalid(None), 1005),
+            (Error::AuthorizationRefreshTokenExpired(None), 1006),
+        ];
+        for (err, expected) in cases {
+            assert_eq!(err.get_code_message().0, expected);
+        }
+    }
+
+    #[test]
+    fn test_auth_access_token_expired_display_format() {
+        let err = Error::AuthorizationAccessTokenExpired(None);
+        let display = err.to_string();
+        assert!(display.starts_with("[1004]"));
+    }
+
+    #[test]
+    fn test_auth_access_token_expired_custom_message() {
+        let err = Error::AuthorizationAccessTokenExpired(Some("自定义过期消息".to_string()));
+        let (code, message) = err.get_code_message();
+        assert_eq!(code, 1004);
+        assert_eq!(message, "自定义过期消息");
+    }
+
+    #[test]
+    fn test_auth_refresh_token_invalid_custom_message() {
+        let err = Error::AuthorizationRefreshTokenInvalid(Some("token被篡改".to_string()));
+        let (code, message) = err.get_code_message();
+        assert_eq!(code, 1005);
+        assert_eq!(message, "token被篡改");
+    }
+
+    #[test]
+    fn test_auth_refresh_token_expired_custom_message() {
+        let err = Error::AuthorizationRefreshTokenExpired(Some("刷新令牌已失效".to_string()));
+        let (code, message) = err.get_code_message();
+        assert_eq!(code, 1006);
+        assert_eq!(message, "刷新令牌已失效");
+    }
 }
