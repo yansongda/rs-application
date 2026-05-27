@@ -172,4 +172,64 @@ mod tests {
             println!("{}", serde_json::to_string_pretty(&response).unwrap());
         }
     }
+
+    #[test]
+    fn test_error_response_access_token_expired_code_1004() {
+        let response =
+            Response::<String>::error(ApiErr(Error::AuthorizationAccessTokenExpired(None)));
+        let json = serde_json::to_value(&response).unwrap();
+
+        assert_eq!(json["code"], 1004);
+        assert!(json["message"].as_str().unwrap().contains("过期"));
+        assert!(json["data"].is_null());
+    }
+
+    #[test]
+    fn test_error_response_refresh_token_invalid_code_1005() {
+        let response =
+            Response::<String>::error(ApiErr(Error::AuthorizationRefreshTokenInvalid(None)));
+        let json = serde_json::to_value(&response).unwrap();
+
+        assert_eq!(json["code"], 1005);
+        assert!(json["message"].as_str().unwrap().contains("不正确"));
+        assert!(json["data"].is_null());
+    }
+
+    #[test]
+    fn test_error_response_refresh_token_expired_code_1006() {
+        let response =
+            Response::<String>::error(ApiErr(Error::AuthorizationRefreshTokenExpired(None)));
+        let json = serde_json::to_value(&response).unwrap();
+
+        assert_eq!(json["code"], 1006);
+        assert!(json["message"].as_str().unwrap().contains("过期"));
+        assert!(json["data"].is_null());
+    }
+
+    #[test]
+    fn test_error_response_auth_codes_are_distinguishable() {
+        let cases: Vec<(Error, u16)> = vec![
+            (Error::AuthorizationAccessTokenExpired(None), 1004),
+            (Error::AuthorizationRefreshTokenInvalid(None), 1005),
+            (Error::AuthorizationRefreshTokenExpired(None), 1006),
+        ];
+
+        for (err, expected_code) in cases {
+            let response = Response::<String>::error(ApiErr(err));
+            let json = serde_json::to_value(&response).unwrap();
+            assert_eq!(json["code"], expected_code);
+            assert!(json["data"].is_null());
+        }
+    }
+
+    #[test]
+    fn test_error_response_access_token_expired_with_custom_message() {
+        let response = Response::<String>::error(ApiErr(Error::AuthorizationAccessTokenExpired(
+            Some("token已失效请重新登录".to_string()),
+        )));
+        let json = serde_json::to_value(&response).unwrap();
+
+        assert_eq!(json["code"], 1004);
+        assert_eq!(json["message"], "token已失效请重新登录");
+    }
 }
