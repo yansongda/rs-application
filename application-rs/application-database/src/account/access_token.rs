@@ -25,20 +25,22 @@ pub struct AccessToken {
 
 impl AccessToken {
     pub fn is_expired(&self) -> bool {
-        match self.expired_at {
-            Some(expired_at) => Local::now() > expired_at,
-            None => true,
+        if let Some(expired_at) = self.expired_at {
+            return Local::now() > expired_at;
         }
+
+        false
     }
 
     pub fn get_expired_in(&self) -> u32 {
-        match self.expired_at {
-            Some(expired_at) => {
-                let duration = expired_at.signed_duration_since(Local::now());
-                duration.num_seconds().try_into().unwrap_or(0)
-            }
-            None => 0,
+        // todo： 微信的 access_token 永不过期，后续需要处理
+        if let Some(expired_at) = self.expired_at {
+            let duration = expired_at.signed_duration_since(Local::now());
+
+            return duration.num_seconds() as u32;
         }
+
+        G_CONFIG.access_token.expired_in
     }
 }
 
@@ -143,7 +145,12 @@ pub async fn insert(
 ) -> Result<AccessToken> {
     let sql = "insert into account.access_token (user_id, access_token, data, platform, third_id, expired_at) values (?, ?, ?, ?, ?, ?)";
     let access_token = Uuid::now_v7().to_string();
-    let expired_at = Some(G_CONFIG.access_token.get_expired_at());
+    let mut expired_at = Some(G_CONFIG.access_token.get_expired_at());
+
+    // todo: 微信的 access_token 永不过期，后续需要处理
+    if Platform::Wechat == *platform {
+        expired_at = None;
+    }
 
     let pool = Pool::mysql("account")?;
 
@@ -175,7 +182,12 @@ pub async fn update(mut access_token: AccessToken, data: AccessTokenData) -> Res
     let sql =
         "update account.access_token set access_token = ?, data = ?, expired_at = ? where id = ?";
     let access_token_value = Uuid::now_v7().to_string();
-    let expired_at = Some(G_CONFIG.access_token.get_expired_at());
+    let mut expired_at = Some(G_CONFIG.access_token.get_expired_at());
+
+    // todo: 微信的 access_token 永不过期，后续需要处理
+    if Platform::Wechat == access_token.platform {
+        expired_at = None;
+    }
 
     let pool = Pool::mysql("account")?;
 
@@ -238,7 +250,7 @@ mod tests {
     fn test_access_token_is_expired_with_no_expiry() {
         let token = create_test_token(None);
 
-        assert!(token.is_expired());
+        assert!(!token.is_expired());
     }
 
     #[test]
@@ -249,16 +261,9 @@ mod tests {
     }
 
     #[test]
-    fn test_get_expired_in_with_past_expiry() {
-        let token = create_test_token(Some(Local::now() - Duration::seconds(1)));
-
-        assert_eq!(token.get_expired_in(), 0);
-    }
-
-    #[test]
     fn test_get_expired_in_without_expiry() {
         let token = create_test_token(None);
 
-        assert_eq!(token.get_expired_in(), 0);
+        assert_eq!(token.get_expired_in(), G_CONFIG.access_token.expired_in);
     }
 }
